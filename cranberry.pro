@@ -14,7 +14,7 @@ TARGET      =   cranberry
 TEMPLATE    =   lib
 CONFIG     +=   c++11
 DEFINES    +=   CRANBERRY_BUILD
-QT         +=   network sql xml
+QT         +=   widgets network sql xml
 
 ####################################################################
 #
@@ -68,10 +68,19 @@ DISTFILES   +=  resources/templates/template_source \
 #
 # HEADER FILES
 ####################################################################
-HEADERS +=  include/Cranberry/Config.hpp
+HEADERS +=  include/Cranberry/Config.hpp \
+            include/Cranberry/Window/cbWindow.hpp \
+            include/Cranberry/Window/Events/cbMouseMoveEvent.hpp \
+            include/Cranberry/Window/Events/cbMouseButtonEvent.hpp \
+            include/Cranberry/Window/Events/cbKeyUpEvent.hpp \
+            include/Cranberry/Window/Events/cbKeyboardState.hpp
 
 ####################################################################
 #
 # SOURCE FILES
 ####################################################################
-SOURCES +=
+SOURCES +=  src/Window/Events/cbMouseMoveEvent.cpp \
+            src/Window/Events/cbMouseButtonEvent.cpp \
+            src/Window/Events/cbKeyUpEvent.cpp \
+            src/Window/Events/cbKeyboardState.cpp \
+            src/Window/cbWindow.cpp

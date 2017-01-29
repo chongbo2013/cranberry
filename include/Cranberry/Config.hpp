@@ -13,7 +13,7 @@
 //  GNU Lesser General Public License for more details.
 //
 //  You should have received a copy of the GNU Lesser General Public License
-//  along with cranberry.  If not, see <http://www.gnu.org/licenses/>.
+//  along with cranberry. If not, see <http://www.gnu.org/licenses/>.
 //
 
 
@@ -55,7 +55,7 @@
 #define CRANBERRY_NAMESPACE         cran
 #define CRANBERRY_BEGIN_NAMESPACE   namespace CRANBERRY_NAMESPACE {
 #define CRANBERRY_END_NAMESPACE     }
-#define CRANBERRY_USING_NAMESPACE   using namespace CRANBERRY_NAMESPACE
+#define CRANBERRY_USING_NAMESPACE   using namespace CRANBERRY_NAMESPACE;
 
 //!
 //! Uses compiler-specific macroes to retrieve the function name.
