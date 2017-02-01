@@ -68,10 +68,11 @@ cbWindow::setClearColor(const QColor& color)
 
     if (m_isInitialized)
     {
-        glClearColor(color.redF(),
-                     color.greenF(),
-                     color.blueF(),
-                     color.alphaF());
+        glClearColor(
+            color.redF(),
+            color.greenF(),
+            color.blueF(),
+            color.alphaF());
     }
 }
 
@@ -90,6 +91,13 @@ cbWindow::enableVerticalSync(bool enable)
 }
 
 
+cbWindow*
+cbWindow::current()
+{
+    return g_Current;
+}
+
+
 void
 cbWindow::initializeGL()
 {
@@ -99,10 +107,11 @@ cbWindow::initializeGL()
     m_isInitialized = true;
 
     // Specifies the clear color for the first time.
-    glClearColor(m_clearColor.redF(),
-                 m_clearColor.greenF(),
-                 m_clearColor.blueF(),
-                 m_clearColor.alphaF());
+    glClearColor(
+        m_clearColor.redF(),
+        m_clearColor.greenF(),
+        m_clearColor.blueF(),
+        m_clearColor.alphaF());
 }
 
 
@@ -247,6 +256,10 @@ cbWindow::event(QEvent* event)
 
     return QOpenGLWindow::event(event);
 }
+
+
+// Static variable definition
+cbWindow* cbWindow::g_Current = nullptr;
 
 
 CRANBERRY_END_NAMESPACE

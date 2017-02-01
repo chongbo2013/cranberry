@@ -125,6 +125,14 @@ public:
     void enableVerticalSync(bool enable);
 
 
+    ///
+    /// Retrieves the currently focused cbWindow.
+    ///
+    /// @returns the active window.
+    ///
+    static cbWindow* current();
+
+
 protected:
 
     ///
@@ -355,6 +363,9 @@ private:
     int         m_keyCount;
 
     cbKeyboardState m_keyState;
+
+    // Static variables
+    cbWindow* g_Current;
 
     // Metadata
     Q_OBJECT
