@@ -73,7 +73,10 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Window/Events/cbMouseMoveEvent.hpp \
             include/Cranberry/Window/Events/cbMouseButtonEvent.hpp \
             include/Cranberry/Window/Events/cbKeyUpEvent.hpp \
-            include/Cranberry/Window/Events/cbKeyboardState.hpp
+            include/Cranberry/Window/Events/cbKeyboardState.hpp \
+            include/Cranberry/Graphics/System/cbDrawable.hpp \
+            include/Cranberry/System/cbGameTime.hpp \
+            include/Cranberry/System/Enums/cbGraphicsEnums.hpp
 
 ####################################################################
 #
@@ -83,4 +86,6 @@ SOURCES +=  src/Window/Events/cbMouseMoveEvent.cpp \
             src/Window/Events/cbMouseButtonEvent.cpp \
             src/Window/Events/cbKeyUpEvent.cpp \
             src/Window/Events/cbKeyboardState.cpp \
-            src/Window/cbWindow.cpp
+            src/Window/cbWindow.cpp \
+            src/System/cbGameTime.cpp \
+            src/Graphics/System/cbDrawable.cpp
