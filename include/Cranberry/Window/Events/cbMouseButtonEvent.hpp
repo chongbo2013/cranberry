@@ -31,70 +31,70 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
-//!
-//! Holds information about a mouse-button event.
-//!
-//! @class cbMouseButtonEvent
-//! @author Nicolas Kogler
-//! @date January 29th, 2017
-//!
+///
+/// Holds information about a mouse-button event.
+///
+/// \class cbMouseButtonEvent
+/// \author Nicolas Kogler
+/// \date January 29th, 2017
+///
 class CRANBERRY_EXPORT cbMouseButtonEvent
 {
 public:
 
-    //!
-    //! Constructor
-    //!
+    ///
+    /// Constructor
+    ///
     cbMouseButtonEvent(const QPoint& p, Qt::MouseButtons buttons);
 
-    //!
-    //! Copy constructor
-    //!
-    //! @param other The other cbMouseButtonEvent instance.
-    //!
+    ///
+    /// Copy constructor
+    ///
+    /// \param other The other cbMouseButtonEvent instance.
+    ///
     cbMouseButtonEvent(const cbMouseButtonEvent& other) = delete;
 
-    //!
-    //! Move constructor
-    //!
-    //! @param other The other cbMouseButtonEvent instance.
-    //!
+    ///
+    /// Move constructor
+    ///
+    /// \param other The other cbMouseButtonEvent instance.
+    ///
     cbMouseButtonEvent(cbMouseButtonEvent&& other) = delete;
 
-    //!
-    //! Assignment operator
-    //!
-    //! @param other The other cbMouseButtonEvent instance.
-    //!
+    ///
+    /// Assignment operator
+    ///
+    /// \param other The other cbMouseButtonEvent instance.
+    ///
     cbMouseButtonEvent& operator=(const cbMouseButtonEvent& other) = delete;
 
-    //!
-    //! Destructor
-    //!
+    ///
+    /// Destructor
+    ///
     ~cbMouseButtonEvent() = default;
 
 
-    //!
-    //! Retrieves the current position of the cursor.
-    //!
-    //! @returns the cursor position.
-    //!
+    ///
+    /// Retrieves the current position of the cursor.
+    ///
+    /// \returns the cursor position.
+    ///
     const QPoint& pos() const;
 
-    //!
-    //! Returns a combination of affected mouse buttons. In order
-    //! to easily determine whether a specific button is affected,
-    //! use the cbMouseButtonEvent::hasButton() function.
-    //!
-    //! @returns a combination of affected mouse buttons.
-    //!
+    ///
+    /// Returns a combination of affected mouse buttons. In order
+    /// to easily determine whether a specific button is affected,
+    /// use the cbMouseButtonEvent::hasButton() function.
+    ///
+    /// \returns a combination of affected mouse buttons.
+    ///
     Qt::MouseButtons buttons() const;
 
-    //!
-    //! Determines whether the given button is affected.
-    //!
-    //! @returns true if it is affected.
-    //!
+    ///
+    /// Determines whether the given button is affected.
+    ///
+    /// \returns true if it is affected.
+    ///
     bool hasButton(Qt::MouseButton button) const;
 
 

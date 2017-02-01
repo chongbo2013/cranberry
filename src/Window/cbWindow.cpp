@@ -140,8 +140,8 @@ cbWindow::mousePressEvent(QMouseEvent* event)
 void
 cbWindow::mouseReleaseEvent(QMouseEvent* event)
 {
-    cbMouseButtonEvent ev(event->pos(), ~event->buttons());
-    onMouseDown(ev);
+    cbMouseButtonEvent ev(event->pos(), event->button());
+    onMouseUp(ev);
 }
 
 
@@ -158,8 +158,8 @@ cbWindow::keyPressEvent(QKeyEvent* event)
 {
     if (!event->text().isEmpty())
     {
-        // Emits a key-char event if key has not been pressed before or
-        // if the given key was repeated.
+        // Emits a key-char event if key has not been pressed
+        // before or if the given key was repeated.
         if (!m_keyState.m_keys.value(event->key()) || event->isAutoRepeat())
             onKeyChar(event->text());
     }

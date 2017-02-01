@@ -28,70 +28,70 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
-//!
-//! Holds information about a key-up event.
-//!
-//! @class cbKeyUpEvent
-//! @author Nicolas Kogler
-//! @date January 29th, 2017
-//!
+///
+/// Holds information about a key-up event.
+///
+/// \class cbKeyUpEvent
+/// \author Nicolas Kogler
+/// \date January 29th, 2017
+///
 class CRANBERRY_EXPORT cbKeyUpEvent
 {
 public:
 
-    //!
-    //! Constructor
-    //!
+    ///
+    /// Constructor
+    ///
     cbKeyUpEvent(int key, Qt::KeyboardModifiers mods);
 
-    //!
-    //! Copy constructor
-    //!
-    //! @param other The other cbKeyUpEvent instance.
-    //!
+    ///
+    /// Copy constructor
+    ///
+    /// \param other The other cbKeyUpEvent instance.
+    ///
     cbKeyUpEvent(const cbKeyUpEvent& other) = delete;
 
-    //!
-    //! Move constructor
-    //!
-    //! @param other The other cbKeyUpEvent instance.
-    //!
+    ///
+    /// Move constructor
+    ///
+    /// \param other The other cbKeyUpEvent instance.
+    ///
     cbKeyUpEvent(cbKeyUpEvent&& other) = delete;
 
-    //!
-    //! Assignment operator
-    //!
-    //! @param other The other cbKeyUpEvent instance.
-    //!
+    ///
+    /// Assignment operator
+    ///
+    /// \param other The other cbKeyUpEvent instance.
+    ///
     cbKeyUpEvent& operator=(const cbKeyUpEvent& other) = delete;
 
-    //!
-    //! Destructor
-    //!
+    ///
+    /// Destructor
+    ///
     ~cbKeyUpEvent() = default;
 
 
-    //!
-    //! Retrieves the released key.
-    //!
-    //! @param key The key that was released.
-    //!
+    ///
+    /// Retrieves the released key.
+    ///
+    /// \param key The key that was released.
+    ///
     Qt::Key key() const;
 
-    //!
-    //! Retrieves all pressed modifiers. In order to
-    //! easily determine whether a specific modifier
-    //! is pressed, use cbKeyUpEvent::hasModifier().
-    //!
-    //! @returns all pressed modifiers.
-    //!
+    ///
+    /// Retrieves all pressed modifiers. In order to
+    /// easily determine whether a specific modifier
+    /// is pressed, use cbKeyUpEvent::hasModifier().
+    ///
+    /// \returns all pressed modifiers.
+    ///
     Qt::KeyboardModifiers modifiers() const;
 
-    //!
-    //! Determines whether the given modifier is pressed.
-    //!
-    //! @returns true if the modifier is pressed.
-    //!
+    ///
+    /// Determines whether the given modifier is pressed.
+    ///
+    /// \returns true if the modifier is pressed.
+    ///
     bool hasModifier(Qt::KeyboardModifier mod) const;
 
 

@@ -31,75 +31,75 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
-//!
-//! Holds all currently pressed keys and modifiers.
-//!
-//! @class cbKeyboardState
-//! @author Nicolas Kogler
-//! @date January 29th, 2017
-//!
+///
+/// Holds all currently pressed keys and modifiers.
+///
+/// \class cbKeyboardState
+/// \author Nicolas Kogler
+/// \date January 29th, 2017
+///
 class CRANBERRY_EXPORT cbKeyboardState
 {
 public:
 
-    //!
-    //! Constructor
-    //!
+    ///
+    /// Constructor
+    ///
     cbKeyboardState() = default;
 
-    //!
-    //! Copy constructor
-    //!
-    //! @param other The other cbKeyboardState instance.
-    //!
+    ///
+    /// Copy constructor
+    ///
+    /// \param other The other cbKeyboardState instance.
+    ///
     cbKeyboardState(const cbKeyboardState& other) = delete;
 
-    //!
-    //! Move constructor
-    //!
-    //! @param other The other cbKeyboardState instance.
-    //!
+    ///
+    /// Move constructor
+    ///
+    /// \param other The other cbKeyboardState instance.
+    ///
     cbKeyboardState(cbKeyboardState&& other) = delete;
 
-    //!
-    //! Assignment operator
-    //!
-    //! @param other The other cbKeyboardState instance.
-    //!
+    ///
+    /// Assignment operator
+    ///
+    /// \param other The other cbKeyboardState instance.
+    ///
     cbKeyboardState& operator=(const cbKeyboardState& other) = delete;
 
-    //!
-    //! Destructor
-    //!
+    ///
+    /// Destructor
+    ///
     ~cbKeyboardState() = default;
 
 
-    //!
-    //! Determines whether the given modifier is pressed.
-    //!
-    //! @returns true if the modifier is pressed.
-    //!
+    ///
+    /// Determines whether the given modifier is pressed.
+    ///
+    /// \returns true if the modifier is pressed.
+    ///
     bool isModifierDown(Qt::Modifier mod) const;
 
-    //!
-    //! Determines whether the given modifier is released.
-    //!
-    //! @returns true if the modifier is released.
-    //!
+    ///
+    /// Determines whether the given modifier is released.
+    ///
+    /// \returns true if the modifier is released.
+    ///
     bool isModifierUp(Qt::Modifier mod) const;
 
-    //!
-    //! Determines whether the given key is pressed.
-    //!
-    //! @returns true if the key is pressed.
-    //!
+    ///
+    /// Determines whether the given key is pressed.
+    ///
+    /// \returns true if the key is pressed.
+    ///
     bool isKeyDown(Qt::Key key) const;
 
-    //!
-    //! Determines whether the given key is released.
-    //!
-    //! @returns true if the key is released.
-    //!
+    ///
+    /// Determines whether the given key is released.
+    ///
+    /// \returns true if the key is released.
+    ///
     bool isKeyUp(Qt::Key key) const;
 
 

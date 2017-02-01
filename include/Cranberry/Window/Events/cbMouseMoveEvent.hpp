@@ -31,61 +31,61 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
-//!
-//! Holds information about a mouse-move event.
-//!
-//! @class cbMouseMoveEvent
-//! @author Nicolas Kogler
-//! @date January 29th, 2017
-//!
+///
+/// Holds information about a mouse-move event.
+///
+/// \class cbMouseMoveEvent
+/// \author Nicolas Kogler
+/// \date January 29th, 2017
+///
 class CRANBERRY_EXPORT cbMouseMoveEvent
 {
 public:
 
-    //!
-    //! Constructor
-    //!
+    ///
+    /// Constructor
+    ///
     cbMouseMoveEvent(const QPoint& pOld, const QPoint& pNew);
 
-    //!
-    //! Copy constructor (disabled)
-    //!
-    //! @param other The other cbMouseMoveEvent instance.
-    //!
+    ///
+    /// Copy constructor (disabled)
+    ///
+    /// \param other The other cbMouseMoveEvent instance.
+    ///
     cbMouseMoveEvent(const cbMouseMoveEvent& other) = delete;
 
-    //!
-    //! Move constructor (disabled)
-    //!
-    //! @param other The other cbMouseMoveEvent instance.
-    //!
+    ///
+    /// Move constructor (disabled)
+    ///
+    /// \param other The other cbMouseMoveEvent instance.
+    ///
     cbMouseMoveEvent(cbMouseMoveEvent&& other) = delete;
 
-    //!
-    //! Assignment operator (disabled)
-    //!
-    //! @param other The other cbMouseMoveEvent instance.
-    //!
+    ///
+    /// Assignment operator (disabled)
+    ///
+    /// \param other The other cbMouseMoveEvent instance.
+    ///
     cbMouseMoveEvent& operator=(const cbMouseMoveEvent& other) = delete;
 
-    //!
-    //! Destructor
-    //!
+    ///
+    /// Destructor
+    ///
     ~cbMouseMoveEvent() = default;
 
 
-    //!
-    //! Retrieves the current position of the cursor.
-    //!
-    //! @returns the cursor position.
-    //!
+    ///
+    /// Retrieves the current position of the cursor.
+    ///
+    /// \returns the cursor position.
+    ///
     const QPoint& pos() const;
 
-    //!
-    //! Retrieves the difference between the old and new position.
-    //!
-    //! @returns the amount of moved pixels.
-    //!
+    ///
+    /// Retrieves the difference between the old and new position.
+    ///
+    /// \returns the amount of moved pixels.
+    ///
     const QPoint& delta() const;
 
 

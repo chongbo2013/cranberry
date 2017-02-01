@@ -32,46 +32,46 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
-//!
-//! This is the description of the class.
-//!
-//! @class %Class
-//! @author Nicolas Kogler
-//! @date January 29th, 2017
-//!
+///
+/// This is the description of the class.
+///
+/// \class %Class
+/// \author Nicolas Kogler
+/// \date January 29th, 2017
+///
 class CRANBERRY_EXPORT %Class
 {
 public:
 
-    //!
-    //! Constructor
-    //!
+    ///
+    /// Constructor
+    ///
     %Class();
 
-    //!
-    //! Copy constructor
-    //!
-    //! @param other The other %Class instance.
-    //!
+    ///
+    /// Copy constructor
+    ///
+    /// \param other The other %Class instance.
+    ///
     %Class(const %Class& other);
 
-    //!
-    //! Move constructor
-    //!
-    //! @param other The other %Class instance.
-    //!
+    ///
+    /// Move constructor
+    ///
+    /// \param other The other %Class instance.
+    ///
     %Class(%Class&& other);
 
-    //!
-    //! Assignment operator
-    //!
-    //! @param other The other %Class instance.
-    //!
+    ///
+    /// Assignment operator
+    ///
+    /// \param other The other %Class instance.
+    ///
     %Class& operator=(const %Class& other);
 
-    //!
-    //! Destructor
-    //!
+    ///
+    /// Destructor
+    ///
     ~%Class();
 
 
