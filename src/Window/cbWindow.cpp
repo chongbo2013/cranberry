@@ -227,7 +227,7 @@ void
 cbWindow::focusInEvent(QFocusEvent*)
 {
     m_isActive = true;
-    g_Current = this;
+    g_CurrentWindow = this;
     onActivate();
 
     // Activates rendering again.

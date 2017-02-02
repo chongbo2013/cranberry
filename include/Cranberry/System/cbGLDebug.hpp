@@ -79,7 +79,7 @@ private:
     {                                   \
         expr;                           \
         cbGLDebug::performCheck(        \
-            std::to_string(__FILE__),   \
+            std::string(__FILE__),      \
             CRANBERRY_FUNC,             \
             std::to_string(__LINE__),   \
             #expr);                     \

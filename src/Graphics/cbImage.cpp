@@ -20,6 +20,7 @@
 // Cranberry headers
 #include <Cranberry/System/cbGLDebug.hpp>
 #include <Cranberry/Graphics/cbImage.hpp>
+#include <Cranberry/Graphics/System/cbGraphicsConstants.hpp>
 #include <Cranberry/Window/cbWindow.hpp>
 
 // Qt headers
@@ -34,19 +35,20 @@ CRANBERRY_BEGIN_NAMESPACE
 cbImage::
 cbImage(cbWindow* renderTarget)
     : cbDrawable(renderTarget)
-    , m_refCount(new int)
+    , m_refCount(new uint32_t)
     , m_texture(nullptr)
     , m_needsUpdate(false)
     , m_isValid(false)
 {
     *m_refCount += 1;
-    vertices()->resize(32u, 0);
+    vertices()->resize(CBI_VERTEX_COUNT, 0);
 }
 
 
 cbImage::
 cbImage(const cbImage& other)
-    : m_refCount(other.m_refCount)
+    : cbDrawable(renderTarget())
+    , m_refCount(other.m_refCount)
     , m_texture(other.m_texture)
     , m_mvpMatrix(other.m_mvpMatrix)
     , m_needsUpdate(other.m_needsUpdate)
@@ -120,8 +122,8 @@ cbImage::setSourceRectangle(const QRectF& source)
     float dstH = source.height();
     float uvcX = source.x() / texW;
     float uvcY = source.y() / texH;
-    float uvcW = relX + (dstW / texW);
-    float uvcH = relY + (dstH / texH);
+    float uvcW = uvcX + (dstW / texW);
+    float uvcH = uvcY + (dstH / texH);
 
     // Modifies the vertex data.        x     y
     set_xy(data, CBI_STRIDE, VERTEX_0, 0.f,  0.f);
@@ -171,14 +173,14 @@ cbImage::create(const QImage& img)
     if (!cbDrawable::create())
         return false;
 
-    m_renderTarget->makeCurrent();
+    renderTarget()->makeCurrent();
     initializeOpenGLFunctions();
     m_texture = new QOpenGLTexture(img);
 
     if (!m_texture->create())
         return false;
 
-    m_renderTarget->doneCurrent();
+    renderTarget()->doneCurrent();
     setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
 
     return true;
@@ -190,17 +192,17 @@ cbImage::destroy()
 {
     cbDrawable::destroy();
 
-    if (m_renderTarget == nullptr)
+    if (renderTarget() == nullptr)
         return;
 
-    m_renderTarget->makeCurrent();
+    renderTarget()->makeCurrent();
     m_texture->destroy();
     m_isValid = false;
 
     delete m_refCount;
     delete m_texture;
 
-    m_renderTarget->doneCurrent();
+    renderTarget()->doneCurrent();
 }
 
 
@@ -219,14 +221,14 @@ cbImage::render()
     m_mvpMatrix.setToIdentity();
     m_mvpMatrix.scale(1 /* scale() */);
     m_mvpMatrix.translate(0, 0 /* origin() * -1*/);
-    m_mvpMatrix.rotate(0, /* angle() */, 0, 0, 1);
+    m_mvpMatrix.rotate(0, /* angle() */ 0, 0, 1);
     m_mvpMatrix.translate(0, 0 /* origin() */);
     m_mvpMatrix.translate(0, 0 /* pos() */);
 
     // Determines which program to use.
     QOpenGLShaderProgram* program; /* = cbPrograms::image() */
-    if (m_customProgram != nullptr)
-        program = m_customProgram;
+    if (shaderProgram() != nullptr)
+        program = shaderProgram();
 
     // Retrieves the vertex array for cbImage.
     QOpenGLVertexArrayObject array;
@@ -240,7 +242,7 @@ cbImage::render()
 
     // If update was requested, update vertex data.
     if (m_needsUpdate)
-        glDebug(m_vertexBuffer->write(0, vertices()->data(), CBI_VERTEX_COUNT));
+        glDebug(vertexBuffer()->write(0, vertices()->data(), CBI_VERTEX_COUNT));
 
     // Forwards the MVP matrix and opacity to the shader.
     glDebug(program->setUniformValue("" /* cbPrograms::imageMatrix() */, m_mvpMatrix));

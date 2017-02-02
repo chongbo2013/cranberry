@@ -23,7 +23,7 @@
 
 // Cranberry headers
 #include <Cranberry/System/cbGameTime.hpp>
-#include <Cranberry/System/Enums/cbGraphicsEnums.hpp>
+#include <Cranberry/Graphics/System/cbGraphicsEnums.hpp>
 
 // Qt headers
 #include <QOpenGLBuffer>

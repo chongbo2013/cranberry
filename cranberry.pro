@@ -76,9 +76,10 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Window/Events/cbKeyboardState.hpp \
             include/Cranberry/Graphics/System/cbDrawable.hpp \
             include/Cranberry/System/cbGameTime.hpp \
-            include/Cranberry/System/Enums/cbGraphicsEnums.hpp \
+            include/Cranberry/Graphics/System/cbGraphicsEnums.hpp \
             include/Cranberry/System/cbGLDebug.hpp \
-            include/Cranberry/Graphics/cbImage.hpp
+            include/Cranberry/Graphics/cbImage.hpp \
+    include/Cranberry/Graphics/System/cbGraphicsConstants.hpp
 
 ####################################################################
 #
