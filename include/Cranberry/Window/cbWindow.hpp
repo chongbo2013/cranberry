@@ -22,7 +22,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/System/cbGameTime.hpp>
 #include <Cranberry/Window/Events/cbKeyUpEvent.hpp>
 #include <Cranberry/Window/Events/cbKeyboardState.hpp>
 #include <Cranberry/Window/Events/cbMouseMoveEvent.hpp>
@@ -46,9 +46,9 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \author Nicolas Kogler
 /// \date January 29th, 2017
 ///
-class CRANBERRY_EXPORT cbWindow :
-        public QOpenGLWindow,
-        protected QOpenGLFunctions
+class CRANBERRY_EXPORT cbWindow
+        : public QOpenGLWindow
+        , protected QOpenGLFunctions
 {
 public:
 
@@ -131,6 +131,11 @@ public:
     /// @returns the active window.
     ///
     static cbWindow* current();
+
+    ///
+    /// Retrieves the current game time.
+    ///
+    static cbGameTime& currentTime();
 
 
 protected:
@@ -258,7 +263,7 @@ protected:
     ///
     /// Should contain calls to update() of cranberry objects.
     ///
-    virtual void onUpdate() = 0;
+    virtual void onUpdate(const cbGameTime& time) = 0;
 
     ///
     /// Should contain calls to render() of cranberry objects.
@@ -363,9 +368,6 @@ private:
     int         m_keyCount;
 
     cbKeyboardState m_keyState;
-
-    // Static variables
-    cbWindow* g_Current;
 
     // Metadata
     Q_OBJECT

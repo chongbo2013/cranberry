@@ -27,6 +27,11 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
+// Variables
+cbWindow* g_CurrentWindow;
+cbGameTime g_CurrentTime;
+
+
 cbWindow::
 cbWindow(cbWindow* parent)
     : QOpenGLWindow(QOpenGLWindow::NoPartialUpdate, parent)
@@ -94,7 +99,7 @@ cbWindow::enableVerticalSync(bool enable)
 cbWindow*
 cbWindow::current()
 {
-    return g_Current;
+    return g_CurrentWindow;
 }
 
 
@@ -123,7 +128,8 @@ cbWindow::paintGL()
         onKeyDown(m_keyState);
 
     // Performs updates and rendering.
-    onUpdate();
+    g_CurrentTime.updateTime();
+    onUpdate(g_CurrentTime);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     onRender();
 }
@@ -257,10 +263,6 @@ cbWindow::event(QEvent* event)
 
     return QOpenGLWindow::event(event);
 }
-
-
-// Static variable definition
-cbWindow* cbWindow::g_Current = nullptr;
 
 
 CRANBERRY_END_NAMESPACE
