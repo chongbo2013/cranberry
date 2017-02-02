@@ -21,17 +21,14 @@
 #include <Cranberry/Graphics/System/cbDrawable.hpp>
 #include <Cranberry/Window/cbWindow.hpp>
 
-// Qt headers
-
-// Standard headers
-
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 cbDrawable::
 cbDrawable(cbWindow* renderTarget)
-    : m_refCount(new uint32_t)
+    : QOpenGLFunctions()
+    , m_refCount(new uint32_t)
     , m_renderTarget(nullptr)
     , m_vertexBuffer(nullptr)
     , m_customProgram(nullptr)
@@ -40,13 +37,14 @@ cbDrawable(cbWindow* renderTarget)
 {
     setRenderTarget(renderTarget);
     m_vertices = new std::vector<float>();
-    *m_refCount += 1;
+    *m_refCount = 1;
 }
 
 
 cbDrawable::
 cbDrawable(const cbDrawable& other)
-    : m_refCount(other.m_refCount)
+    : QOpenGLFunctions(other.m_renderTarget->context())
+    , m_refCount(other.m_refCount)
     , m_vertexBuffer(other.m_vertexBuffer)
     , m_customProgram(other.m_customProgram)
     , m_vertices(other.m_vertices)
@@ -71,8 +69,7 @@ cbDrawable::operator=(const cbDrawable& other)
 cbDrawable::
 ~cbDrawable()
 {
-    int& ref = *m_refCount;
-    if (ref == 1)
+    if (*m_refCount == 1)
     {
         // This is the last instance, free heap.
         if (m_isValid)
@@ -80,7 +77,7 @@ cbDrawable::
     }
     else
     {
-        ref -= 1;
+        *m_refCount -= 1;
     }
 }
 
@@ -139,6 +136,9 @@ cbDrawable::setBlendMode(BlendModes mode)
 void
 cbDrawable::destroy()
 {
+    if (Q_UNLIKELY(m_renderTarget == nullptr))
+        return;
+
     m_renderTarget->makeCurrent();
     m_vertexBuffer->destroy();
     m_isValid = false;
@@ -155,12 +155,13 @@ cbDrawable::destroy()
 bool
 cbDrawable::create()
 {
-    if (m_renderTarget == nullptr)
+    if (Q_UNLIKELY(m_renderTarget == nullptr))
         return false;
 
     // Attempts to allocate a new vertex buffer.
     m_renderTarget->makeCurrent();
-    m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::DynamicDraw);
+    initializeOpenGLFunctions();
+    m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
 
     // If creating fails, you are most likely out of memory.
     if (!m_vertexBuffer->create())

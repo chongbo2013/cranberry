@@ -221,6 +221,27 @@ private:
 };
 
 
+#define set_xy(data, stride, vertex, x, y) \
+{                                          \
+    data[vertex*stride+0] = x;             \
+    data[vertex*stride+1] = y;             \
+}
+
+#define set_uv(data, stride, vertex, u, v) \
+{                                          \
+    data[vertex*stride+3] = u;             \
+    data[vertex*stride+4] = v;             \
+}
+
+#define set_rgba(data, stride, vertex, c) \
+{                                         \
+    data[vertex*stride+5] = c.redF();     \
+    data[vertex*stride+6] = c.greenF();   \
+    data[vertex*stride+7] = c.blueF();    \
+    data[vertex*stride+8] = c.alphaF();   \
+}
+
+
 CRANBERRY_END_NAMESPACE
 
 

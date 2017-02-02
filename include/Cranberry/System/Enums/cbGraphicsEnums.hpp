@@ -49,15 +49,30 @@ enum BlendMode
 };
 
 
+// Constants for the graphics classes
+#define VERTEX_0                0
+#define VERTEX_1                1
+#define VERTEX_2                2
+#define VERTEX_3                3
+#define ATTRIB_XYZ              0
+#define ATTRIB_UV               1
+#define ATTRIB_RGBA             2
+#define ATTRIB_XYZ_SIZE         3
+#define ATTRIB_UV_SIZE          2
+#define ATTRIB_RGBA_SIZE        4
+#define ATTRIB_UV_OFFSET        (const void*) (sizeof(float) * 3);
+#define ATTRIB_RGBA_OFFSET      (const void*) (sizeof(float) * 5);
+#define INDEX_BUFFER_SIZE       6
+
+#define CBI_STRIDE              9
+#define CBI_VERTEX_COUNT        CBI_STRIDE * 4
+
+
 // Flag declarations
 Q_DECLARE_FLAGS(BlendModes, BlendMode)
 
 
 CRANBERRY_END_NAMESPACE
-
-
-// Flag operator declarations
-Q_DECLARE_OPERATORS_FOR_FLAGS(BlendModes)
 
 
 #endif  // CRANBERRY_GRAPHICSENUMS_HPP
