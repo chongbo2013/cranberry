@@ -61,36 +61,32 @@ INCLUDEPATH +=  include
 # RESOURCES AND OTHER FILES
 ####################################################################
 RESOURCES   +=
-DISTFILES   +=  resources/templates/template_source \
-                resources/templates/template_header
+DISTFILES   += \
+    templates/header.txt \
+    templates/license_notice.txt \
+    templates/source.txt
 
 ####################################################################
 #
 # HEADER FILES
 ####################################################################
-HEADERS +=  include/Cranberry/Config.hpp \
-            include/Cranberry/Window/cbWindow.hpp \
-            include/Cranberry/Window/Events/cbMouseMoveEvent.hpp \
-            include/Cranberry/Window/Events/cbMouseButtonEvent.hpp \
-            include/Cranberry/Window/Events/cbKeyUpEvent.hpp \
-            include/Cranberry/Window/Events/cbKeyboardState.hpp \
-            include/Cranberry/Graphics/System/cbDrawable.hpp \
-            include/Cranberry/System/cbGameTime.hpp \
-            include/Cranberry/Graphics/System/cbGraphicsEnums.hpp \
-            include/Cranberry/System/cbGLDebug.hpp \
-            include/Cranberry/Graphics/cbImage.hpp \
-    include/Cranberry/Graphics/System/cbGraphicsConstants.hpp
+HEADERS += \
+    include/Cranberry/Config.hpp \
+    include/Cranberry/Window/Window.hpp \
+    include/Cranberry/Window/Input/KeyboardState.hpp \
+    include/Cranberry/Window/Input/KeyReleaseEvent.hpp \
+    include/Cranberry/Window/Input/MouseState.hpp \
+    include/Cranberry/Window/Input/MouseReleaseEvent.hpp \
+    include/Cranberry/Window/Input/MouseMoveEvent.hpp
 
 ####################################################################
 #
 # SOURCE FILES
 ####################################################################
-SOURCES +=  src/Window/Events/cbMouseMoveEvent.cpp \
-            src/Window/Events/cbMouseButtonEvent.cpp \
-            src/Window/Events/cbKeyUpEvent.cpp \
-            src/Window/Events/cbKeyboardState.cpp \
-            src/Window/cbWindow.cpp \
-            src/System/cbGameTime.cpp \
-            src/Graphics/System/cbDrawable.cpp \
-            src/System/cbGLDebug.cpp \
-    src/Graphics/cbImage.cpp
+SOURCES += \
+    src/Window/Window.cpp \
+    src/Window/Input/KeyboardState.cpp \
+    src/Window/Input/KeyReleaseEvent.cpp \
+    src/Window/Input/MouseMoveEvent.cpp \
+    src/Window/Input/MouseReleaseEvent.cpp \
+    src/Window/Input/MouseState.cpp

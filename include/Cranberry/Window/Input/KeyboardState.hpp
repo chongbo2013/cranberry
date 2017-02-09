@@ -17,8 +17,9 @@
 //
 
 
-#ifndef CRANBERRY_CBKEYBOARDSTATE_HPP
-#define CRANBERRY_CBKEYBOARDSTATE_HPP
+#pragma once
+#ifndef CRANBERRY_KEYBOARDSTATE_HPP
+#define CRANBERRY_KEYBOARDSTATE_HPP
 
 
 // Cranberry headers
@@ -34,44 +35,18 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 /// Holds all currently pressed keys and modifiers.
 ///
-/// \class cbKeyboardState
+/// \class KeyboardState
 /// \author Nicolas Kogler
-/// \date January 29th, 2017
+/// \date February 8, 2017
 ///
-class CRANBERRY_EXPORT cbKeyboardState
+class CRANBERRY_EXPORT KeyboardState
 {
 public:
 
-    ///
-    /// Constructor
-    ///
-    cbKeyboardState() = default;
-
-    ///
-    /// Copy constructor
-    ///
-    /// \param other The other cbKeyboardState instance.
-    ///
-    cbKeyboardState(const cbKeyboardState& other) = delete;
-
-    ///
-    /// Move constructor
-    ///
-    /// \param other The other cbKeyboardState instance.
-    ///
-    cbKeyboardState(cbKeyboardState&& other) = delete;
-
-    ///
-    /// Assignment operator
-    ///
-    /// \param other The other cbKeyboardState instance.
-    ///
-    cbKeyboardState& operator=(const cbKeyboardState& other) = delete;
-
-    ///
-    /// Destructor
-    ///
-    ~cbKeyboardState() = default;
+    CRANBERRY_DEFAULT_CTOR(KeyboardState)
+    CRANBERRY_DISABLE_COPY(KeyboardState)
+    CRANBERRY_DISABLE_MOVE(KeyboardState)
+    CRANBERRY_DEFAULT_DTOR(KeyboardState)
 
 
     ///
@@ -110,11 +85,12 @@ private:
     Qt::KeyboardModifiers   m_mods;
 
     // Friends
-    friend class cbWindow;
+    friend class Window;
 };
 
 
 CRANBERRY_END_NAMESPACE
 
 
-#endif  // CRANBERRY_CBKEYBOARDSTATE_HPP
+
+#endif  // CRANBERRY_KEYBOARDSTATE_HPP

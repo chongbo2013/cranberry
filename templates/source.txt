@@ -18,39 +18,14 @@
 
 
 // Cranberry headers
-#include <Cranberry/Window/Events/cbMouseButtonEvent.hpp>
+
+// Qt headers
+
+// Standard headers
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
-
-cbMouseButtonEvent::
-cbMouseButtonEvent(const QPoint& p, Qt::MouseButtons buttons)
-    : m_pos(p)
-    , m_flags(buttons)
-{
-}
-
-
-const QPoint&
-cbMouseButtonEvent::pos() const
-{
-    return m_pos;
-}
-
-
-Qt::MouseButtons
-cbMouseButtonEvent::buttons() const
-{
-    return m_flags;
-}
-
-
-bool
-cbMouseButtonEvent::hasButton(Qt::MouseButton button) const
-{
-    return (m_flags & button) != 0;
-}
 
 
 CRANBERRY_END_NAMESPACE

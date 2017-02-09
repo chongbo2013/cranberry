@@ -17,8 +17,9 @@
 //
 
 
-#ifndef CRANBERRY_CBMOUSEMOVEEVENT_HPP
-#define CRANBERRY_CBMOUSEMOVEEVENT_HPP
+#pragma once
+#ifndef CRANBERRY_MOUSEMOVEEVENT_HPP
+#define CRANBERRY_MOUSEMOVEEVENT_HPP
 
 
 // Cranberry headers
@@ -34,48 +35,29 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 /// Holds information about a mouse-move event.
 ///
-/// \class cbMouseMoveEvent
+/// \class MouseMoveEvent
 /// \author Nicolas Kogler
-/// \date January 29th, 2017
+/// \date February 9, 2017
 ///
-class CRANBERRY_EXPORT cbMouseMoveEvent
+class CRANBERRY_EXPORT MouseMoveEvent
 {
 public:
 
-    ///
-    /// Constructor
-    ///
-    cbMouseMoveEvent(const QPoint& pOld, const QPoint& pNew);
+    CRANBERRY_DISABLE_COPY(MouseMoveEvent)
+    CRANBERRY_DISABLE_MOVE(MouseMoveEvent)
+    CRANBERRY_DEFAULT_DTOR(MouseMoveEvent)
 
     ///
-    /// Copy constructor (disabled)
+    /// Initializes a new instance of MouseMoveEvent.
     ///
-    /// \param other The other cbMouseMoveEvent instance.
+    /// \param posOld The previous cursor position.
+    /// \param posNew The new cursor position.
     ///
-    cbMouseMoveEvent(const cbMouseMoveEvent& other) = delete;
-
-    ///
-    /// Move constructor (disabled)
-    ///
-    /// \param other The other cbMouseMoveEvent instance.
-    ///
-    cbMouseMoveEvent(cbMouseMoveEvent&& other) = delete;
-
-    ///
-    /// Assignment operator (disabled)
-    ///
-    /// \param other The other cbMouseMoveEvent instance.
-    ///
-    cbMouseMoveEvent& operator=(const cbMouseMoveEvent& other) = delete;
-
-    ///
-    /// Destructor
-    ///
-    ~cbMouseMoveEvent() = default;
+    MouseMoveEvent(const QPoint& posOld, const QPoint& posNew);
 
 
     ///
-    /// Retrieves the current position of the cursor.
+    /// Retrieves the current cursor position.
     ///
     /// \returns the cursor position.
     ///
@@ -84,7 +66,7 @@ public:
     ///
     /// Retrieves the difference between the old and new position.
     ///
-    /// \returns the amount of moved pixels.
+    /// \returns the amount of pixels the cursor moved.
     ///
     const QPoint& delta() const;
 
@@ -100,4 +82,4 @@ private:
 CRANBERRY_END_NAMESPACE
 
 
-#endif  // CRANBERRY_CBMOUSEMOVEEVENT_HPP
+#endif  // CRANBERRY_MOUSEMOVEEVENT_HPP

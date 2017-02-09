@@ -18,31 +18,34 @@
 
 
 // Cranberry headers
-#include <Cranberry/Window/Events/cbMouseMoveEvent.hpp>
+#include <Cranberry/Window/Input/KeyReleaseEvent.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
-cbMouseMoveEvent::
-cbMouseMoveEvent(const QPoint& pOld, const QPoint& pNew)
-    : m_pos(pNew)
-    , m_delta(pNew - pOld)
+KeyReleaseEvent::KeyReleaseEvent(int key, Qt::KeyboardModifiers mods)
+    : m_key(static_cast<Qt::Key>(key))
+    , m_mods(mods)
 {
 }
 
 
-const QPoint&
-cbMouseMoveEvent::pos() const
+Qt::Key KeyReleaseEvent::key() const
 {
-    return m_pos;
+    return m_key;
 }
 
 
-const QPoint&
-cbMouseMoveEvent::delta() const
+Qt::KeyboardModifiers KeyReleaseEvent::modifiers() const
 {
-    return m_delta;
+    return m_mods;
+}
+
+
+bool KeyReleaseEvent::hasModifier(Qt::KeyboardModifier mod) const
+{
+    return (m_mods & mod) != 0;
 }
 
 

@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -15,57 +15,3 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with cranberry. If not, see <http://www.gnu.org/licenses/>.
 //
-
-
-// Cranberry headers
-#include <Cranberry/System/cbGameTime.hpp>
-
-// Standard headers
-#include <ctime>
-
-
-CRANBERRY_BEGIN_NAMESPACE
-
-
-// Variables
-clock_t g_current;
-clock_t g_elapsed;
-
-
-const QTime&
-cbGameTime::totalTime() const
-{
-    return m_totalTime;
-}
-
-
-double
-cbGameTime::deltaTime() const
-{
-    return m_deltaTime;
-}
-
-
-void
-cbGameTime::updateTime()
-{
-    m_deltaTime = computeDelta();
-    m_totalTime = m_totalTime.addMSecs(m_deltaTime * 1000);
-}
-
-
-double
-cbGameTime::computeDelta()
-{
-    g_current = clock();
-
-    double delta = g_current - g_elapsed;
-    double secs  = delta / CLOCKS_PER_SEC;
-
-    g_elapsed = g_current;
-
-    return secs;
-}
-
-
-CRANBERRY_END_NAMESPACE

@@ -17,6 +17,7 @@
 //
 
 
+#pragma once
 #ifndef CRANBERRY_%CLASS_HPP
 #define CRANBERRY_%CLASS_HPP
 
@@ -36,68 +37,51 @@ CRANBERRY_BEGIN_NAMESPACE
 /// This is the description of the class.
 ///
 /// \class %Class
-/// \author Nicolas Kogler
-/// \date January 29th, 2017
+/// \author %Author
+/// \date %Month %Day, %Year
 ///
 class CRANBERRY_EXPORT %Class
 {
 public:
 
     ///
-    /// Constructor
+    /// Initializes a new instance of %Class.
     ///
     %Class();
 
     ///
-    /// Copy constructor
+    /// Copies one %Class instance to another.
     ///
     /// \param other The other %Class instance.
     ///
     %Class(const %Class& other);
 
     ///
-    /// Move constructor
+    /// Moves one %Class instance to another.
     ///
     /// \param other The other %Class instance.
     ///
     %Class(%Class&& other);
 
     ///
-    /// Assignment operator
+    /// Copies one %Class instance to another.
     ///
     /// \param other The other %Class instance.
     ///
     %Class& operator=(const %Class& other);
 
     ///
-    /// Destructor
+    /// Destroys this %Class instance.
     ///
     ~%Class();
 
 
-    // Getters (delete this)
-
-
-    // Setters (delete this)
-
-
-    // Other methods (delete this)
-
-
 protected:
-
-    // Implemented functions (delete this)
-
-    // Virtual functions (delete this)
 
 
 private:
 
-    // Helper functions
 
-    // Members
-
-    // Metadata
 };
 
 

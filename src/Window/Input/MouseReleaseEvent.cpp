@@ -18,16 +18,35 @@
 
 
 // Cranberry headers
-
-// Qt headers
-
-// Standard headers
+#include <Cranberry/Window/Input/MouseReleaseEvent.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
-// Functions (delete this)
+MouseReleaseEvent::MouseReleaseEvent(const QPoint& pos, Qt::MouseButtons btns)
+    : m_pos(pos)
+    , m_btns(btns)
+{
+}
+
+
+const QPoint& MouseReleaseEvent::pos() const
+{
+    return m_pos;
+}
+
+
+Qt::MouseButtons MouseReleaseEvent::buttons() const
+{
+    return m_btns;
+}
+
+
+bool MouseReleaseEvent::hasButton(Qt::MouseButton button) const
+{
+    return (m_btns & button) != 0;
+}
 
 
 CRANBERRY_END_NAMESPACE

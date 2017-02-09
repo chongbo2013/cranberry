@@ -17,8 +17,9 @@
 //
 
 
-#ifndef CRANBERRY_CBKEYUPEVENT_HPP
-#define CRANBERRY_CBKEYUPEVENT_HPP
+#pragma once
+#ifndef CRANBERRY_KEYRELEASEEVENT_HPP
+#define CRANBERRY_KEYRELEASEEVENT_HPP
 
 
 // Cranberry headers
@@ -31,57 +32,38 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 /// Holds information about a key-up event.
 ///
-/// \class cbKeyUpEvent
+/// \class KeyReleaseEvent
 /// \author Nicolas Kogler
-/// \date January 29th, 2017
+/// \date February 8, 2017
 ///
-class CRANBERRY_EXPORT cbKeyUpEvent
+class CRANBERRY_EXPORT KeyReleaseEvent
 {
 public:
 
-    ///
-    /// Constructor
-    ///
-    cbKeyUpEvent(int key, Qt::KeyboardModifiers mods);
+    CRANBERRY_DISABLE_COPY(KeyReleaseEvent)
+    CRANBERRY_DISABLE_MOVE(KeyReleaseEvent)
+    CRANBERRY_DEFAULT_DTOR(KeyReleaseEvent)
 
     ///
-    /// Copy constructor
+    /// Initializes a new instance of KeyReleaseEvent.
     ///
-    /// \param other The other cbKeyUpEvent instance.
+    /// \param key The key that was released.
+    /// \param mods The modifiers pressed currently.
     ///
-    cbKeyUpEvent(const cbKeyUpEvent& other) = delete;
-
-    ///
-    /// Move constructor
-    ///
-    /// \param other The other cbKeyUpEvent instance.
-    ///
-    cbKeyUpEvent(cbKeyUpEvent&& other) = delete;
-
-    ///
-    /// Assignment operator
-    ///
-    /// \param other The other cbKeyUpEvent instance.
-    ///
-    cbKeyUpEvent& operator=(const cbKeyUpEvent& other) = delete;
-
-    ///
-    /// Destructor
-    ///
-    ~cbKeyUpEvent() = default;
+    KeyReleaseEvent(int key, Qt::KeyboardModifiers mods);
 
 
     ///
     /// Retrieves the released key.
     ///
-    /// \param key The key that was released.
+    /// \returns key The key that was released.
     ///
     Qt::Key key() const;
 
     ///
     /// Retrieves all pressed modifiers. In order to
     /// easily determine whether a specific modifier
-    /// is pressed, use cbKeyUpEvent::hasModifier().
+    /// is pressed, use hasModifier().
     ///
     /// \returns all pressed modifiers.
     ///
@@ -90,6 +72,7 @@ public:
     ///
     /// Determines whether the given modifier is pressed.
     ///
+    /// \param mod The modifier to check for.
     /// \returns true if the modifier is pressed.
     ///
     bool hasModifier(Qt::KeyboardModifier mod) const;
@@ -106,4 +89,4 @@ private:
 CRANBERRY_END_NAMESPACE
 
 
-#endif  // CRANBERRY_CBKEYUPEVENT_HPP
+#endif  // CRANBERRY_KEYRELEASEEVENT_HPP

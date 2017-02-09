@@ -17,6 +17,7 @@
 //
 
 
+#pragma once
 #ifndef CRANBERRY_CONFIG_HPP
 #define CRANBERRY_CONFIG_HPP
 
@@ -56,6 +57,21 @@
 #define CRANBERRY_BEGIN_NAMESPACE   namespace CRANBERRY_NAMESPACE {
 #define CRANBERRY_END_NAMESPACE     }
 #define CRANBERRY_USING_NAMESPACE   using namespace CRANBERRY_NAMESPACE;
+
+///
+/// These macroes disable copy or move constructors and
+/// their corresponding assignment operators.
+///
+/// \def CRANBERRY_DEFAULT_CTOR CRANBERRY_DEFAULT_DTOR
+/// \def CRANBERRY_DISABLE_COPY CRANBERRY_DISABLE_MOVE
+/// \def CRANBERRY_DEFAULT_COPY CRANBERRY_DEFAULT_MOVE
+///
+#define CRANBERRY_DEFAULT_CTOR(x) x() = default;
+#define CRANBERRY_DEFAULT_DTOR(x) ~x() = default;
+#define CRANBERRY_DISABLE_COPY(x) x(const x& other) = delete; x& operator =(const x& other) = delete;
+#define CRANBERRY_DISABLE_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = delete;
+#define CRANBERRY_DEFAULT_COPY(x) x(const x& other) = default; x& operator =(const x& other) = default;
+#define CRANBERRY_DEFAULT_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = default;
 
 ///
 /// Uses compiler-specific macroes to retrieve the function name.

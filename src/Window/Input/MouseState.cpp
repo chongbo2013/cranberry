@@ -17,38 +17,23 @@
 //
 
 
-#ifndef CRANBERRY_GRAPHICSCONSTANTS_HPP
-#define CRANBERRY_GRAPHICSCONSTANTS_HPP
-
-
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/Window/Input/MouseState.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
-// General
-#define VERTEX_0                0
-#define VERTEX_1                1
-#define VERTEX_2                2
-#define VERTEX_3                3
-#define ATTRIB_XYZ              0
-#define ATTRIB_UV               1
-#define ATTRIB_RGBA             2
-#define ATTRIB_XYZ_SIZE         3
-#define ATTRIB_UV_SIZE          2
-#define ATTRIB_RGBA_SIZE        4
-#define ATTRIB_UV_OFFSET        ((const void*) (sizeof(float) * 3))
-#define ATTRIB_RGBA_OFFSET      ((const void*) (sizeof(float) * 5))
-#define INDEX_BUFFER_SIZE       6
+bool MouseState::isButtonDown(Qt::MouseButton button) const
+{
+    return m_buttons.value(button);
+}
 
-// cbImage
-#define CBI_STRIDE              9
-#define CBI_VERTEX_COUNT        CBI_STRIDE * 4
+
+bool MouseState::isKeyUp(Qt::MouseButton button) const
+{
+    return !m_buttons.value(button);
+}
 
 
 CRANBERRY_END_NAMESPACE
-
-
-#endif  // CRANBERRY_GRAPHICSCONSTANTS_HPP

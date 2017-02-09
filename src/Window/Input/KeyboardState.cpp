@@ -18,35 +18,31 @@
 
 
 // Cranberry headers
-#include <Cranberry/Window/Events/cbKeyboardState.hpp>
+#include <Cranberry/Window/Input/KeyboardState.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
-bool
-cbKeyboardState::isModifierDown(Qt::Modifier mod) const
+bool KeyboardState::isModifierDown(Qt::Modifier mod) const
 {
     return (m_mods & mod) != 0;
 }
 
 
-bool
-cbKeyboardState::isModifierUp(Qt::Modifier mod) const
+bool KeyboardState::isModifierUp(Qt::Modifier mod) const
 {
     return (m_mods & mod) == 0;
 }
 
 
-bool
-cbKeyboardState::isKeyDown(Qt::Key key) const
+bool KeyboardState::isKeyDown(Qt::Key key) const
 {
     return m_keys.value(key);
 }
 
 
-bool
-cbKeyboardState::isKeyUp(Qt::Key key) const
+bool KeyboardState::isKeyUp(Qt::Key key) const
 {
     return !m_keys.value(key);
 }
