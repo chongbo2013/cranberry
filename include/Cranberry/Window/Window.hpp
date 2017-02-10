@@ -274,7 +274,7 @@ private:
     // Members
     MouseState          m_mouseState;
     KeyboardState       m_keyState;
-    QOpenGLFunctions    m_func;
+    QOpenGLFunctions    m_funcs;
     QPoint              m_lastCursorPos;
     QColor              m_clearColor;
     bool                m_hasVsync;

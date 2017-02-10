@@ -87,7 +87,7 @@ const QColor& Window::clearColor() const
 
 QOpenGLFunctions* Window::functions() const
 {
-    return &m_func;
+    return &m_funcs;
 }
 
 
@@ -125,7 +125,7 @@ void Window::setClearColor(const QColor& color)
     // if the OpenGL window is initialized.
     if (m_isInit)
     {
-        m_func.glClearColor(
+        m_funcs.glClearColor(
                 color.redF(),
                 color.greenF(),
                 color.blueF(),
@@ -137,12 +137,12 @@ void Window::setClearColor(const QColor& color)
 void Window::initializeGL()
 {
     // Initializes the OpenGL functions.
-    m_func.initializeOpenGLFunctions();
+    m_funcs.initializeOpenGLFunctions();
     m_isInit = true;
     init();
 
     // Specifies the clear color for the first time.
-    m_func.glClearColor(
+    m_funcs.glClearColor(
             m_clearColor.redF(),
             m_clearColor.greenF(),
             m_clearColor.blueF(),
