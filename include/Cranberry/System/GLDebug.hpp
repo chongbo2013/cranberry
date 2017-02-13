@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -49,10 +49,10 @@ public:
     /// \param expr Potentially erroneous expression.
     ///
     static void print(
-            const char* file,
-            const char* func,
+            std::string file,
+            std::string func,
             long long   line,
-            const char* expr);
+            std::string expr);
 };
 
 
@@ -64,11 +64,10 @@ public:
         GLDebug::print(     \
             __FILE__,       \
             CRANBERRY_FUNC, \
-            __LINE__        \
+            __LINE__,       \
             #x              \
         );                  \
     } while(0)
-
 #else
     #define glDebug(x) x
 #endif

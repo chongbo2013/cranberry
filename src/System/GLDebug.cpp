@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -24,15 +24,18 @@
 // Qt headers
 #include <QOpenGLFunctions>
 
+// Std headers
+#include <iostream>
+
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 void GLDebug::print(
-        const char* file,
-        const char* func,
+        std::string file,
+        std::string func,
         long long line,
-        const char* expr)
+        std::string expr)
 {
     // Retrieves the GL functions in the current context.
     QOpenGLFunctions* funcs = Window::activeWindow()->functions();
@@ -43,46 +46,54 @@ void GLDebug::print(
     GLenum error = funcs->glGetError();
     while (error != GL_NO_ERROR)
     {
-        const char* etype;
-        const char* cause;
+        const char* type;
+        const char* desc;
 
         switch (error)
         {
             case GL_INVALID_ENUM:
-                etype = "GL_INVALID_ENUM";
-                cause = "An invalid enum value was passed.";
+                type = "GL_INVALID_ENUM";
+                desc = "An invalid enum value was passed.";
                 break;
             case GL_INVALID_VALUE:
-                etype = "GL_INVALID_VALUE";
-                cause = "An invalid value was passed.";
+                type = "GL_INVALID_VALUE";
+                desc = "An invalid value was passed.";
                 break;
             case GL_INVALID_INDEX:
-                etype = "GL_INVALID_INDEX";
-                cause = "An invalid index was passed.";
+                type = "GL_INVALID_INDEX";
+                desc = "An invalid index was passed.";
                 break;
             case GL_INVALID_OPERATION:
-                etype = "GL_INVALID_OPERATION";
-                cause = "Can not succeed due to invalid OpenGL states.";
+                type = "GL_INVALID_OPERATION";
+                desc = "Can not succeed due to invalid OpenGL states.";
                 break;
             case GL_STACK_OVERFLOW:
-                etype = "GL_STACK_OVERFLOW";
-                cause = "Can not push due to the stack being full.";
+                type = "GL_STACK_OVERFLOW";
+                desc = "Can not push due to the stack being full.";
                 break;
             case GL_STACK_UNDERFLOW:
-                etype = "GL_STACK_UNDERFLOW";
-                cause = "Can not pop due to the stack being empty.";
+                type = "GL_STACK_UNDERFLOW";
+                desc = "Can not pop due to the stack being empty.";
                 break;
             case GL_OUT_OF_MEMORY:
-                etype = "GL_OUT_OF_MEMORY";
-                cause = "Can not allocate OpenGL object. Memory is full.";
+                type = "GL_OUT_OF_MEMORY";
+                desc = "Can not allocate OpenGL object. Memory is full.";
                 break;
             default:
-                etype = "Unknown error";
-                cause = "Error could not be resolved.";
+                type = "Unknown error";
+                desc = "Error could not be resolved.";
                 break;
         }
 
         // Prints the message.
+        std::cout << "OpenGL error occured" << std::endl
+                  << "of type: "    << type << std::endl
+                  << "in file: "    << file << std::endl
+                  << "in func: "    << func << std::endl
+                  << "in line: "    << line << std::endl
+                  << "by call: "    << expr << std::endl
+                  << "details: "    << desc << std::endl
+                  << std::endl;
 
         error = funcs->glGetError();
     }
