@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -53,7 +53,7 @@ double GameTime::deltaTime() const
 void GameTime::update()
 {
     g_currentTicks = clock();
-    m_delta = (g_currentTicks - g_previousTicks) / CLOCKS_PER_SEC;
+    m_delta = (g_currentTicks - g_previousTicks) / (double) CLOCKS_PER_SEC;
     m_total = m_total.addMSecs(m_delta * 1000);
     g_previousTicks = g_currentTicks;
 }
