@@ -60,33 +60,43 @@ INCLUDEPATH +=  include
 #
 # RESOURCES AND OTHER FILES
 ####################################################################
-RESOURCES   +=
-DISTFILES   += \
-    templates/header.txt \
-    templates/license_notice.txt \
-    templates/source.txt
+RESOURCES   +=  resources/res_shaders.qrc
+DISTFILES   +=  templates/header.txt \
+                templates/license_notice.txt \
+                templates/source.txt
 
 ####################################################################
 #
 # HEADER FILES
 ####################################################################
-HEADERS += \
-    include/Cranberry/Config.hpp \
-    include/Cranberry/Window/Window.hpp \
-    include/Cranberry/Window/Input/KeyboardState.hpp \
-    include/Cranberry/Window/Input/KeyReleaseEvent.hpp \
-    include/Cranberry/Window/Input/MouseState.hpp \
-    include/Cranberry/Window/Input/MouseReleaseEvent.hpp \
-    include/Cranberry/Window/Input/MouseMoveEvent.hpp
+HEADERS +=  include/Cranberry/Config.hpp \
+            include/Cranberry/Window/Window.hpp \
+            include/Cranberry/Window/Input/KeyboardState.hpp \
+            include/Cranberry/Window/Input/KeyReleaseEvent.hpp \
+            include/Cranberry/Window/Input/MouseState.hpp \
+            include/Cranberry/Window/Input/MouseReleaseEvent.hpp \
+            include/Cranberry/Window/Input/MouseMoveEvent.hpp \
+            include/Cranberry/System/GameTime.hpp \
+            include/Cranberry/System/GLDebug.hpp \
+            include/Cranberry/Graphics/System/GraphicsEnums.hpp \
+            include/Cranberry/Graphics/System/Drawable.hpp \
+            include/Cranberry/Graphics/System/GraphicsStructs.hpp \
+            include/Cranberry/Graphics/Image.hpp \
+            include/Cranberry/System/GLShader.hpp \
+    include/Cranberry/Graphics/System/GraphicsConstants.hpp
 
 ####################################################################
 #
 # SOURCE FILES
 ####################################################################
-SOURCES += \
-    src/Window/Window.cpp \
-    src/Window/Input/KeyboardState.cpp \
-    src/Window/Input/KeyReleaseEvent.cpp \
-    src/Window/Input/MouseMoveEvent.cpp \
-    src/Window/Input/MouseReleaseEvent.cpp \
-    src/Window/Input/MouseState.cpp
+SOURCES +=  src/Window/Window.cpp \
+            src/Window/Input/KeyboardState.cpp \
+            src/Window/Input/KeyReleaseEvent.cpp \
+            src/Window/Input/MouseMoveEvent.cpp \
+            src/Window/Input/MouseReleaseEvent.cpp \
+            src/Window/Input/MouseState.cpp \
+            src/System/GameTime.cpp \
+            src/System/GLDebug.cpp \
+            src/Graphics/System/Drawable.cpp \
+            src/Graphics/Image.cpp \
+            src/System/GLShader.cpp
