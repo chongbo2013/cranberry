@@ -25,10 +25,6 @@
 // Cranberry headers
 #include <Cranberry/Config.hpp>
 
-// Qt headers
-
-// Standard headers
-
 
 CRANBERRY_BEGIN_NAMESPACE
 

@@ -19,9 +19,11 @@
 
 // Cranberry headers
 #include <Cranberry/Window/Window.hpp>
+#include <Cranberry/System/GLDebug.hpp>
 
 // Qt headers
 #include <QtEvents>
+#include <QMatrix4x4>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -61,6 +63,11 @@ Window::Window(Window* parent)
 }
 
 
+Window::~Window()
+{
+}
+
+
 bool Window::isInitialized() const
 {
     return m_isInit;
@@ -87,7 +94,13 @@ const QColor& Window::clearColor() const
 
 QOpenGLFunctions* Window::functions() const
 {
-    return &m_funcs;
+    return (QOpenGLFunctions*) &m_funcs;
+}
+
+
+void Window::applyOrtho(QMatrix4x4* mat)
+{
+    mat->ortho(0.f, (float) width(), (float) height(), 0.f, -1.f, 1.f);
 }
 
 
@@ -147,6 +160,10 @@ void Window::initializeGL()
             m_clearColor.greenF(),
             m_clearColor.blueF(),
             m_clearColor.alphaF());
+
+    // Enables blending
+    m_funcs.glEnable(GL_BLEND);
+    m_funcs.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -161,7 +178,7 @@ void Window::paintGL()
     // Performs updating and rendering
     g_currentTime.update();
     update(g_currentTime);
-    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDebug(m_funcs.glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     render();
 }
 
@@ -235,13 +252,13 @@ void Window::keyReleaseEvent(QKeyEvent* event)
 
 void Window::wheelEvent(QWheelEvent* event)
 {
-    scroll(event);
+    scroll(*event);
 }
 
 
 void Window::touchEvent(QTouchEvent* event)
 {
-    touch(event);
+    touch(*event);
 }
 
 
@@ -259,7 +276,7 @@ void Window::focusInEvent(QFocusEvent*)
 
     // Activates rendering again.
     connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
-    update();
+    QOpenGLWindow::update();
 
     // TODO: Resume sound playing.
 }
@@ -288,6 +305,24 @@ bool Window::event(QEvent* event)
 
     return QOpenGLWindow::event(event);
 }
+
+
+void Window::init() { }
+void Window::exit() { }
+void Window::update(const GameTime&) { }
+void Window::render() { }
+void Window::mouseMove(const MouseMoveEvent&) { }
+void Window::mouseDown(const MouseState&) { }
+void Window::mouseUp(const MouseReleaseEvent&) { }
+void Window::mouseDoubleClick(const MouseReleaseEvent&) { }
+void Window::keyDown(const KeyboardState&) { }
+void Window::keyUp(const KeyReleaseEvent&) { }
+void Window::keyChar(const QString&) { }
+void Window::scroll(const QWheelEvent&) { }
+void Window::touch(const QTouchEvent&) { }
+void Window::windowResize(const QSize&) { }
+void Window::windowActivate() { }
+void Window::windowDeactivate() { }
 
 
 CRANBERRY_END_NAMESPACE

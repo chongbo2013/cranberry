@@ -30,7 +30,7 @@ bool MouseState::isButtonDown(Qt::MouseButton button) const
 }
 
 
-bool MouseState::isKeyUp(Qt::MouseButton button) const
+bool MouseState::isButtonUp(Qt::MouseButton button) const
 {
     return !m_buttons.value(button);
 }

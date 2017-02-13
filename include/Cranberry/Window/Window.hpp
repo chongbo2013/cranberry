@@ -67,7 +67,7 @@ public:
     ///
     /// Destructor
     ///
-    ~Window();
+    virtual ~Window();
 
 
     ///
@@ -111,6 +111,14 @@ public:
     ///
     QOpenGLFunctions* functions() const;
 
+
+    ///
+    /// Applies a projection matrix that maps to
+    /// the upper-left corner of the window.
+    ///
+    /// \param m The matrix to manipulate.
+    ///
+    void applyOrtho(QMatrix4x4* mat);
 
     ///
     /// Enables vertical sync by setting the swap interval
