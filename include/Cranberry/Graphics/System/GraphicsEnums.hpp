@@ -49,15 +49,87 @@ enum BlendMode
     LightenBlend    = 0x0100    ///< Picks the greatest red, green and blue.
 };
 
+///
+/// This enum specifies the move directions
+/// for base class cran::Transformable.
+///
+/// \enum MoveDirection
+///
+enum MoveDirection
+{
+    MoveNone        = 0x0000,
+    MoveNorth       = 0x0001,
+    MoveEast        = 0x0002,
+    MoveSouth       = 0x0004,
+    MoveWest        = 0x0008
+};
+
+///
+/// This enum specifies the scale directions
+/// for base class cran::Transformable.
+///
+/// \enum ScaleDirection
+///
+enum ScaleDirection
+{
+    ScaleUp,
+    ScaleDown
+};
+
+///
+/// This enum specifies the rotate directions
+/// for base class cran::Transformable.
+///
+/// \enum RotateDirection
+///
+enum RotateDirection
+{
+    RotateCW,   ///< Clockwise rotation
+    RotateCCW   ///< Counter-clockwise rotation
+};
+
+
+///
+/// This enum specifies the rotate axes
+/// for base class cran::Transformable.
+///
+enum RotateAxis
+{
+    AxisX,
+    AxisY,
+    AxisZ
+};
+
+///
+/// This enum specifies the fade directions
+/// for base class cran::Fadable.
+///
+enum FadeDirection
+{
+    FadeIn,
+    FadeOut
+};
+
 
 // Flag declarations
 Q_DECLARE_FLAGS(BlendModes, BlendMode)
+Q_DECLARE_FLAGS(MoveDirections, MoveDirection)
+Q_DECLARE_FLAGS(ScaleDirections, ScaleDirection)
+Q_DECLARE_FLAGS(RotateDirections, RotateDirection)
+Q_DECLARE_FLAGS(RotateAxes, RotateAxis)
+Q_DECLARE_FLAGS(FadeDirections, FadeDirection)
 
 
 CRANBERRY_END_NAMESPACE
 
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(cran::BlendModes)
+// Operators
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::BlendModes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::MoveDirections)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::ScaleDirections)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::RotateDirections)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::RotateAxes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::FadeDirections)
 
 
 #endif  // CRANBERRY_GRAPHICSENUMS_HPP
