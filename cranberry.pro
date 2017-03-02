@@ -83,7 +83,9 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/System/GraphicsStructs.hpp \
             include/Cranberry/Graphics/Image.hpp \
             include/Cranberry/System/GLShader.hpp \
-    include/Cranberry/Graphics/System/GraphicsConstants.hpp
+    include/Cranberry/Graphics/System/GraphicsConstants.hpp \
+    include/Cranberry/Graphics/System/Transformable.hpp \
+    include/Cranberry/Graphics/System/Fadable.hpp
 
 ####################################################################
 #
@@ -99,4 +101,6 @@ SOURCES +=  src/Window/Window.cpp \
             src/System/GLDebug.cpp \
             src/Graphics/System/Drawable.cpp \
             src/Graphics/Image.cpp \
-            src/System/GLShader.cpp
+            src/System/GLShader.cpp \
+    src/Graphics/System/Transformable.cpp \
+    src/Graphics/System/Fadable.cpp

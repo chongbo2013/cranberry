@@ -24,7 +24,9 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/System/Drawable.hpp>
+#include <Cranberry/Graphics/System/Fadable.hpp>
 #include <Cranberry/Graphics/System/GraphicsStructs.hpp>
+#include <Cranberry/Graphics/System/Transformable.hpp>
 
 // Standard headers
 #include <array>
@@ -32,7 +34,6 @@
 // Forward declarations
 class QOpenGLVertexArrayObject;
 class QOpenGLTexture;
-class QMatrix4x4;
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -45,7 +46,10 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \author Nicolas Kogler
 /// \date February 11, 2017
 ///
-class CRANBERRY_EXPORT Image : public Drawable
+class CRANBERRY_EXPORT Image
+        : public Drawable
+        , public Transformable
+        , public Fadable
 {
 public:
 
@@ -174,7 +178,6 @@ private:
     uint32_t*       m_refCount;
     QOpenGLTexture* m_texture;
     QOpenGLBuffer*  m_indexBuffer;
-    QMatrix4x4*     m_mvpMatrix;
     bool            m_needsUpdate;
     bool            m_isInit;
 

@@ -37,10 +37,11 @@ CRANBERRY_BEGIN_NAMESPACE
 
 Image::Image()
     : Drawable()
+    , Transformable()
+    , Fadable()
     , m_refCount(new uint32_t(1))
     , m_texture(nullptr)
     , m_indexBuffer(nullptr)
-    , m_mvpMatrix(new QMatrix4x4)
     , m_needsUpdate(false)
     , m_isInit(false)
 {
@@ -50,10 +51,11 @@ Image::Image()
 
 Image::Image(const Image& other)
     : Drawable(other)
+    , Transformable(other)
+    , Fadable(other)
     , m_refCount(other.m_refCount)
     , m_texture(other.m_texture)
     , m_indexBuffer(other.m_indexBuffer)
-    , m_mvpMatrix(other.m_mvpMatrix)
     , m_needsUpdate(other.m_needsUpdate)
     , m_isInit(other.m_isInit)
 {
@@ -66,7 +68,6 @@ Image& Image::operator =(const Image& other)
     m_refCount = other.m_refCount;
     m_texture = other.m_texture;
     m_indexBuffer = other.m_indexBuffer;
-    m_mvpMatrix = other.m_mvpMatrix;
     m_needsUpdate = other.m_needsUpdate;
     m_isInit = other.m_isInit;
    *m_refCount += 1;
@@ -83,7 +84,6 @@ Image::~Image()
     if (*m_refCount == 0)
     {
         delete m_refCount;
-        delete m_mvpMatrix;
         if (m_isInit)
             destroy();
     }
@@ -183,6 +183,7 @@ bool Image::create(const QImage& img, Window* target)
 
     // Initializes the vertices to default values.
     setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
+    setOrigin(QVector2D(m_texture->width() / 2, m_texture->height() / 2));
     setBlendColor(QColor(Qt::black));
     m_isInit = true;
 
@@ -213,7 +214,8 @@ void Image::destroy()
 
 void Image::update(const GameTime& time)
 {
-    Q_UNUSED(time)
+    updateTransform(time);
+    updateFade(time);
 }
 
 
@@ -225,14 +227,14 @@ void Image::render()
     renderTarget()->makeCurrent();
 
     // Constructs the MVP matrix.
-    m_mvpMatrix->setToIdentity();
-//    m_mvpMatrix->translate(0, 0);
-//    m_mvpMatrix->scale(1);
-//    m_mvpMatrix->translate(0, 0);
-//    m_mvpMatrix->rotate(0, 0, 0, 0);
-//    m_mvpMatrix->translate(0, 0);
-//    m_mvpMatrix->translate(0, 0);
-    renderTarget()->applyOrtho(m_mvpMatrix);
+    QMatrix4x4 munit, mproj, mtran, mrot, mscale, mtor, mitor, mvp;
+    renderTarget()->applyOrtho(&mproj);
+    mtran.translate(x(), y());
+    mrot.rotate(angle(), rotationAxis());
+    mscale.scale(scale());
+    mtor.translate(origin());
+    mitor.translate(origin() * -1);
+    mvp = mproj * mtran * mtor * mrot * mitor * mscale * munit;
 
     // Determines which program to use.
     auto* program = g_program;
@@ -254,8 +256,8 @@ void Image::render()
     // Forwards the MVP matrix, opacity and blending mode.
     glDebug(program->bind());
     glDebug(program->setUniformValue("uni_texture", GL_ZERO));
-    glDebug(program->setUniformValue("uni_mvp", *m_mvpMatrix));
-    glDebug(program->setUniformValue("uni_opacity", 1.f));
+    glDebug(program->setUniformValue("uni_mvp", mvp));
+    glDebug(program->setUniformValue("uni_opacity", opacity()));
     glDebug(program->setUniformValue("uni_mode", (int) blendMode()));
 
     // Enables all the vertex attributes to be used.
