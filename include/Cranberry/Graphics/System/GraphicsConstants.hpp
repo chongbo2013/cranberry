@@ -45,6 +45,19 @@ CRANBERRY_BEGIN_NAMESPACE
 #define IMAGE_SHADER_VERT               ":/shaders/image_vertex.glsl"
 #define IMAGE_SHADER_FRAG               ":/shaders/image_fragment.glsl"
 
+// cran::Primitive
+#define PRIMITIVE_VERTEX_COUNT          m_vertices.size()
+#define PRIMITIVE_VERTEX_POS            0
+#define PRIMITIVE_VERTEX_COLOR          1
+#define PRIMITIVE_VERTEX_POS_SIZE       3
+#define PRIMITIVE_VERTEX_COLOR_SIZE     4
+#define PRIMITIVE_VERTEX_POS_OFFSET     (const void*) (nullptr)
+#define PRIMITIVE_VERTEX_COLOR_OFFSET   (const void*) (sizeof(float) * 3)
+#define PRIMITIVE_VERTEX_STRIDE         (int) (sizeof(float) * 7)
+#define PRIMITIVE_VERTEX_SIZE           (int) (sizeof(VxPrimitive) * m_vertices.size())
+#define PRIMITIVE_SHADER_VERT           ":/shaders/primitive_vertex.glsl"
+#define PRIMITIVE_SHADER_FRAG           ":/shaders/primitive_fragment.glsl"
+
 
 CRANBERRY_END_NAMESPACE
 

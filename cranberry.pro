@@ -63,7 +63,7 @@ INCLUDEPATH +=  include
 RESOURCES   +=  resources/res_shaders.qrc
 DISTFILES   +=  templates/header.txt \
                 templates/license_notice.txt \
-                templates/source.txt
+                templates/source.txt \
 
 ####################################################################
 #
@@ -83,9 +83,12 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/System/GraphicsStructs.hpp \
             include/Cranberry/Graphics/Image.hpp \
             include/Cranberry/System/GLShader.hpp \
-    include/Cranberry/Graphics/System/GraphicsConstants.hpp \
-    include/Cranberry/Graphics/System/Transformable.hpp \
-    include/Cranberry/Graphics/System/Fadable.hpp
+            include/Cranberry/Graphics/System/GraphicsConstants.hpp \
+            include/Cranberry/Graphics/System/Transformable.hpp \
+            include/Cranberry/Graphics/System/Fadable.hpp \
+            include/Cranberry/Graphics/Primitive.hpp \
+            include/Cranberry/Graphics/Line.hpp \
+    include/Cranberry/Graphics/Triangle.hpp
 
 ####################################################################
 #
@@ -102,5 +105,7 @@ SOURCES +=  src/Window/Window.cpp \
             src/Graphics/System/Drawable.cpp \
             src/Graphics/Image.cpp \
             src/System/GLShader.cpp \
-    src/Graphics/System/Transformable.cpp \
-    src/Graphics/System/Fadable.cpp
+            src/Graphics/System/Transformable.cpp \
+            src/Graphics/System/Fadable.cpp \
+            src/Graphics/Primitive.cpp \
+            src/Graphics/Line.cpp

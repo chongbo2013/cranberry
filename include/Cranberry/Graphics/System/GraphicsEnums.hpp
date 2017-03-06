@@ -110,6 +110,21 @@ enum FadeDirection
     FadeOut
 };
 
+///
+/// This enum represents the OpenGL drawing modes.
+///
+enum DrawMode
+{
+    DrawPoints          = 0x0000,
+    DrawLines           = 0x0001,
+    DrawLineLoop        = 0x0002,
+    DrawLineStrip       = 0x0003,
+    DrawTriangles       = 0x0004,
+    DrawTriangleStrip   = 0x0005,
+    DrawTriangleFan     = 0x0006,
+    DrawPatches         = 0x000E,
+};
+
 
 // Flag declarations
 Q_DECLARE_FLAGS(BlendModes, BlendMode)
