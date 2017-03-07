@@ -19,6 +19,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Line.hpp>
+#include <Cranberry/Graphics/System/GraphicsConstants.hpp>
 
 // Qt headers
 #include <QOpenGLBuffer>
@@ -43,7 +44,7 @@ void Line::setLine(const QPointF& start, const QPointF& end)
 {
     m_start = QVector3D(start);
     m_end = QVector3D(end);
-    vertexBuffer()->allocate(sizeof(float) * 28);
+    vertexBuffer()->allocate(PRIMITIVE_ALLOCATE(2));
 
     setPosition(QVector2D(start));
     setOrigin(QVector2D(end - start));
@@ -67,12 +68,13 @@ void Line::setLine(const QVector3D& vector, const QPointF& start)
 {
     m_start = vector;
     m_end = QVector3D(vector.x() + start.x(), vector.y() + start.y(), 0.f);
-    vertexBuffer()->allocate(sizeof(float) * 28);
+    vertexBuffer()->allocate(PRIMITIVE_ALLOCATE(2));
+
 
     setPosition(QVector2D(start));
     setOrigin(vector.toVector2D() / 2);
 
-    if (vertices().size() == 0)
+    if (vertices().empty())
     {
         vertices().push_back(VxPrimitive());
         vertices().push_back(VxPrimitive());
@@ -92,7 +94,7 @@ void Line::setColor(const QColor& c1, const QColor& c2)
         ce = cf;
     }
 
-    if (vertices().size() == 0)
+    if (vertices().empty())
     {
         vertices().push_back(VxPrimitive());
         vertices().push_back(VxPrimitive());

@@ -76,6 +76,22 @@ public:
     ///
     void setTriangle(const QPointF& a, const QPointF& b, const QPointF& c);
 
+    ///
+    /// Specifies a single color for all vertices.
+    ///
+    /// \param color Color of A, B and C.
+    ///
+    void setColor(const QColor& color);
+
+    ///
+    /// Specifies the color of all three vertices.
+    ///
+    /// \param ca Color of point A.
+    /// \param cb Color of point B.
+    /// \param cc Color of point C.
+    ///
+    void setColor(const QColor& ca, const QColor& cb, const QColor& cc);
+
 
 protected:
 

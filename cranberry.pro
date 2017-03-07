@@ -88,7 +88,8 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/System/Fadable.hpp \
             include/Cranberry/Graphics/Primitive.hpp \
             include/Cranberry/Graphics/Line.hpp \
-    include/Cranberry/Graphics/Triangle.hpp
+    include/Cranberry/Graphics/Triangle.hpp \
+    include/Cranberry/Game/Game.hpp
 
 ####################################################################
 #
@@ -108,4 +109,6 @@ SOURCES +=  src/Window/Window.cpp \
             src/Graphics/System/Transformable.cpp \
             src/Graphics/System/Fadable.cpp \
             src/Graphics/Primitive.cpp \
-            src/Graphics/Line.cpp
+            src/Graphics/Line.cpp \
+    src/Graphics/Triangle.cpp \
+    src/Game/Game.cpp

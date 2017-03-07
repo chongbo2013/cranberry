@@ -60,6 +60,10 @@ Window::Window(Window* parent)
     setFormat(surfaceFormat);
     setSurfaceType(QOpenGLWindow::OpenGLSurface);
     connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+
+    // Specifies the default clear color and the default size.
+    m_clearColor = QColor(100, 149, 237);
+    resize(600, 400);
 }
 
 

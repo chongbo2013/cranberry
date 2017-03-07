@@ -57,6 +57,7 @@ CRANBERRY_BEGIN_NAMESPACE
 #define PRIMITIVE_VERTEX_SIZE           (int) (sizeof(VxPrimitive) * m_vertices.size())
 #define PRIMITIVE_SHADER_VERT           ":/shaders/primitive_vertex.glsl"
 #define PRIMITIVE_SHADER_FRAG           ":/shaders/primitive_fragment.glsl"
+#define PRIMITIVE_ALLOCATE(vertexCount) (sizeof(VxPrimitive) * vertexCount)
 
 
 CRANBERRY_END_NAMESPACE
