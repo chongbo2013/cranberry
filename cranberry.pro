@@ -63,56 +63,58 @@ INCLUDEPATH +=  include
 RESOURCES   +=  resources/res_shaders.qrc
 DISTFILES   +=  templates/header.txt \
                 templates/license_notice.txt \
-                templates/source.txt \
+                templates/source.txt
 
 ####################################################################
 #
 # HEADER FILES
 ####################################################################
 HEADERS +=  include/Cranberry/Config.hpp \
+            include/Cranberry/System/GameTime.hpp \
+            include/Cranberry/System/GLDebug.hpp \
+            include/Cranberry/System/GLShader.hpp \
             include/Cranberry/Window/Window.hpp \
             include/Cranberry/Window/Input/KeyboardState.hpp \
             include/Cranberry/Window/Input/KeyReleaseEvent.hpp \
             include/Cranberry/Window/Input/MouseState.hpp \
             include/Cranberry/Window/Input/MouseReleaseEvent.hpp \
             include/Cranberry/Window/Input/MouseMoveEvent.hpp \
-            include/Cranberry/System/GameTime.hpp \
-            include/Cranberry/System/GLDebug.hpp \
             include/Cranberry/Graphics/System/GraphicsEnums.hpp \
             include/Cranberry/Graphics/System/Drawable.hpp \
             include/Cranberry/Graphics/System/GraphicsStructs.hpp \
             include/Cranberry/Graphics/Image.hpp \
-            include/Cranberry/System/GLShader.hpp \
             include/Cranberry/Graphics/System/GraphicsConstants.hpp \
             include/Cranberry/Graphics/System/Transformable.hpp \
             include/Cranberry/Graphics/System/Fadable.hpp \
             include/Cranberry/Graphics/Primitive.hpp \
-            include/Cranberry/Graphics/Line.hpp \
-            include/Cranberry/Graphics/Triangle.hpp \
-            include/Cranberry/Game/Game.hpp \
-            include/Cranberry/Graphics/Polygon.hpp \
-            include/Cranberry/Graphics/Background.hpp
+            include/Cranberry/Graphics/Background.hpp \
+            include/Cranberry/Graphics/Shapes/Line.hpp \
+            include/Cranberry/Graphics/Shapes/Triangle.hpp \
+            include/Cranberry/Graphics/Shapes/Polygon.hpp \
+            include/Cranberry/Graphics/Shapes/Ellipse.hpp \
+            include/Cranberry/Game/Game.hpp
 
 ####################################################################
 #
 # SOURCE FILES
 ####################################################################
-SOURCES +=  src/Window/Window.cpp \
+SOURCES +=  src/System/GameTime.cpp \
+            src/System/GLDebug.cpp \
+            src/System/GLShader.cpp \
+            src/Window/Window.cpp \
             src/Window/Input/KeyboardState.cpp \
             src/Window/Input/KeyReleaseEvent.cpp \
             src/Window/Input/MouseMoveEvent.cpp \
             src/Window/Input/MouseReleaseEvent.cpp \
             src/Window/Input/MouseState.cpp \
-            src/System/GameTime.cpp \
-            src/System/GLDebug.cpp \
             src/Graphics/System/Drawable.cpp \
             src/Graphics/Image.cpp \
-            src/System/GLShader.cpp \
             src/Graphics/System/Transformable.cpp \
             src/Graphics/System/Fadable.cpp \
             src/Graphics/Primitive.cpp \
-            src/Graphics/Line.cpp \
-            src/Graphics/Triangle.cpp \
-            src/Game/Game.cpp \
-            src/Graphics/Polygon.cpp \
-            src/Graphics/Background.cpp
+            src/Graphics/Background.cpp \
+            src/Graphics/Shapes/Line.cpp \
+            src/Graphics/Shapes/Triangle.cpp \
+            src/Graphics/Shapes/Polygon.cpp \
+            src/Graphics/Shapes/Ellipse.cpp \
+            src/Game/Game.cpp

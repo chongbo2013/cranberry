@@ -46,6 +46,12 @@ struct VxPrimitive
     float x, y, z;
     float r, g, b, a;
 
+
+    ///
+    /// Initializes the alpha value to one.
+    ///
+    VxPrimitive() : a(1.f) { }
+
     ///
     /// Specifies the vertex position.
     ///
@@ -89,6 +95,12 @@ struct VxTexture
     float x, y, z;
     float u, v;
     float r, g, b, a;
+
+
+    ///
+    /// Initializes the alpha value to one.
+    ///
+    VxTexture() : a(1.f) { }
 
     ///
     /// Specifies the vertex position.
