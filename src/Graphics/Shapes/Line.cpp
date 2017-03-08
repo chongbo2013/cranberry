@@ -18,7 +18,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Line.hpp>
+#include <Cranberry/Graphics/Shapes/Line.hpp>
 #include <Cranberry/Graphics/System/GraphicsConstants.hpp>
 
 // Qt headers

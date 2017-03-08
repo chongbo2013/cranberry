@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -25,16 +25,14 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Primitive.hpp>
 
-// Qt headers
-
-// Standard headers
-
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ///
-/// Defines a polygon with multiple vertices.
+/// Defines a polygon with multiple vertices. The color
+/// of the vertices may only be set \em after setVertices
+/// was called.
 ///
 /// \class Polygon
 /// \author Nicolas Kogler
@@ -74,14 +72,16 @@ public:
     void setVertices(float size, uint32_t sides);
 
     ///
-    /// Paints the polygon in one single \p color.
+    /// Paints the polygon in one single \p color. Do not
+    /// call this function before setVertices() was used.
     ///
     /// \param color The color to fill the polygon in.
     ///
     void setColor(const QColor& color);
 
     ///
-    /// Specifies the colors of all vertices.
+    /// Specifies the colors of all vertices. Do not
+    /// call this function before setVertices() was used.
     ///
     /// \param colors All the colors.
     ///

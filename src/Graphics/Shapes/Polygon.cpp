@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -18,7 +18,11 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Polygon.hpp>
+#include <Cranberry/Graphics/Shapes/Polygon.hpp>
+#include <Cranberry/Graphics/System/GraphicsConstants.hpp>
+
+// Qt headers
+#include <QOpenGLBuffer>
 
 // Standard headers
 #include <cmath>
@@ -56,6 +60,7 @@ void Polygon::setVertices(const std::vector<QPointF>& points)
     }
 
     setOrigin(QVector2D(eX, eY));
+    vertexBuffer()->allocate(PRIMITIVE_ALLOCATE(vertices().size()));
     requestUpdate();
 }
 
@@ -66,6 +71,7 @@ void Polygon::setVertices(float size, uint32_t sides)
     float cX = radius, cY = radius;
     float eX = cX, eY = cY;
 
+    m_points.clear();
     vertices().clear();
     vertices().push_back(VxPrimitive());
     vertices().at(0).xyz(cX + radius * cosf(0), cY + radius * sinf(0), 0.f);
@@ -76,6 +82,7 @@ void Polygon::setVertices(float size, uint32_t sides)
         float cos = cX + radius * cosf((2*i) * (M_PI / sides));
         float sin = cY + radius * sinf((2*i) * (M_PI / sides));
 
+        m_points.push_back(QPointF(cos, sin));
         vertices().push_back(VxPrimitive());
         vertices().at(i).xyz(cos, sin, 0.f);
         eX += cos;
@@ -83,6 +90,7 @@ void Polygon::setVertices(float size, uint32_t sides)
     }
 
     setOrigin(QVector2D(eX / sides, eY / sides));
+    vertexBuffer()->allocate(PRIMITIVE_ALLOCATE(vertices().size()));
     requestUpdate();
 }
 
@@ -118,6 +126,18 @@ void Polygon::setColor(const std::vector<QColor>& colors)
     // One color for one vertex.
     for (size_t i = 0; i < vertices().size(); i++)
         vertices().at(i).rgba(colors.at(i));
+}
+
+
+uint32_t Polygon::renderModeWired() const
+{
+    return DrawLineLoop;
+}
+
+
+uint32_t Polygon::renderModeFilled() const
+{
+    return DrawTriangleFan;
 }
 
 
