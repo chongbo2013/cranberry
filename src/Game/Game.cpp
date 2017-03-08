@@ -24,6 +24,9 @@
 // Qt headers
 #include <QGuiApplication>
 
+// Standard headers
+#include <iostream>
+
 
 CRANBERRY_BEGIN_NAMESPACE
 
@@ -57,7 +60,7 @@ void Game::addWindow(Window* window)
     }
     else
     {
-        printf("Cranberry: Given window is invalid!");
+        std::cout << "Cranberry: Given window is invalid!" << std::endl;
     }
 }
 
@@ -75,7 +78,7 @@ void Game::removeWindow(Window* window)
     }
     else
     {
-        printf("Cranberry: Given window is invalid!");
+        std::cout << "Cranberry: Given window is invalid!" << std::endl;
     }
 }
 

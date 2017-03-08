@@ -125,6 +125,16 @@ enum DrawMode
     DrawPatches         = 0x000E,
 };
 
+///
+/// This enum represents the scrolling
+/// background behaviour.
+///
+enum ScrollingBehaviour
+{
+    LimitedScroll,
+    InfiniteScroll
+};
+
 
 // Flag declarations
 Q_DECLARE_FLAGS(BlendModes, BlendMode)

@@ -280,6 +280,7 @@ void Window::focusInEvent(QFocusEvent*)
 
     // Activates rendering again.
     connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+    g_currentTime.update();
     QOpenGLWindow::update();
 
     // TODO: Resume sound playing.

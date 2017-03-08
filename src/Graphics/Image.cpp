@@ -191,6 +191,7 @@ bool Image::create(const QImage& img, Window* target)
     if (g_instanceCount <= 1)
         createOpenGL();
 
+    emit created();
     return true;
 }
 
@@ -209,6 +210,8 @@ void Image::destroy()
     // Eventually destroys static OpenGL resources.
     if (g_instanceCount <= 0)
         destroyOpenGL();
+
+    emit destroyed();
 }
 
 
@@ -295,6 +298,18 @@ void Image::render()
                 IMAGE_VERTEX_COUNT,
                 GL_UNSIGNED_INT,
                 IMAGE_VERTEX_POS_OFFSET));
+}
+
+
+void Image::requestUpdate()
+{
+    m_needsUpdate = true;
+}
+
+
+std::array<VxTexture, 4>& Image::vertices()
+{
+    return m_vertices;
 }
 
 

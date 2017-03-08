@@ -42,7 +42,8 @@ Drawable::Drawable()
 
 
 Drawable::Drawable(const Drawable& other)
-    : m_refCount(other.m_refCount)
+    : QObject()
+    , m_refCount(other.m_refCount)
     , m_renderTarget(other.m_renderTarget)
     , m_vertexBuffer(other.m_vertexBuffer)
     , m_customProgram(other.m_customProgram)
@@ -140,6 +141,7 @@ bool Drawable::createInternal(Window* target, int32_t size)
     m_vertexBuffer->bind();
     m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
     m_vertexBuffer->allocate(size);
+
     return true;
 }
 

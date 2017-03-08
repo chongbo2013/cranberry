@@ -52,6 +52,7 @@ void Triangle::setTriangle(const QPointF& a, const QPointF& b, const QPointF& c)
     m_b = b;
     m_c = c;
     vertexBuffer()->allocate(PRIMITIVE_ALLOCATE(3));
+    // TODO origin
 
     if (vertices().empty())
     {

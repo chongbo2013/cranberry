@@ -164,12 +164,29 @@ public:
     ///
     /// \param time Contains the delta time.
     ///
-    void update(const GameTime &time) override;
+    virtual void update(const GameTime &time) override;
 
     ///
     /// Renders the object in its current state.
     ///
     void render() override;
+
+
+protected:
+
+    ///
+    /// Needed for the parent class to tell
+    /// this class to update the vertices.
+    ///
+    void requestUpdate();
+
+    ///
+    /// Retrieves the vertices in order to modify them
+    /// in a possible base class of this class.
+    ///
+    /// \returns the vertices.
+    ///
+    std::array<VxTexture, 4>& vertices();
 
 
 private:
