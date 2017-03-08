@@ -7,10 +7,10 @@
 |    ✓    |       Line      |
 |    ✓    |     Triangle    |
 |    ✓    |     Polygon     |
-|    ~    |     Ellipse     |
+|    ✓    |     Ellipse     |
 |         |      Sprite     |
 |         |    Animation    |
-|         |       Text      |
+|    ~    |       Text      |
 |         |    Transition   |
 |         |      Scene      |
 |         |   SceneManager  |
