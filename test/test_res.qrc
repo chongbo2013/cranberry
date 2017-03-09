@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pattern.png</file>
+    </qresource>
+</RCC>
