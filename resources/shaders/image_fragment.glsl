@@ -49,23 +49,23 @@ void main()
     vec4 vecPixel = texture(uni_texture, out_uv);
 
     // Applies blending, if desired.
-    if (uni_mode & 0x0001) // Multiply
+    if ((uni_mode & 0x0001) != 0) // Multiply
         vecPixel = applyMultiply(vecPixel, out_rgba);
-    if (uni_mode & 0x0002) // Screen
+    if ((uni_mode & 0x0002) != 0) // Screen
         vecPixel = applyScreen(vecPixel, out_rgba);
-    if (uni_mode & 0x0004) // Overlay
+    if ((uni_mode & 0x0004) != 0) // Overlay
         vecPixel = applyOverlay(vecPixel, out_rgba);
-    if (uni_mode & 0x0008) // Divide
+    if ((uni_mode & 0x0008) != 0) // Divide
         vecPixel = applyDivide(vecPixel, out_rgba);
-    if (uni_mode & 0x0010) // Add
+    if ((uni_mode & 0x0010) != 0) // Add
         vecPixel = applyAdd(vecPixel, out_rgba);
-    if (uni_mode & 0x0020) // Subtract
+    if ((uni_mode & 0x0020) != 0) // Subtract
         vecPixel = applySubtract(vecPixel, out_rgba);
-    if (uni_mode & 0x0040) // Difference
+    if ((uni_mode & 0x0040) != 0) // Difference
         vecPixel = applyDiff(vecPixel, out_rgba);
-    if (uni_mode & 0x0080) // Darken
+    if ((uni_mode & 0x0080) != 0) // Darken
         vecPixel = applyDarken(vecPixel, out_rgba);
-    if (uni_mode & 0x0100) // Lighten
+    if ((uni_mode & 0x0100) != 0) // Lighten
         vecPixel = applyLighten(vecPixel, out_rgba);
 
     // Multiplies the (blended) pixel with the opacity.

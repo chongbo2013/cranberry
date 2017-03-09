@@ -38,3 +38,7 @@ CMakeLists.txt.user
 
 # Output files
 bin/**
+test/bin**
+test/bin2**
+test/.qmake.cache
+test/.qmake.stash
