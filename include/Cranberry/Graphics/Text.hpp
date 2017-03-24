@@ -28,9 +28,9 @@
 #include <Cranberry/Graphics/System/Transformable.hpp>
 
 // Qt headers
-#include <QBrush>
 #include <QFont>
 #include <QPen>
+#include <QStaticText>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -79,7 +79,7 @@ public:
     ///
     /// \returns the text color.
     ///
-    const QColor& textColor() const;
+    QColor textColor() const;
 
     ///
     /// Retrieves the outline color.
@@ -116,6 +116,14 @@ public:
     /// \param color New text color.
     ///
     void setTextColor(const QColor& color);
+
+    ///
+    /// Specifies the text options such as wrap
+    /// or text alignment.
+    ///
+    /// \param option Text options to set.
+    ///
+    void setTextOptions(const QTextOption& option);
 
     ///
     /// Specifies the color of the outline.
@@ -161,11 +169,13 @@ public:
 private:
 
     // Members
-    QString m_text;
-    QFont   m_font;
-    QBrush  m_textBrush;
-    QPen    m_outlinePen;
-    int32_t m_outlineSize;
+    QString     m_text;
+    QFont       m_font;
+    QPen        m_textPen;
+    QPen        m_outlinePen;
+    int32_t     m_outlineSize;
+    int32_t     m_textHeight;
+    QStaticText m_staticText;
 };
 
 

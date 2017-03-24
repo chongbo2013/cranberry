@@ -32,11 +32,19 @@ Text::Text()
     , Fadable()
     , Transformable()
     , m_text(QUuid::createUuid().toString())
-    , m_textBrush(QBrush(Qt::white))
+    , m_textPen(QPen(Qt::white))
     , m_outlinePen(QPen(Qt::black))
     , m_outlineSize(0)
 {
+    QTextOption op;
+    op.setAlignment(Qt::AlignLeft);
+    op.setWrapMode(QTextOption::NoWrap);
+
     m_outlinePen.setWidth(m_outlineSize);
+    m_staticText.setText(m_text);
+    m_staticText.setTextOption(op);
+    m_staticText.setTextFormat(Qt::RichText);
+    m_staticText.setPerformanceHint(QStaticText::AggressiveCaching);
 }
 
 
@@ -52,9 +60,9 @@ const QFont& Text::font() const
 }
 
 
-const QColor& Text::textColor() const
+QColor Text::textColor() const
 {
-    return m_textBrush.color();
+    return m_textPen.color();
 }
 
 
@@ -73,6 +81,7 @@ int32_t Text::outlineWidth() const
 void Text::setText(const QString& str)
 {
     m_text = str;
+    m_staticText.setText(str);
 }
 
 
@@ -83,7 +92,13 @@ void Text::setFont(const QFont& font)
 
 void Text::setTextColor(const QColor& color)
 {
-    m_textBrush.setColor(color);
+    m_textPen.setColor(color);
+}
+
+
+void Text::setTextOptions(const QTextOption& option)
+{
+    m_staticText.setTextOption(option);
 }
 
 
@@ -96,6 +111,7 @@ void Text::setOutlineColor(const QColor& color)
 void Text::setOutlineWidth(int32_t width)
 {
     m_outlinePen.setWidth(width);
+    m_outlineSize = width;
 }
 
 
@@ -120,10 +136,6 @@ void Text::update(const GameTime& time)
 
 void Text::render()
 {
-    // Creates a painter path that contains the text.
-    QPainterPath path;
-    path.addText(QPointF(), m_font, m_text);
-
     // Creates a painter that draws onto the current render target.
     QPainter painter(renderTarget());
     painter.setRenderHints(QPainter::HighQualityAntialiasing |
@@ -134,13 +146,12 @@ void Text::render()
     painter.translate(x(), y());
     painter.scale(scale(), scale());
     painter.rotate(angle());
-    painter.setOpacity(opacity());
 
     // Appearance
+    painter.setOpacity(opacity());
     painter.setFont(m_font);
-    painter.setPen(QColor(Qt::red));
-    painter.setBrush(m_textBrush);
-    painter.drawPath(path);
+    painter.setPen(m_textPen);
+    painter.drawStaticText(0, 0, m_staticText);
 }
 
 
