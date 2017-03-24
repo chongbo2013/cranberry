@@ -94,7 +94,8 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/Shapes/Polygon.hpp \
             include/Cranberry/Graphics/Shapes/Ellipse.hpp \
             include/Cranberry/Game/Game.hpp \
-            include/Cranberry/Graphics/Text.hpp
+            #include/Cranberry/Graphics/Text.hpp
+    include/Cranberry/Graphics/Text.hpp
 
 ####################################################################
 #
@@ -120,4 +121,5 @@ SOURCES +=  src/System/GameTime.cpp \
             src/Graphics/Shapes/Polygon.cpp \
             src/Graphics/Shapes/Ellipse.cpp \
             src/Game/Game.cpp \
-            src/Graphics/Text.cpp
+            #src/Graphics/Text.cpp
+    src/Graphics/Text.cpp

@@ -48,7 +48,7 @@ Window::Window(Window* parent)
     // Determines between the OpenGL and OpenGL/ES API.
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL)
     {
-        surfaceFormat.setVersion(3, 3);
+        //surfaceFormat.setVersion(3, 3);
         surfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
     }
     else

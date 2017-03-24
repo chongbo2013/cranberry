@@ -104,7 +104,7 @@ bool Primitive::create(Window* target)
         target = Window::activeWindow();
 
     // Attempts to allocate the vertex buffer.
-    if (!createInternal(target, 1))
+    if (!createInternal(target, 0))
         return false;
 
     m_isInit = true;

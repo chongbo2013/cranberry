@@ -1,4 +1,4 @@
-#include "Test.hpp"
+﻿#include "Test.hpp"
 
 
 Test::Test() : m_direction(0)
@@ -18,6 +18,13 @@ void Test::init()
     m_bg.setScrollingDirection(cran::MoveSouth | cran::MoveEast);
     m_bg.setBlendColor(m_currentColor);
     m_bg.startScrolling();
+
+    m_text.create(this);
+    m_text.setTextColor(QColor(Qt::white));
+    m_text.setOutlineColor(QColor(Qt::white));
+    m_text.setText(tr("Hello world!"));
+    m_text.setFont(QFont("Arial", 20));
+    m_text.setPosition(QVector2D(100, 100));
 }
 
 
@@ -77,13 +84,14 @@ void Test::update(const cran::GameTime& time)
             m_direction = TEST_FADE_RED;
     }
 
-
     m_bg.setBlendColor(m_currentColor);
     m_bg.update(time);
+    m_text.update(time);
 }
 
 
 void Test::render()
 {
     m_bg.render();
+    m_text.render();
 }

@@ -180,6 +180,7 @@ bool Image::create(const QImage& img, Window* target)
     m_indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
     m_indexBuffer->allocate(sizeof(uint32_t) * 6);
     m_indexBuffer->write(0, indices.data(), sizeof(uint32_t) * 6);
+    m_indexBuffer->release();
 
     // Initializes the vertices to default values.
     setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
@@ -298,6 +299,12 @@ void Image::render()
                 IMAGE_VERTEX_COUNT,
                 GL_UNSIGNED_INT,
                 IMAGE_VERTEX_POS_OFFSET));
+
+    // Unbinds all the OpenGL objects.
+    glDebug(program->release());
+    glDebug(m_indexBuffer->release());
+    glDebug(vertexBuffer()->release());
+    glDebug(g_vao->release());
 }
 
 

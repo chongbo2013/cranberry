@@ -134,13 +134,18 @@ bool Drawable::createInternal(Window* target, int32_t size)
     m_renderTarget = target;
     m_isInit = true;
 
-    // Attempts to create the vertex buffer.
-    if (!m_vertexBuffer->create())
-        return false;
+    // If a valid size was requested for the buffer, creates one.
+    if (size > 0)
+    {
+        // Attempts to create the vertex buffer.
+        if (!m_vertexBuffer->create())
+            return false;
 
-    m_vertexBuffer->bind();
-    m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
-    m_vertexBuffer->allocate(size);
+        m_vertexBuffer->bind();
+        m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
+        m_vertexBuffer->allocate(size);
+        m_vertexBuffer->release();
+    }
 
     return true;
 }
@@ -153,12 +158,14 @@ void Drawable::destroyInternal()
         return;
 
     m_renderTarget->makeCurrent();
-    m_vertexBuffer->destroy();
     m_isInit = false;
 
+    if (m_vertexBuffer->isCreated())
+        m_vertexBuffer->destroy();
+
     delete m_refCount;
-    delete m_vertexBuffer;
     delete m_customProgram;
+    delete m_vertexBuffer;
 }
 
 

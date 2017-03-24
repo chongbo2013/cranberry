@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -25,6 +25,7 @@
 // Cranberry headers
 #include <Cranberry/Window/Window.hpp>
 #include <Cranberry/Graphics/Background.hpp>
+#include <Cranberry/Graphics/Text.hpp>
 
 
 class Test : public cran::Window
@@ -44,6 +45,7 @@ public:
 private:
 
     cran::Background m_bg;
+    cran::Text m_text;
     QColor m_currentColor;
     uint32_t m_direction;
 };
