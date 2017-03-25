@@ -37,7 +37,7 @@ Text::Text()
     , m_outlineSize(0)
 {
     QTextOption op;
-    op.setAlignment(Qt::AlignLeft);
+    op.setAlignment(Qt::AlignLeft | Qt::AlignTop | Qt::AlignBaseline);
     op.setWrapMode(QTextOption::NoWrap);
 
     m_staticText.setText(m_text);
@@ -178,11 +178,7 @@ void Text::prepareText()
         QFontMetrics fm(m_font, renderTarget());
         QPainterPath textPath;
         QPainterPathStroker stroker;
-
-        // Inaccurate bounding rect - attempt to work-around.
         QRect tight = fm.tightBoundingRect(m_text);
-        QRect wide  = fm.boundingRect(m_text);
-        int32_t hei = tight.height() + ((wide.height() - tight.height()) / 2);
 
         // Stroker
         stroker.setJoinStyle(Qt::RoundJoin);
@@ -190,7 +186,7 @@ void Text::prepareText()
         stroker.setWidth(m_outlineSize);
 
         // Path
-        textPath.addText(x(), y() + hei, m_font, m_text);
+        textPath.addText(x(), y() + tight.height() + 1, m_font, m_text);
         m_outlinePath = stroker.createStroke(textPath);
     }
 }

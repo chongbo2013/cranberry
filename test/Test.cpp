@@ -22,8 +22,8 @@ void Test::init()
     m_text.create(this);
     m_text.setTextColor(QColor(Qt::white));
     m_text.setOutlineColor(QColor(Qt::black));
-    m_text.setOutlineWidth(10);
-    m_text.setText(tr("Hello world!"));
+    m_text.setOutlineWidth(5);
+    m_text.setText(tr("Hello èß#Ωζد"));
     m_text.setFont(QFont("Arial", 20));
     m_text.setPosition(QVector2D(0, 0));
 }
