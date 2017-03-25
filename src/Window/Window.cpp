@@ -50,6 +50,7 @@ Window::Window(Window* parent)
     {
         //surfaceFormat.setVersion(3, 3);
         surfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
+        surfaceFormat.setSamples(4);
     }
     else
     {
@@ -165,9 +166,11 @@ void Window::initializeGL()
             m_clearColor.blueF(),
             m_clearColor.alphaF());
 
-    // Enables blending
+    // Enables blending & multisampling.
     m_funcs.glEnable(GL_BLEND);
     m_funcs.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    m_funcs.glEnable(GL_MULTISAMPLE);
+    m_funcs.glEnable(GL_LINE_SMOOTH);
 }
 
 

@@ -33,14 +33,13 @@ Text::Text()
     , Transformable()
     , m_text(QUuid::createUuid().toString())
     , m_textPen(QPen(Qt::white))
-    , m_outlinePen(QPen(Qt::black))
+    , m_outlineBrush(QBrush(Qt::black))
     , m_outlineSize(0)
 {
     QTextOption op;
     op.setAlignment(Qt::AlignLeft);
     op.setWrapMode(QTextOption::NoWrap);
 
-    m_outlinePen.setWidth(m_outlineSize);
     m_staticText.setText(m_text);
     m_staticText.setTextOption(op);
     m_staticText.setTextFormat(Qt::RichText);
@@ -68,7 +67,7 @@ QColor Text::textColor() const
 
 QColor Text::outlineColor() const
 {
-    return m_outlinePen.color();
+    return m_outlineBrush.color();
 }
 
 
@@ -82,12 +81,14 @@ void Text::setText(const QString& str)
 {
     m_text = str;
     m_staticText.setText(str);
+    prepareText();
 }
 
 
 void Text::setFont(const QFont& font)
 {
     m_font = font;
+    prepareText();
 }
 
 void Text::setTextColor(const QColor& color)
@@ -104,13 +105,12 @@ void Text::setTextOptions(const QTextOption& option)
 
 void Text::setOutlineColor(const QColor& color)
 {
-    m_outlinePen.setColor(color);
+    m_outlineBrush.setColor(color);
 }
 
 
 void Text::setOutlineWidth(int32_t width)
 {
-    m_outlinePen.setWidth(width);
     m_outlineSize = width;
 }
 
@@ -139,19 +139,60 @@ void Text::render()
     // Creates a painter that draws onto the current render target.
     QPainter painter(renderTarget());
     painter.setRenderHints(QPainter::HighQualityAntialiasing |
+                           QPainter::SmoothPixmapTransform |
                            QPainter::TextAntialiasing |
                            QPainter::Antialiasing);
 
     // Transformations
-    painter.translate(x(), y());
-    painter.scale(scale(), scale());
-    painter.rotate(angle());
+    QTransform transform;
+    transform.translate(x(), y());
+    transform.scale(scale(), scale());
+    transform.rotate(angle());
+    painter.setTransform(transform);
 
     // Appearance
     painter.setOpacity(opacity());
     painter.setFont(m_font);
     painter.setPen(m_textPen);
+
+    // Text
+    if (m_outlineSize > 0)
+        painter.fillPath(m_outlinePath, m_outlineBrush);
+
     painter.drawStaticText(0, 0, m_staticText);
+}
+
+
+void Text::prepareText()
+{
+    // Prepares the static text transform.
+    QTransform transform;
+    transform.translate(x(), y());
+    transform.scale(scale(), scale());
+    transform.rotate(angle());
+    m_staticText.prepare(transform, m_font);
+
+    // Prepares the outline, if any.
+    if (m_outlineSize > 0)
+    {
+        QFontMetrics fm(m_font, renderTarget());
+        QPainterPath textPath;
+        QPainterPathStroker stroker;
+
+        // Inaccurate bounding rect - attempt to work-around.
+        QRect tight = fm.tightBoundingRect(m_text);
+        QRect wide  = fm.boundingRect(m_text);
+        int32_t hei = tight.height() + ((wide.height() - tight.height()) / 2);
+
+        // Stroker
+        stroker.setJoinStyle(Qt::RoundJoin);
+        stroker.setCapStyle(Qt::RoundCap);
+        stroker.setWidth(m_outlineSize);
+
+        // Path
+        textPath.addText(x(), y() + hei, m_font, m_text);
+        m_outlinePath = stroker.createStroke(textPath);
+    }
 }
 
 

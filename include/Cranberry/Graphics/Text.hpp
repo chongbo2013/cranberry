@@ -168,14 +168,18 @@ public:
 
 private:
 
+    // Helpers
+    void prepareText();
+
     // Members
-    QString     m_text;
-    QFont       m_font;
-    QPen        m_textPen;
-    QPen        m_outlinePen;
-    int32_t     m_outlineSize;
-    int32_t     m_textHeight;
-    QStaticText m_staticText;
+    QString         m_text;
+    QFont           m_font;
+    QPen            m_textPen;
+    QBrush          m_outlineBrush;
+    int32_t         m_outlineSize;
+    int32_t         m_textHeight;
+    QStaticText     m_staticText;
+    QPainterPath    m_outlinePath;
 };
 
 
