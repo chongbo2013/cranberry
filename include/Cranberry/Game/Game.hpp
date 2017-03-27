@@ -83,7 +83,9 @@ public:
     void removeWindow(Window* window);
 
     ///
-    /// Runs the game and shows the main window.
+    /// Runs the game and shows the main window. This
+    /// game instance will take ownership of the given
+    /// window, make sure that it is created on the heap.
     ///
     /// \param mainWindow Valid main window instance.
     /// \returns the exit code of the application.
@@ -93,7 +95,7 @@ public:
     ///
     /// Exits the game and closes all windows.
     ///
-    void exit();
+    void exit(int exitCode = 0);
 
 
     ///

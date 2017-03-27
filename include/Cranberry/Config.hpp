@@ -93,6 +93,17 @@
 ///
 #define CRANBERRY_CLASS CRANBERRY_CONVERT_CLASS(CRANBERRY_FUNC)
 
+
+///
+/// Defines all exit codes for cranberry.
+///
+/// \def CRANBERRY_EXIT_NORMAL CRANBERRY_EXIT_FATAL CRANBERRY_EXIT_UNHANDLED
+///
+#define CRANBERRY_EXIT_NORMAL
+#define CRANBERRY_EXIT_FATAL
+#define CRANBERRY_EXIT_UNHANDLED
+
+
 ///
 /// This macro standardizes the evaluation of the __FUNCTION__,
 /// __PRETTY_FUNCTION__ and __func__ macro to 'scope::func'. Uses

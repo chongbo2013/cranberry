@@ -23,8 +23,10 @@
 
 // Qt headers
 #include <QGuiApplication>
+#include <QMessageBox>
 
 // Standard headers
+#include <exception>
 #include <iostream>
 
 
@@ -42,19 +44,62 @@ QGuiApplication* g_application;
 Game* g_instance;
 
 
+///
+/// The global exception handler for unhandled exceptions.
+/// Issues a termination of the game while destroying all
+/// the OpenGL resources still occupied by the application.
+///
+void cranberryExceptionHandler()
+{
+    // Attempts to get exception text.
+    std::string cause = "Unknown exception";
+    try
+    {
+        auto* eptr = std::current_exception();
+        if (eptr)
+            std::rethrow_exception(eptr);
+    }
+    catch (const std::exception& e)
+    {
+        cause = e.what();
+    }
+
+
+    if (Window::activeWindow() != nullptr)
+    {
+        // Shows the messagebox.
+        QMessageBox box(Window::activeWindow());
+        box.setWindowTitle("Cranberry Error");
+        box.setIcon(QMessageBox::Critical);
+        box.setStandardButtons(QMessageBox::Close);
+        box.setText(cause.data());
+        box.exec();
+    }
+
+    // Terminates the game.
+    Game::instance()->exit(CRANBERRY_EXIT_UNHANDLED);
+}
+
 
 Game::Game(int& argc, char* argv[])
 {
     // Creates the GUI application.
     g_application = new QGuiApplication(argc, argv);
+    g_instance = this;
 
+    // Registers the global exception handler.
+    std::set_terminate(cranberryExceptionHandler);
 }
 
 
 Game::~Game()
 {
     for (auto* window : m_windows)
+    {
+        // Last resort OpenGL resource destruction.
+        window->close();
         delete window;
+    }
 }
 
 
@@ -62,7 +107,9 @@ void Game::addWindow(Window* window)
 {
     if (window != nullptr)
     {
-        m_windows.push_back(window);
+        if (std::find(m_windows.begin(), m_windows.end(), window) == m_windows.end())
+            m_windows.push_back(window);
+
         window->show();
     }
     else
@@ -97,16 +144,20 @@ int Game::run(Window* mainWindow)
 }
 
 
-void Game::exit()
+void Game::exit(int exitCode)
 {
     for (auto* window : m_windows)
     {
+        if (exitCode)
+            window->crash();
+
+        // Destructs all OpenGL resources.
         window->close();
         delete window;
     }
 
     m_windows.clear();
-    g_application->exit();
+    g_application->exit(exitCode);
 }
 
 
