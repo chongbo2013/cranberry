@@ -60,7 +60,7 @@ INCLUDEPATH +=  include
 #
 # RESOURCES AND OTHER FILES
 ####################################################################
-RESOURCES   += \ 
+RESOURCES   += \
     resources/res_shaders.qrc
 DISTFILES   +=  templates/header.txt \
                 templates/license_notice.txt \
@@ -94,8 +94,11 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/Shapes/Polygon.hpp \
             include/Cranberry/Graphics/Shapes/Ellipse.hpp \
             include/Cranberry/Game/Game.hpp \
-            #include/Cranberry/Graphics/Text.hpp
-    include/Cranberry/Graphics/Text.hpp
+            include/Cranberry/Graphics/Text.hpp \
+            include/Cranberry/Graphics/Animation/Animation.hpp \
+            include/Cranberry/Graphics/Animation/AnimationFrame.hpp \
+            include/Cranberry/System/DebugLog.hpp
+
 
 ####################################################################
 #
@@ -121,5 +124,8 @@ SOURCES +=  src/System/GameTime.cpp \
             src/Graphics/Shapes/Polygon.cpp \
             src/Graphics/Shapes/Ellipse.cpp \
             src/Game/Game.cpp \
-            #src/Graphics/Text.cpp
-    src/Graphics/Text.cpp
+            src/Graphics/Text.cpp \
+            src/Graphics/Animation/AnimationFrame.cpp \
+            src/System/DebugLog.cpp \
+    src/Graphics/Animation/Animation.cpp \
+    src/System/DebugLog.cpp

@@ -90,6 +90,19 @@ public:
     ///
     int run(Window* mainWindow);
 
+    ///
+    /// Exits the game and closes all windows.
+    ///
+    void exit();
+
+
+    ///
+    /// Retrieves the current game instance.
+    ///
+    /// \returns the current game instance.
+    ///
+    static Game* instance();
+
 
 private:
 

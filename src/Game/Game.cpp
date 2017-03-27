@@ -36,11 +36,18 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 QGuiApplication* g_application;
 
+///
+/// The unique game instance.
+///
+Game* g_instance;
+
+
 
 Game::Game(int& argc, char* argv[])
 {
     // Creates the GUI application.
     g_application = new QGuiApplication(argc, argv);
+
 }
 
 
@@ -87,6 +94,25 @@ int Game::run(Window* mainWindow)
 {
     addWindow(mainWindow);
     return g_application->exec();
+}
+
+
+void Game::exit()
+{
+    for (auto* window : m_windows)
+    {
+        window->close();
+        delete window;
+    }
+
+    m_windows.clear();
+    g_application->exit();
+}
+
+
+Game* Game::instance()
+{
+    return g_instance;
 }
 
 
