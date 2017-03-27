@@ -19,6 +19,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/System/Drawable.hpp>
+#include <Cranberry/System/DebugLog.hpp>
 
 // Qt headers
 #include <QOpenGLBuffer>
@@ -126,7 +127,10 @@ bool Drawable::createInternal(Window* target, int32_t size)
 {
     // Does not accept invalid target.
     if (target == nullptr)
+    {
+        cranError("Drawable::createInternal: No render target specified!");
         return false;
+    }
 
     target->makeCurrent();
     gl = target->context()->functions();
