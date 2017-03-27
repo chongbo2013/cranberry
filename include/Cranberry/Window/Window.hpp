@@ -139,6 +139,11 @@ public:
     ///
     void setClearColor(const QColor& color);
 
+    ///
+    /// Informs the window about a crash in cranberry.
+    ///
+    void informCrash();
+
 
     ///
     /// Retrieves the currently active window. If no

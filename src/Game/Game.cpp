@@ -55,7 +55,7 @@ void cranberryExceptionHandler()
     std::string cause = "Unknown exception";
     try
     {
-        auto* eptr = std::current_exception();
+        auto eptr = std::current_exception();
         if (eptr)
             std::rethrow_exception(eptr);
     }
@@ -64,17 +64,13 @@ void cranberryExceptionHandler()
         cause = e.what();
     }
 
-
-    if (Window::activeWindow() != nullptr)
-    {
-        // Shows the messagebox.
-        QMessageBox box(Window::activeWindow());
-        box.setWindowTitle("Cranberry Error");
-        box.setIcon(QMessageBox::Critical);
-        box.setStandardButtons(QMessageBox::Close);
-        box.setText(cause.data());
-        box.exec();
-    }
+    // Shows the messagebox.
+    QMessageBox box;
+    box.setWindowTitle("Cranberry Error");
+    box.setIcon(QMessageBox::Critical);
+    box.setStandardButtons(QMessageBox::Close);
+    box.setText(cause.data());
+    box.exec();
 
     // Terminates the game.
     Game::instance()->exit(CRANBERRY_EXIT_UNHANDLED);
@@ -149,7 +145,7 @@ void Game::exit(int exitCode)
     for (auto* window : m_windows)
     {
         if (exitCode)
-            window->crash();
+            window->informCrash();
 
         // Destructs all OpenGL resources.
         window->close();

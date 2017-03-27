@@ -121,6 +121,12 @@ GameTime* Window::currentTime()
 }
 
 
+void Window::informCrash()
+{
+    crash();
+}
+
+
 void Window::setVerticalSync(bool enable)
 {
     QSurfaceFormat sf = format();

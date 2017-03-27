@@ -49,29 +49,26 @@ void DebugLog::write(int32_t line,
 #else
     if (isError)
     {
-        if (Window::activeWindow() != nullptr)
-        {
-            // Prepares the strings.
-            QString strLine = QString::number(line);
-            QString strFile(file.data());
-            QString strFunc(func.data());
-            QString strMsg(msg.data());
+        // Prepares the strings.
+        QString strLine = QString::number(line);
+        QString strFile(file.data());
+        QString strFunc(func.data());
+        QString strMsg(msg.data());
 
-            // Prepares the quick info.
-            QString strInfo("The Cranberry game engine reported an error "
-                            "thrown in module \"%0\" within function \"%1\" "
-                            "located in line %2. Please contact the author "
-                            "of this game and forward the detailed message.");
+        // Prepares the quick info.
+        QString strInfo("The Cranberry game engine reported an error "
+                        "thrown in module \"%0\" within function \"%1\" "
+                        "located in line %2. Please contact the author "
+                        "of this game and forward the detailed message.");
 
-            // Shows the messagebox.
-            QMessageBox box(Window::activeWindow());
-            box.setWindowTitle("Cranberry Error");
-            box.setIcon(QMessageBox::Critical);
-            box.setStandardButtons(QMessageBox::Close);
-            box.setText(strInfo.arg(strFile, strFunc, strLine));
-            box.setDetailedText(strMsg);
-            box.exec();
-        }
+        // Shows the messagebox.
+        QMessageBox box;
+        box.setWindowTitle("Cranberry Error");
+        box.setIcon(QMessageBox::Critical);
+        box.setStandardButtons(QMessageBox::Close);
+        box.setText(strInfo.arg(strFile, strFunc, strLine));
+        box.setDetailedText(strMsg);
+        box.exec();
 
         // Terminates the game.
         Game::instance()->exit(CRANBERRY_EXIT_FATAL);
