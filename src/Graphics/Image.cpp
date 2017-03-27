@@ -35,6 +35,25 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
+///
+/// The indices defining the two triangles (i.e. quad) to draw.
+///
+constexpr std::array<uint32_t, 6> indices {{ 0, 1, 2, 2, 3, 0 }};
+
+///
+/// Shared resources across all cran::Image instances.
+///
+uint32_t g_instanceCount;
+QOpenGLVertexArrayObject* g_vao;
+QOpenGLShaderProgram* g_program;
+
+///
+/// Functions to initialize/destroy the shared resources.
+///
+void createOpenGL();
+void destroyOpenGL();
+
+
 Image::Image()
     : Drawable()
     , Transformable()
@@ -87,6 +106,12 @@ Image::~Image()
         if (m_isInit)
             destroy();
     }
+}
+
+
+bool Image::isNull() const
+{
+    return !m_texture->isCreated();
 }
 
 
@@ -158,7 +183,6 @@ void Image::setBlendColor(
 }
 
 
-constexpr std::array<uint32_t, 6> indices {{0,1,2,2,3,0}};
 bool Image::create(const QImage& img, Window* target)
 {
     if (target == nullptr)
@@ -169,31 +193,21 @@ bool Image::create(const QImage& img, Window* target)
         return false;
 
     // Creates a new texture and index buffer.
-    m_texture = new QOpenGLTexture(img);
-    m_indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+    return createPrivate(new QOpenGLTexture(img));
+}
 
-    if (!m_indexBuffer->create())
+
+bool Image::create(QOpenGLTexture* tex, Window* target)
+{
+    if (target == nullptr)
+        target = Window::activeWindow();
+
+    // Attempts to allocate the vertex buffer.
+    if (!createInternal(target, IMAGE_VERTEX_SIZE))
         return false;
 
-    // Fills the index buffer with static data.
-    m_indexBuffer->bind();
-    m_indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    m_indexBuffer->allocate(sizeof(uint32_t) * 6);
-    m_indexBuffer->write(0, indices.data(), sizeof(uint32_t) * 6);
-    m_indexBuffer->release();
-
-    // Initializes the vertices to default values.
-    setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
-    setOrigin(QVector2D(m_texture->width() / 2, m_texture->height() / 2));
-    setBlendColor(QColor(Qt::black));
-    m_isInit = true;
-
-    // Eventually initializes static OpenGL resources.
-    if (g_instanceCount <= 1)
-        createOpenGL();
-
-    emit created();
-    return true;
+    // Creates a new texture and index buffer.
+    return createPrivate(tex);
 }
 
 
@@ -320,7 +334,37 @@ std::array<VxTexture, 4>& Image::vertices()
 }
 
 
-void Image::createOpenGL()
+bool Image::createPrivate(QOpenGLTexture* tex)
+{
+    m_texture = tex;
+    m_indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+
+    if (!m_indexBuffer->create())
+        return false;
+
+    // Fills the index buffer with static data.
+    m_indexBuffer->bind();
+    m_indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    m_indexBuffer->allocate(sizeof(uint32_t) * 6);
+    m_indexBuffer->write(0, indices.data(), sizeof(uint32_t) * 6);
+    m_indexBuffer->release();
+
+    // Initializes the vertices to default values.
+    setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
+    setOrigin(QVector2D(m_texture->width() / 2, m_texture->height() / 2));
+    setBlendColor(QColor(Qt::black));
+    m_isInit = true;
+
+    // Eventually initializes static OpenGL resources.
+    if (g_instanceCount <= 1)
+        createOpenGL();
+
+    emit created();
+    return true;
+}
+
+
+void createOpenGL()
 {
     g_vao = new QOpenGLVertexArrayObject();
     g_program = new QOpenGLShaderProgram();
@@ -330,7 +374,7 @@ void Image::createOpenGL()
 }
 
 
-void Image::destroyOpenGL()
+void destroyOpenGL()
 {
     g_vao->destroy();
     g_program->removeAllShaders();
@@ -338,11 +382,6 @@ void Image::destroyOpenGL()
     delete g_vao;
     delete g_program;
 }
-
-
-uint32_t Image::g_instanceCount = 0;
-QOpenGLVertexArrayObject* Image::g_vao = nullptr;
-QOpenGLShaderProgram* Image::g_program = nullptr;
 
 
 CRANBERRY_END_NAMESPACE

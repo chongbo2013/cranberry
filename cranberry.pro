@@ -126,6 +126,5 @@ SOURCES +=  src/System/GameTime.cpp \
             src/Game/Game.cpp \
             src/Graphics/Text.cpp \
             src/Graphics/Animation/AnimationFrame.cpp \
-            src/System/DebugLog.cpp \
-    src/Graphics/Animation/Animation.cpp \
-    src/System/DebugLog.cpp
+            src/Graphics/Animation/Animation.cpp \
+            src/System/DebugLog.cpp
