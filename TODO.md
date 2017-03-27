@@ -10,7 +10,7 @@
 |    ✓    |     Ellipse     |
 |         |      Sprite     |
 |         |    Animation    |
-|    ~    |       Text      |
+|    ✓    |       Text      |
 |         |    Transition   |
 |         |      Scene      |
 |         |   SceneManager  |
