@@ -317,6 +317,7 @@ bool Window::event(QEvent* event)
 
 void Window::init() { }
 void Window::exit() { }
+void Window::crash() { }
 void Window::update(const GameTime&) { }
 void Window::render() { }
 void Window::mouseMove(const MouseMoveEvent&) { }

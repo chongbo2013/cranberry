@@ -261,6 +261,7 @@ protected:
     // Functions to override
     virtual void init();
     virtual void exit();
+    virtual void crash();
     virtual void update(const GameTime& time);
     virtual void render();
     virtual void mouseMove(const MouseMoveEvent& event);
