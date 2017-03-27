@@ -9,7 +9,7 @@
 |    ✓    |     Polygon     |
 |    ✓    |     Ellipse     |
 |         |      Sprite     |
-|         |    Animation    |
+|    ~    |    Animation    |
 |    ✓    |       Text      |
 |         |    Transition   |
 |         |      Scene      |
