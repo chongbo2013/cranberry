@@ -2,23 +2,22 @@
 C++ game engine using the Qt framework and OpenGL/ES.
 
 ## Introduction
-Qt is, in my opinion, a framework which is completely underrated, also in terms of game engineering. This section will
-solely describe the reason why I use Qt for this game engine and why it is so useful for the purpose we are trying to fulfill.
+Qt is, in my opinion, a framework which is completely underrated in terms of game engineering. This section will
+solely describe the reasons why I use Qt to develop this game engine and why it is useful for this purpose.
 
-First of all, Qt provides one of the best window management abstractions I have ever seen in my life. With its tool `qmake` it
-is absolutely easy to compile your code for various platforms, including mobile ones, which makes it attractive for modern game engineering.
+Qt provides one of the best window management abstractions I have ever seen in my life. With its tool `qmake` it
+is easy to compile your code for various platforms, such as mobile ones, which makes it attractive for modern game engineering.
 
-Secondly, the `Qt designer` can be used to create all kinds of graphical user interfaces. It is easy and straight forward to design
-GUIs, plus it is extremely flexible and extensible.
+The `Qt designer` can also be used to create graphical user interfaces. The process to create GUI's is streamlined, plus it is extremely flexible and extensible.
 
-Thirdly, the `Qt resource system` is perfect for game engines, as it is capable of storing all kinds of assets within the executable
-itself. Accessing them by `:/<some_path>/<your_img>.png` is also simple.
+The `Qt resource system` is ideal for game engines, as it is capable of storing a diverse collection of assets within the executable
+itself. You can access them by going to `:/<some_path>/<your_img>.png` 
 
-To mention another advantage, Qt also puts an abstract layer onto OpenGL and OpenGL/ES. That means if we design the code in a way
-it uses the modern OpenGL pipeline, we can render stuff for desktop and mobile devices without doing annoying `#ifdef`'s or abstract
+Qt also puts an abstract layer onto OpenGL and OpenGL/ES. That means that if we design the code in such a way that
+it uses the modern OpenGL pipeline, we can render stuff for desktop and mobile devices without doing redundant `#ifdef`'s or abstract
 classes.
 
-Finally, the Qt core classes offer us `QObject` with its `signal and slot` system (and also parent/child mechanisms) and `QString`,
-which supports all unicode characters. By using some other stuff of Qt, like the `Qt language system` in combination with `QObject::tr()`
-and the `Qt linguist` to internationalize your game or modules like `QSql` or `QNetworking` to add multiplayer support to your game,
-game engineering will surely be a pleasure!
+Lastly, the Qt core classes offers us `QObject` with it's `signal and slot` system (and also parent/child mechanisms) and `QString`,
+which supports all unicode characters. By using functions of Qt such as the `Qt language system` in combination with `QObject::tr()`
+and the `Qt linguist` you are able to to internationalize your game or modules. Implementing `QSql` or `QNetworking` will allow you to 
+add multiplayer support to your game. With such advantages game engineering will surely be a pleasure!
