@@ -26,6 +26,7 @@
 #include <Cranberry/Window/Window.hpp>
 #include <Cranberry/Graphics/Background.hpp>
 #include <Cranberry/Graphics/Text.hpp>
+#include <Cranberry/Graphics/Animation/Animation.hpp>
 
 
 class Test : public cran::Window
@@ -44,6 +45,7 @@ public:
 
 private:
 
+    cran::Animation m_anim;
     cran::Background m_bg;
     cran::Text m_text;
     QColor m_currentColor;
