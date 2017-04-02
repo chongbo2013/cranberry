@@ -241,7 +241,7 @@ void Animation::update(const GameTime& gameTime)
     updateTransform(gameTime);
 
     // Updates the animation.
-    if (isValid() && m_isAnimating)
+    if (Q_LIKELY(isValid()) && m_isAnimating)
     {
         m_elapsedTime += gameTime.deltaTime();
         if (m_elapsedTime >= m_currentFrame->duration())
@@ -261,7 +261,7 @@ void Animation::update(const GameTime& gameTime)
 
 void Animation::render()
 {
-    if (Q_UNLIKELY(isValid()))
+    if (Q_LIKELY(isValid()))
     {
         // Copies all transformations and renders the current texture.
         Image* image = m_textures[m_currentFrame->textureIndex()];
