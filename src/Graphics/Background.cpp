@@ -238,6 +238,12 @@ void Background::updateUVs()
     float uvW = repeatX - uvX;
     float uvH = repeatY - uvY;
 
+    // Modifies the vertices to fill the entire window.
+    vertices().at(0).xyz(0.f,  0.f,  0.f);
+    vertices().at(1).xyz(winX, 0.f,  0.f);
+    vertices().at(2).xyz(winX, winY, 0.f);
+    vertices().at(3).xyz(0.f,  winY, 0.f);
+
     // Applies the coordinates.
     vertices().at(0).uv(-uvX, -uvY);
     vertices().at(1).uv(+uvW, -uvY);
