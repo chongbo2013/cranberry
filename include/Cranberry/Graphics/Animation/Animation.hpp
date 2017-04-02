@@ -110,6 +110,9 @@ public:
     /// and an existing set of images for that animation. Can
     /// be used to construct even more complex animations that
     /// can not be achieved with Cranberry Animation files.
+    /// The instances of cran::Image in \p images must be
+    /// created on the heap. Furthermore, this class takes
+    /// ownership of these, own disposal is not necessary.
     ///
     /// \param frames Frames to execute for this animation.
     /// \param images Images to use for this animation.
@@ -117,7 +120,7 @@ public:
     /// \returns true if created successfully.
     ///
     bool create(const std::vector<AnimationFrame>& frames,
-                const std::vector<Image>& images,
+                const std::vector<Image*>& images,
                 Window* renderTarget);
 
     ///
@@ -159,10 +162,11 @@ private:
 
     // Helpers
     void drawInto(QImage* dst, QImage& src, QRectF& rc);
+    void removeAllTextures();
 
     // Members
     std::vector<AnimationFrame> m_frames;
-    std::vector<Image>          m_textures;
+    std::vector<Image*>         m_textures;
     AnimationFrame*             m_currentFrame;
     Window*                     m_renderTarget;
     double                      m_elapsedTime;

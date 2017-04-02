@@ -77,7 +77,9 @@ Animation::~Animation()
 
 bool Animation::isValid() const
 {
-    return m_renderTarget != nullptr;
+    return m_renderTarget != nullptr
+       && !m_textures.empty()
+       && !m_frames.empty();
 }
 
 
@@ -121,14 +123,20 @@ bool Animation::create(const QString& path, Window* renderTarget)
             QRectF fit = atlas.find(image.size());
             if (fit.isNull())
             {
-                // Before creating new texture, save old one.
-                Image tex;
-                tex.create(bigImage, renderTarget);
-                m_textures.push_back(tex);
+                // Attempts to create a new big texture for the frames.
+                Image* tex = new Image;
+                if (!tex->create(bigImage, renderTarget))
+                {
+                    removeAllTextures();
+                    m_frames.clear();
+                    return false;
+                }
 
-                // No space - requires new texture.
+                // Resets the atlas and the big image.
+                m_textures.push_back(tex);
                 atlas.reset(1024, 1024);
                 bigImage.fill(Qt::transparent);
+                fit = atlas.find(image.size());
             }
 
             // Places the image inside the texture.
@@ -144,8 +152,14 @@ bool Animation::create(const QString& path, Window* renderTarget)
         }
 
         // Adds the last texture.
-        Image tex;
-        tex.create(bigImage, renderTarget);
+        Image* tex = new Image;
+        if (!tex->create(bigImage, renderTarget))
+        {
+            removeAllTextures();
+            m_frames.clear();
+            return false;
+        }
+
         m_textures.push_back(tex);
         m_currentFrame = &m_frames[0];
     }
@@ -153,14 +167,13 @@ bool Animation::create(const QString& path, Window* renderTarget)
     {
     }
 
-
-    // Retrieves the current window if 'renderTarget' is unspecified.
+    // Attempts to find a suitable render target.
     if ((m_renderTarget = renderTarget) == nullptr)
     {
         if ((m_renderTarget = Window::activeWindow()) == nullptr)
         {
             cranError("Animation::create: No render target specified!");
-            m_textures.clear();
+            removeAllTextures();
             m_frames.clear();
             return false;
         }
@@ -171,12 +184,13 @@ bool Animation::create(const QString& path, Window* renderTarget)
 
 
 bool Animation::create(const std::vector<AnimationFrame>& frames,
-                       const std::vector<Image>& images,
+                       const std::vector<Image*>& images,
                        Window* renderTarget)
 {
     m_frames = frames;
     m_textures = images;
 
+    // Determines whether the given properties are valid.
     if (m_textures.size() == 0 || m_frames.size() == 0)
     {
         cranError("Animation::create: No frames or textures specified.");
@@ -201,7 +215,7 @@ void Animation::destroy()
 {
     if (isValid())
     {
-        m_textures.clear();
+        removeAllTextures();
         m_frames.clear();
         m_currentFrame = nullptr;
         m_isAnimating = false;
@@ -229,6 +243,7 @@ void Animation::update(const GameTime& gameTime)
     // Updates the animation.
     if (isValid() && m_isAnimating)
     {
+        m_elapsedTime += gameTime.deltaTime();
         if (m_elapsedTime >= m_currentFrame->duration())
         {
             // Jump to next frame; handles overflow.
@@ -249,7 +264,7 @@ void Animation::render()
     if (Q_UNLIKELY(isValid()))
     {
         // Copies all transformations and renders the current texture.
-        Image* image = &m_textures[m_currentFrame->textureIndex()];
+        Image* image = m_textures[m_currentFrame->textureIndex()];
         image->setPosition(pos());
         image->setAngle(angle());
         image->setOpacity(opacity());
@@ -264,7 +279,16 @@ void Animation::drawInto(QImage* dst, QImage& src, QRectF& rc)
 {
     QPainter painter(dst);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter.drawImage(rc, src);
+    painter.drawImage(rc, src.convertToFormat(QImage::Format_ARGB32));
+}
+
+
+void Animation::removeAllTextures()
+{
+    for (auto* tex : m_textures)
+        delete tex;
+
+    m_textures.clear();
 }
 
 
