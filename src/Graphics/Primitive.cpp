@@ -54,7 +54,7 @@ Primitive::Primitive()
     , Fadable()
     , m_refCount(new uint32_t(1))
     , m_fillShape(false)
-    , m_needsUpdate(false))
+    , m_needsUpdate(false)
 {
     g_primitiveInstanceCount++;
 }

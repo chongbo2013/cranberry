@@ -135,8 +135,15 @@ bool Drawable::createInternal(Window* target, int32_t size)
     // Does not accept invalid target.
     if (target == nullptr)
     {
-        cranError("Drawable::createInternal: No render target specified!");
-        return false;
+        if (m_renderTarget == nullptr)
+        {
+            cranError("Drawable::createInternal: No render target specified!");
+            return false;
+        }
+        else
+        {
+            target = m_renderTarget;
+        }
     }
 
     target->makeCurrent();
@@ -149,7 +156,12 @@ bool Drawable::createInternal(Window* target, int32_t size)
     {
         // Attempts to create the vertex buffer.
         if (!m_vertexBuffer->create())
+        {
+
+            m_renderTarget = nullptr;
+            delete m_vertexBuffer;
             return false;
+        }
 
         m_vertexBuffer->bind();
         m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
