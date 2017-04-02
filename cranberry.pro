@@ -39,16 +39,19 @@ gcc {
 #
 # OUTPUT DIRECTORIES
 ####################################################################
-debug:DESTDIR       =   debug
-debug:OBJECTS_DIR   =   debug/obj/
-debug:MOC_DIR       =   debug/moc/
-debug:RCC_DIR       =   debug/res/
-debug:UI_DIR        =   debug/ui/
-release:DESTDIR     =   release
-release:OBJECTS_DIR =   release/obj/
-release:MOC_DIR     =   release/moc/
-release:RCC_DIR     =   release/res/
-release:UI_DIR      =   release/ui/
+CONFIG(debug, debug|release) {
+    DESTDIR         =   debug
+    OBJECTS_DIR     =   debug/obj/
+    MOC_DIR         =   debug/moc/
+    RCC_DIR         =   debug/res/
+    UI_DIR          =   debug/ui/
+} else {
+    DESTDIR         =   release
+    OBJECTS_DIR     =   release/obj/
+    MOC_DIR         =   release/moc/
+    RCC_DIR         =   release/res/
+    UI_DIR          =   release/ui/
+}
 
 ####################################################################
 #
@@ -60,8 +63,7 @@ INCLUDEPATH +=  include
 #
 # RESOURCES AND OTHER FILES
 ####################################################################
-RESOURCES   += \
-    resources/res_shaders.qrc
+RESOURCES   +=  resources/res_shaders.qrc
 DISTFILES   +=  templates/header.txt \
                 templates/license_notice.txt \
                 templates/source.txt
@@ -98,7 +100,7 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/Animation/Animation.hpp \
             include/Cranberry/Graphics/Animation/AnimationFrame.hpp \
             include/Cranberry/System/DebugLog.hpp \
-    include/Cranberry/Graphics/System/TextureAtlas.hpp
+            include/Cranberry/Graphics/System/TextureAtlas.hpp
 
 
 ####################################################################
@@ -129,4 +131,4 @@ SOURCES +=  src/System/GameTime.cpp \
             src/Graphics/Animation/AnimationFrame.cpp \
             src/Graphics/Animation/Animation.cpp \
             src/System/DebugLog.cpp \
-    src/Graphics/System/TextureAtlas.cpp
+            src/Graphics/System/TextureAtlas.cpp
