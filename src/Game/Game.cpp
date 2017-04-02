@@ -96,6 +96,9 @@ Game::~Game()
         window->close();
         delete window;
     }
+
+    // Deletes the applications.
+    delete g_application;
 }
 
 

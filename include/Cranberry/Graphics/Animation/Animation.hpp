@@ -35,6 +35,9 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
+class Window;
+
+
 ///
 /// Defines an animation that plays several frames.
 ///
@@ -78,12 +81,18 @@ public:
 
 
     ///
-    /// Determines whether this animation
-    /// is already created.
+    /// Determines whether this object is valid.
     ///
-    /// \returns true if the animation was not created.
+    /// \returns true if valid.
     ///
-    bool isNull() const;
+    bool isValid() const;
+
+    ///
+    /// Determines whether the animation is running.
+    ///
+    /// \returns true if the animation is running.
+    ///
+    bool isAnimating() const;
 
     ///
     /// Creates a new animation from a given path. The file
@@ -101,9 +110,6 @@ public:
     /// and an existing set of images for that animation. Can
     /// be used to construct even more complex animations that
     /// can not be achieved with Cranberry Animation files.
-    /// The instances of cran::Image in \p images must be
-    /// created on the heap. Furthermore, this class takes
-    /// ownership of these, own disposal is not necessary.
     ///
     /// \param frames Frames to execute for this animation.
     /// \param images Images to use for this animation.
@@ -111,7 +117,7 @@ public:
     /// \returns true if created successfully.
     ///
     bool create(const std::vector<AnimationFrame>& frames,
-                const std::vector<Image*>& images,
+                const std::vector<Image>& images,
                 Window* renderTarget);
 
     ///
@@ -121,6 +127,18 @@ public:
     /// context could be already destroyed at that point.
     ///
     void destroy();
+
+
+    ///
+    /// Starts the animation.
+    ///
+    void startAnimation();
+
+
+    ///
+    /// Stops the animation.
+    ///
+    void stopAnimation();
 
 
     ///
@@ -144,9 +162,11 @@ private:
 
     // Members
     std::vector<AnimationFrame> m_frames;
-    std::vector<Image*> m_textures;
-    Window* m_renderTarget;
-    bool m_isCreated;
+    std::vector<Image>          m_textures;
+    AnimationFrame*             m_currentFrame;
+    Window*                     m_renderTarget;
+    double                      m_elapsedTime;
+    bool                        m_isAnimating;
 };
 
 
