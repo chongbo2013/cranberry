@@ -34,16 +34,29 @@
 CRANBERRY_BEGIN_NAMESPACE
 
 
+///
+/// Shared resources across all cran::Primitive instances.
+///
+int g_primitiveInstanceCount = 0;
+QOpenGLVertexArrayObject* g_primitiveVao;
+QOpenGLShaderProgram* g_primitiveProgram;
+
+///
+/// Functions to initialize/destroy the shared resources.
+///
+void primitiveCreateOpenGL();
+void primitiveDestroyOpenGL();
+
+
 Primitive::Primitive()
     : Drawable()
     , Transformable()
     , Fadable()
     , m_refCount(new uint32_t(1))
     , m_fillShape(false)
-    , m_needsUpdate(false)
-    , m_isInit(false)
+    , m_needsUpdate(false))
 {
-    g_instanceCount += 1;
+    g_primitiveInstanceCount++;
 }
 
 
@@ -54,9 +67,9 @@ Primitive::Primitive(const Primitive& other)
     , m_refCount(other.m_refCount)
     , m_fillShape(other.m_fillShape)
     , m_needsUpdate(other.m_needsUpdate)
-    , m_isInit(other.m_isInit)
 {
     *m_refCount += 1;
+    g_primitiveInstanceCount++;
 }
 
 
@@ -64,9 +77,9 @@ Primitive& Primitive::operator =(const Primitive& other)
 {
     m_refCount = other.m_refCount;
     m_fillShape = other.m_fillShape;
-    m_needsUpdate = other.m_needsUpdate;
-    m_isInit = other.m_isInit;
+    m_needsUpdate = other.m_needsUpdate;;
    *m_refCount += 1;
+    g_primitiveInstanceCount++;
 
     return *this;
 }
@@ -74,14 +87,20 @@ Primitive& Primitive::operator =(const Primitive& other)
 
 Primitive::~Primitive()
 {
-    g_instanceCount -= 1;
     *m_refCount -= 1;
+    g_primitiveInstanceCount -= 1;
 
+    // Eventually destroys local OpenGL resources.
     if (*m_refCount == 0)
     {
+        this->destroy();
         delete m_refCount;
-        if (m_isInit)
-            destroy();
+    }
+
+    // Eventually destroys global OpenGL resources.
+    if (g_primitiveInstanceCount <= 0)
+    {
+        primitiveDestroyOpenGL();
     }
 }
 
@@ -107,11 +126,9 @@ bool Primitive::create(Window* target)
     if (!createInternal(target, 0))
         return false;
 
-    m_isInit = true;
-
     // Initializes static OpenGL resources.
-    if (g_instanceCount <= 1)
-        createOpenGL();
+    if (g_primitiveInstanceCount <= 1)
+        primitiveCreateOpenGL();
 
     return true;
 }
@@ -119,12 +136,8 @@ bool Primitive::create(Window* target)
 
 void Primitive::destroy()
 {
-    destroyInternal();
-    m_isInit = false;
-
-    // Destroys static OpenGL resources.
-    if (g_instanceCount <= 0)
-        destroyOpenGL();
+    if (isValid())
+        destroyInternal();
 }
 
 
@@ -137,7 +150,7 @@ void Primitive::update(const GameTime& time)
 
 void Primitive::render()
 {
-    if (Q_UNLIKELY(!m_isInit))
+    if (Q_UNLIKELY(!isValid()))
         return;
 
     renderTarget()->makeCurrent();
@@ -153,12 +166,12 @@ void Primitive::render()
     mvp = mproj * mtran * mtor * mrot * mitor * mscale * munit;
 
     // Determines which program to use.
-    auto* program = g_program;
+    auto* program = g_primitiveProgram;
     if (customProgram() != nullptr)
         program = customProgram();
 
     // Binds the OpenGL objects necessary for rendering.
-    glDebug(g_vao->bind());
+    glDebug(g_primitiveVao->bind());
     glDebug(vertexBuffer()->bind());
 
     // Updates vertex data, if requested.
@@ -198,26 +211,6 @@ void Primitive::render()
 }
 
 
-void Primitive::createOpenGL()
-{
-    g_vao = new QOpenGLVertexArrayObject();
-    g_program = new QOpenGLShaderProgram();
-    g_vao->create();
-
-    GLShader::load(g_program, PRIMITIVE_SHADER_VERT, PRIMITIVE_SHADER_FRAG);
-}
-
-
-void Primitive::destroyOpenGL()
-{
-    g_vao->destroy();
-    g_program->removeAllShaders();
-
-    delete g_vao;
-    delete g_program;
-}
-
-
 void Primitive::requestUpdate()
 {
     m_needsUpdate = true;
@@ -242,9 +235,24 @@ uint32_t Primitive::renderModeFilled() const
 }
 
 
-uint32_t Primitive::g_instanceCount = 0;
-QOpenGLVertexArrayObject* Primitive::g_vao = nullptr;
-QOpenGLShaderProgram* Primitive::g_program = nullptr;
+void primitiveCreateOpenGL()
+{
+    g_primitiveVao = new QOpenGLVertexArrayObject();
+    g_primitiveProgram = new QOpenGLShaderProgram();
+    g_primitiveVao->create();
+
+    GLShader::load(g_primitiveProgram, PRIMITIVE_SHADER_VERT, PRIMITIVE_SHADER_FRAG);
+}
+
+
+void primitiveDestroyOpenGL()
+{
+    g_primitiveVao->destroy();
+    g_primitiveProgram->removeAllShaders();
+
+    delete g_primitiveVao;
+    delete g_primitiveProgram;
+}
 
 
 CRANBERRY_END_NAMESPACE

@@ -45,7 +45,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \author Nicolas Kogler
 /// \date February 11, 2017
 ///
-class CRANBERRY_EXPORT Drawable : public QObject
+class CRANBERRY_EXPORT Drawable
 {
 public:
 
@@ -77,6 +77,13 @@ public:
     ///
     virtual ~Drawable();
 
+
+    ///
+    /// Determines whether this object is valid.
+    ///
+    /// \returns true if valid.
+    ///
+    bool isValid() const;
 
     ///
     /// Retrieves the current render target.
@@ -168,20 +175,6 @@ protected:
     QOpenGLFunctions* gl;
 
 
-signals:
-
-    ///
-    /// Is emitted once the object has been fully
-    /// created and is ready to be rendered.
-    ///
-    void created();
-
-    ///
-    /// Is emitted once the object is destroyed.
-    ///
-    void destroyed();
-
-
 private:
 
     // Members
@@ -190,10 +183,6 @@ private:
     QOpenGLBuffer*          m_vertexBuffer;
     QOpenGLShaderProgram*   m_customProgram;
     BlendModes              m_blendModes;
-    bool                    m_isInit;
-
-    // Metadata
-    Q_OBJECT
 };
 
 

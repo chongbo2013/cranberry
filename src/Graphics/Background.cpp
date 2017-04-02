@@ -39,10 +39,6 @@ Background::Background()
     , m_scrollingDir(0)
     , m_scrollingMode(0)
 {
-    // In order to repeat the background to fill the
-    // entire window, we need to prepare the texture
-    // once the object has been made ready.
-    QObject::connect(this, SIGNAL(created()), this, SLOT(prepareTexture()));
 }
 
 

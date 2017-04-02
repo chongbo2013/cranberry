@@ -89,7 +89,6 @@ public:
     ///
     bool isShapeFilled() const;
 
-
     ///
     /// Either renders this primitive filled or wired.
     ///
@@ -141,18 +140,8 @@ private:
     uint32_t*       m_refCount;
     bool            m_fillShape;
     bool            m_needsUpdate;
-    bool            m_isInit;
 
     std::vector<VxPrimitive> m_vertices;
-
-    // Static functions
-    static void createOpenGL();
-    static void destroyOpenGL();
-
-    // Static variables
-    static uint32_t g_instanceCount;
-    static QOpenGLVertexArrayObject* g_vao;
-    static QOpenGLShaderProgram* g_program;
 };
 
 

@@ -43,15 +43,15 @@ constexpr std::array<uint32_t, 6> indices {{ 0, 1, 2, 2, 3, 0 }};
 ///
 /// Shared resources across all cran::Image instances.
 ///
-uint32_t g_instanceCount;
-QOpenGLVertexArrayObject* g_vao;
-QOpenGLShaderProgram* g_program;
+int g_imageInstanceCount = 0;
+QOpenGLVertexArrayObject* g_imageVao;
+QOpenGLShaderProgram* g_imageProgram;
 
 ///
 /// Functions to initialize/destroy the shared resources.
 ///
-void createOpenGL();
-void destroyOpenGL();
+void imageCreateOpenGL();
+void imageDestroyOpenGL();
 
 
 Image::Image()
@@ -62,9 +62,8 @@ Image::Image()
     , m_texture(nullptr)
     , m_indexBuffer(nullptr)
     , m_needsUpdate(false)
-    , m_isInit(false)
 {
-    g_instanceCount += 1;
+    g_imageInstanceCount++;
 }
 
 
@@ -76,9 +75,9 @@ Image::Image(const Image& other)
     , m_texture(other.m_texture)
     , m_indexBuffer(other.m_indexBuffer)
     , m_needsUpdate(other.m_needsUpdate)
-    , m_isInit(other.m_isInit)
 {
     *m_refCount += 1;
+    g_imageInstanceCount++;
 }
 
 
@@ -88,8 +87,8 @@ Image& Image::operator =(const Image& other)
     m_texture = other.m_texture;
     m_indexBuffer = other.m_indexBuffer;
     m_needsUpdate = other.m_needsUpdate;
-    m_isInit = other.m_isInit;
    *m_refCount += 1;
+    g_imageInstanceCount++;
 
     return *this;
 }
@@ -97,14 +96,20 @@ Image& Image::operator =(const Image& other)
 
 Image::~Image()
 {
-    g_instanceCount -= 1;
     *m_refCount -= 1;
+    g_imageInstanceCount--;
 
+    // Eventually destroys local OpenGL resources.
     if (*m_refCount == 0)
     {
+        this->destroy();
         delete m_refCount;
-        if (m_isInit)
-            destroy();
+    }
+
+    // Eventually destroys global OpenGL resources.
+    if (g_imageInstanceCount <= 0)
+    {
+        imageDestroyOpenGL();
     }
 }
 
@@ -156,7 +161,6 @@ void Image::setSourceRectangle(const QRectF& src)
     m_vertices.at(1).uv(uvcW, uvcY);
     m_vertices.at(2).uv(uvcW, uvcH);
     m_vertices.at(3).uv(uvcX, uvcH);
-
     m_needsUpdate = true;
 }
 
@@ -213,20 +217,16 @@ bool Image::create(QOpenGLTexture* tex, Window* target)
 
 void Image::destroy()
 {
-    // Destroys the texture and index buffer.
-    destroyInternal();
-    m_texture->destroy();
-    m_indexBuffer->destroy();
-    m_isInit = false;
+    if (isValid())
+    {
+        // Destroys the texture and index buffer.
+        m_texture->destroy();
+        m_indexBuffer->destroy();
+        destroyInternal();
 
-    delete m_texture;
-    delete m_indexBuffer;
-
-    // Eventually destroys static OpenGL resources.
-    if (g_instanceCount <= 0)
-        destroyOpenGL();
-
-    emit destroyed();
+        delete m_texture;
+        delete m_indexBuffer;
+    }
 }
 
 
@@ -239,7 +239,7 @@ void Image::update(const GameTime& time)
 
 void Image::render()
 {
-    if (Q_UNLIKELY(!m_isInit))
+    if (Q_UNLIKELY(!isValid()))
         return;
 
     renderTarget()->makeCurrent();
@@ -255,12 +255,12 @@ void Image::render()
     mvp = mproj * mtran * mtor * mrot * mitor * mscale * munit;
 
     // Determines which program to use.
-    auto* program = g_program;
+    auto* program = g_imageProgram;
     if (customProgram() != nullptr)
         program = customProgram();
 
     // Binds the OpenGL objects necessary for rendering.
-    glDebug(g_vao->bind());
+    glDebug(g_imageVao->bind());
     glDebug(vertexBuffer()->bind());
     glDebug(m_indexBuffer->bind());
 
@@ -318,7 +318,7 @@ void Image::render()
     glDebug(program->release());
     glDebug(m_indexBuffer->release());
     glDebug(vertexBuffer()->release());
-    glDebug(g_vao->release());
+    glDebug(g_imageVao->release());
 }
 
 
@@ -340,7 +340,11 @@ bool Image::createPrivate(QOpenGLTexture* tex)
     m_indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 
     if (!m_indexBuffer->create())
+    {
+        destroyInternal();
+        setRenderTarget(nullptr);
         return false;
+    }
 
     // Fills the index buffer with static data.
     m_indexBuffer->bind();
@@ -353,34 +357,32 @@ bool Image::createPrivate(QOpenGLTexture* tex)
     setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
     setOrigin(QVector2D(m_texture->width() / 2, m_texture->height() / 2));
     setBlendColor(QColor(Qt::black));
-    m_isInit = true;
 
     // Eventually initializes static OpenGL resources.
-    if (g_instanceCount <= 1)
-        createOpenGL();
+    if (g_imageInstanceCount <= 1)
+        imageCreateOpenGL();
 
-    emit created();
     return true;
 }
 
 
-void createOpenGL()
+void imageCreateOpenGL()
 {
-    g_vao = new QOpenGLVertexArrayObject();
-    g_program = new QOpenGLShaderProgram();
-    g_vao->create();
+    g_imageVao = new QOpenGLVertexArrayObject();
+    g_imageProgram = new QOpenGLShaderProgram();
+    g_imageVao->create();
 
-    GLShader::load(g_program, IMAGE_SHADER_VERT, IMAGE_SHADER_FRAG);
+    GLShader::load(g_imageProgram, IMAGE_SHADER_VERT, IMAGE_SHADER_FRAG);
 }
 
 
-void destroyOpenGL()
+void imageDestroyOpenGL()
 {
-    g_vao->destroy();
-    g_program->removeAllShaders();
+    g_imageVao->destroy();
+    g_imageProgram->removeAllShaders();
 
-    delete g_vao;
-    delete g_program;
+    delete g_imageVao;
+    delete g_imageProgram;
 }
 
 

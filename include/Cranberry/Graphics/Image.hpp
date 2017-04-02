@@ -218,7 +218,6 @@ private:
     QOpenGLTexture* m_texture;
     QOpenGLBuffer*  m_indexBuffer;
     bool            m_needsUpdate;
-    bool            m_isInit;
 
     std::array<VxTexture, 4> m_vertices;
 };
