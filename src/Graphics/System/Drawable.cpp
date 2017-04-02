@@ -36,7 +36,7 @@ Drawable::Drawable()
     , m_renderTarget(nullptr)
     , m_vertexBuffer(nullptr)
     , m_customProgram(nullptr)
-    , m_blendModes(MultiplyBlend)
+    , m_blendModes(NoBlend)
 {
 }
 

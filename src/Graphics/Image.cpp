@@ -349,7 +349,7 @@ bool Image::createPrivate(QOpenGLTexture* tex, Window* target)
     // Initializes the vertices to default values.
     setSourceRectangle(QRectF(0, 0, m_texture->width(), m_texture->height()));
     setOrigin(QVector2D(m_texture->width() / 2, m_texture->height() / 2));
-    setBlendColor(QColor(Qt::black));
+    setBlendColor(QColor(Qt::white));
 
     // Eventually initializes static OpenGL resources.
     if (g_imageInstanceCount <= 1)
