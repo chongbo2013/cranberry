@@ -22,7 +22,7 @@
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
-#include <QGuiApplication>
+#include <QApplication>
 #include <QMessageBox>
 
 // Standard headers
@@ -36,7 +36,8 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 /// The actual Qt GUI application.
 ///
-QGuiApplication* g_application;
+QApplication* g_application;
+bool g_isRunning = false;
 
 ///
 /// The unique game instance.
@@ -80,7 +81,7 @@ void cranberryExceptionHandler()
 Game::Game(int& argc, char* argv[])
 {
     // Creates the GUI application.
-    g_application = new QGuiApplication(argc, argv);
+    g_application = new QApplication(argc, argv);
     g_instance = this;
 
     // Registers the global exception handler.
@@ -90,14 +91,13 @@ Game::Game(int& argc, char* argv[])
 
 Game::~Game()
 {
-    for (auto* window : m_windows)
+    if (g_isRunning)
     {
-        // Last resort OpenGL resource destruction.
-        window->close();
-        delete window;
+        g_application->closeAllWindows();
+        g_application->exit(CRANBERRY_EXIT_NORMAL);
+        g_isRunning = false;
     }
 
-    // Deletes the applications.
     delete g_application;
 }
 
@@ -139,24 +139,29 @@ void Game::removeWindow(Window* window)
 int Game::run(Window* mainWindow)
 {
     addWindow(mainWindow);
+    g_isRunning = true;
     return g_application->exec();
 }
 
 
 void Game::exit(int exitCode)
 {
+    // Informs all windows about the crash in
+    // order to save important game data.
     for (auto* window : m_windows)
     {
         if (exitCode)
             window->informCrash();
-
-        // Destructs all OpenGL resources.
-        window->close();
-        delete window;
     }
 
     m_windows.clear();
-    g_application->exit(exitCode);
+
+    if (g_isRunning)
+    {
+        g_application->closeAllWindows();
+        g_application->exit(exitCode);
+        g_isRunning = false;
+    }
 }
 
 
