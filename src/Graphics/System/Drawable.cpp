@@ -37,19 +37,17 @@ Drawable::Drawable()
     , m_vertexBuffer(nullptr)
     , m_customProgram(nullptr)
     , m_blendModes(MultiplyBlend)
-    , m_isInit(false)
 {
 }
 
 
 Drawable::Drawable(const Drawable& other)
-    : QObject()
+    : gl(other.gl)
     , m_refCount(other.m_refCount)
     , m_renderTarget(other.m_renderTarget)
     , m_vertexBuffer(other.m_vertexBuffer)
     , m_customProgram(other.m_customProgram)
     , m_blendModes(other.m_blendModes)
-    , m_isInit(other.m_isInit)
 {
     *m_refCount += 1;
 }
@@ -57,12 +55,12 @@ Drawable::Drawable(const Drawable& other)
 
 Drawable& Drawable::operator =(const Drawable& other)
 {
+    gl = other.gl;
     m_refCount = other.m_refCount;
     m_renderTarget = other.m_renderTarget;
     m_vertexBuffer = other.m_vertexBuffer;
     m_customProgram = other.m_customProgram;
     m_blendModes = other.m_blendModes;
-    m_isInit = other.m_isInit;
    *m_refCount += 1;
 
     return *this;
@@ -73,8 +71,17 @@ Drawable::~Drawable()
 {
     *m_refCount -= 1;
 
-    if (*m_refCount == 0 && m_isInit)
+    if (*m_refCount == 0)
+    {
         destroyInternal();
+        delete m_refCount;
+    }
+}
+
+
+bool Drawable::isValid() const
+{
+    return m_renderTarget != nullptr;
 }
 
 
@@ -103,7 +110,7 @@ void Drawable::setRenderTarget(Window* target)
         target = Window::activeWindow();
 
     // If already created, change the functions too.
-    if (m_isInit)
+    if (isValid())
         gl = target->context()->functions();
 
     m_renderTarget = target;
@@ -136,7 +143,6 @@ bool Drawable::createInternal(Window* target, int32_t size)
     gl = target->context()->functions();
     m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     m_renderTarget = target;
-    m_isInit = true;
 
     // If a valid size was requested for the buffer, creates one.
     if (size > 0)
@@ -157,19 +163,18 @@ bool Drawable::createInternal(Window* target, int32_t size)
 
 void Drawable::destroyInternal()
 {
-    // Does not accept invalid target.
-    if (m_renderTarget == nullptr)
-        return;
+    if (isValid())
+    {
+        // Frees the vertex buffer and (if existing) a custom shader program.
+        m_renderTarget->makeCurrent();
+        m_renderTarget = nullptr;
 
-    m_renderTarget->makeCurrent();
-    m_isInit = false;
+        if (m_vertexBuffer->isCreated())
+            m_vertexBuffer->destroy();
 
-    if (m_vertexBuffer->isCreated())
-        m_vertexBuffer->destroy();
-
-    delete m_refCount;
-    delete m_customProgram;
-    delete m_vertexBuffer;
+        delete m_customProgram;
+        delete m_vertexBuffer;
+    }
 }
 
 

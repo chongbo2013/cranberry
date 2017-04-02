@@ -143,9 +143,6 @@ private:
     float   m_scrollTargetY;
     int     m_scrollingDir;
     int     m_scrollingMode;
-
-    // Metadata
-    Q_OBJECT
 };
 
 
