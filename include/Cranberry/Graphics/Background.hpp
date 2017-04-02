@@ -107,6 +107,33 @@ public:
 
 
     ///
+    /// Attempts to allocate a new OpenGL texture
+    /// and vertex buffer object for this object.
+    /// Must either specify a render target by calling
+    /// Drawable::setRenderTarget() beforehand or
+    /// by passing a window to draw this image on
+    /// to this function.
+    ///
+    /// \param img The image to draw.
+    /// \param target The window to draw the image on.
+    /// \returns true if successfully created.
+    ///
+    bool create(const QImage& img, Window* target) override;
+
+    ///
+    /// Creates a new background and uses the given \p tex
+    /// as texture to draw. This instance will take
+    /// ownership of the given QOpenGLTexture so make
+    /// sure to create the QOpenGLTexture on the heap.
+    ///
+    /// \param tex Texture to draw.
+    /// \param target Target to draw texture on.
+    /// \returns true if successfully created.
+    ///
+    bool create(QOpenGLTexture* tex, Window* target) override;
+
+
+    ///
     /// Hooks the update() method from cran::Image
     /// in order to update the custom scroll.
     ///
@@ -115,22 +142,11 @@ public:
     void update(const GameTime& time) override;
 
 
-private slots:
-
-    ///
-    /// Prepares the texture to wrap around the
-    /// entire window. Is connected to signal
-    /// Drawable::created().
-    ///
-    void prepareTexture();
-
-    ///
-    /// Updates the UVs, depending on the current position.
-    ///
-    void updateUVs();
-
-
 private:
+
+    // Helpers
+    void prepareTexture();
+    void updateUVs();
 
     // Members
     bool    m_isScrolling;

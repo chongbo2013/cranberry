@@ -108,6 +108,26 @@ void Background::stopScrolling()
 }
 
 
+bool Background::create(const QImage& img, Window* target)
+{
+    if (!Image::create(img, target))
+        return false;
+
+    prepareTexture();
+    return true;
+}
+
+
+bool Background::create(QOpenGLTexture* tex, Window* target)
+{
+    if (!Image::create(tex, target))
+        return false;
+
+    prepareTexture();
+    return true;
+}
+
+
 void Background::update(const GameTime& time)
 {
     Image::update(time);

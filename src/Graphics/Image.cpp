@@ -20,6 +20,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Image.hpp>
 #include <Cranberry/Graphics/System/GraphicsConstants.hpp>
+#include <Cranberry/System/DebugLog.hpp>
 #include <Cranberry/System/GLDebug.hpp>
 #include <Cranberry/System/GLShader.hpp>
 
@@ -189,29 +190,15 @@ void Image::setBlendColor(
 
 bool Image::create(const QImage& img, Window* target)
 {
-    if (target == nullptr)
-        target = Window::activeWindow();
-
-    // Attempts to allocate the vertex buffer.
-    if (!createInternal(target, IMAGE_VERTEX_SIZE))
-        return false;
-
     // Creates a new texture and index buffer.
-    return createPrivate(new QOpenGLTexture(img));
+    return createPrivate(new QOpenGLTexture(img), target);
 }
 
 
 bool Image::create(QOpenGLTexture* tex, Window* target)
 {
-    if (target == nullptr)
-        target = Window::activeWindow();
-
-    // Attempts to allocate the vertex buffer.
-    if (!createInternal(target, IMAGE_VERTEX_SIZE))
-        return false;
-
     // Creates a new texture and index buffer.
-    return createPrivate(tex);
+    return createPrivate(tex, target);
 }
 
 
@@ -334,15 +321,21 @@ std::array<VxTexture, 4>& Image::vertices()
 }
 
 
-bool Image::createPrivate(QOpenGLTexture* tex)
+bool Image::createPrivate(QOpenGLTexture* tex, Window* target)
 {
+    // Attempts to allocate the vertex buffer.
+    if (!createInternal(target, IMAGE_VERTEX_SIZE))
+        return false;
+
     m_texture = tex;
     m_indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 
+    // Attempts to allocate the index buffer.
     if (!m_indexBuffer->create())
     {
+        cranError("Image::createPrivate: Index buffer could not be created.");
         destroyInternal();
-        setRenderTarget(nullptr);
+        delete m_indexBuffer;
         return false;
     }
 

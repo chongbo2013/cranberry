@@ -159,7 +159,7 @@ public:
     /// \param target The window to draw the image on.
     /// \returns true if successfully created.
     ///
-    bool create(const QImage& img, Window* target);
+    virtual bool create(const QImage& img, Window* target);
 
     ///
     /// Creates a new image and uses the given \p tex
@@ -171,7 +171,7 @@ public:
     /// \param target Target to draw texture on.
     /// \returns true if successfully created.
     ///
-    bool create(QOpenGLTexture* tex, Window* target);
+    virtual bool create(QOpenGLTexture* tex, Window* target);
 
     ///
     /// Destroys the underlying OpenGL objects.
@@ -211,7 +211,7 @@ protected:
 private:
 
     // Helpers
-    bool createPrivate(QOpenGLTexture* tex);
+    bool createPrivate(QOpenGLTexture* tex, Window* target);
 
     // Members
     uint32_t*       m_refCount;
