@@ -38,7 +38,7 @@ void GLDebug::print(
         std::string expr)
 {
     // Retrieves the GL functions in the current context.
-    QOpenGLFunctions* funcs = Window::activeWindow()->functions();
+    QOpenGLFunctions* funcs = Window::activeWindow()->context()->functions();
     if (funcs == nullptr)
         return;
 

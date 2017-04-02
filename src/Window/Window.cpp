@@ -48,7 +48,7 @@ Window::Window(Window* parent)
     // Determines between the OpenGL and OpenGL/ES API.
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL)
     {
-        //surfaceFormat.setVersion(3, 3);
+        surfaceFormat.setVersion(3, 3);
         surfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
         surfaceFormat.setSamples(4);
     }
@@ -315,6 +315,10 @@ bool Window::event(QEvent* event)
         makeCurrent();
         exit();
         doneCurrent();
+    }
+    else if (event->type() == QEvent::Show)
+    {
+        g_activeWindow = this;
     }
 
     return QOpenGLWindow::event(event);
