@@ -69,25 +69,36 @@ public:
     void reset(int width, int height);
 
     ///
-    /// \brief fit
+    /// Finds a free rectangle in the bin.
+    ///
     /// \param requestedSize Size of rect to insert into texture.
     /// \returns a fitting rectangle.
     ///
     QRectF find(const QSize& requestedSize);
 
+    ///
+    /// Determines the level of occupancy.
+    /// Zero means no space is used, one means
+    /// all space is used.
+    ///
+    /// \returns the occupancy of the bin.
+    ///
+    double occupancy() const;
+
 
 private:
 
     // Functions
-    bool contains(const QRect& r1, const QRect& r2);
-    void place(const QRect& node);
-    QRect score(int width, int height);
-    bool split(const QRect& free, const QRect& used);
-    void tidyUp();
+    void merge();
+    void split(const QRect& free, const QRect& used);
+    int score(int width, int height, const QRect& free);
+    QRect findPrivate(int width, int height, int& index);
 
     // Members
     std::vector<QRect> m_used;
     std::vector<QRect> m_free;
+    int m_width;
+    int m_height;
 };
 
 

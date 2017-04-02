@@ -32,6 +32,8 @@ TextureAtlas::TextureAtlas(int width, int height)
 
 void TextureAtlas::reset(int width, int height)
 {
+    m_width = width;
+    m_height = height;
     m_free.clear();
     m_used.clear();
     m_free.push_back(QRect(0, 0, width, height));
@@ -41,185 +43,148 @@ void TextureAtlas::reset(int width, int height)
 QRectF TextureAtlas::find(const QSize& requestedSize)
 {
     int w = requestedSize.width(),
-        h = requestedSize.height();
+        h = requestedSize.height(),
+        nodeIndex = 0;
 
     // Finds a fitting rectangle.
-    QRect fit = score(w, h);
+    QRect fit = findPrivate(w, h, nodeIndex);
     if (fit.isNull())
         return fit;
 
+    // Performs a clean-up.
+    split(m_free.at(nodeIndex), fit);
+    m_free.erase(m_free.begin() + nodeIndex);
+    merge();
+
     // Places the rectangle in the texture.
-    place(fit);
+    m_used.push_back(fit);
     return fit;
 }
 
 
-bool TextureAtlas::contains(const QRect& r1, const QRect& r2)
+double TextureAtlas::occupancy() const
 {
-    int x1 = r1.x(), x2 = r2.x();
-    int y1 = r1.y(), y2 = r2.y();
-    int w1 = r1.width(), w2 = r2.width();
-    int h1 = r1.height(), h2 = r2.height();
+    uint64_t usedArea = 0;
+    for (size_t i = 0; i < m_used.size(); i++)
+        usedArea += (m_used.at(i).width() * m_used.at(i).height());
 
-    // Determines whether r1 can even contain r2.
-    if (x2 < x1 || y2 < y1)
-        return false;
-
-    int xx = w1 + x1;
-    int yy = h1 + y1;
-    int ww = w2 + x2;
-    int hh = h2 + y2;
-
-    // Determines whether r1 exceeds r2's bounds.
-    if (ww <= x2)
-    {
-        if (xx >= x1 || ww > xx)
-            return false;
-    }
-    else
-    {
-        if (xx >= x1 && ww > xx)
-            return false;
-    }
-    if (hh <= y2)
-    {
-        if (yy >= y1 || hh > yy)
-            return false;
-    }
-    else
-    {
-        if (yy >= y1 && hh > yy)
-            return false;
-    }
-
-    return true;
+    return usedArea / (m_width * m_height);
 }
 
 
-void TextureAtlas::place(const QRect& node)
+int TextureAtlas::score(int width, int height, const QRect& free)
 {
-    // Inserts the given rectangle in a free region.
-    size_t toProcess = m_free.size();
-    for (size_t i = 0; i < toProcess;)
-    {
-        if (split(m_free.at(i), node))
-        {
-            m_free.erase(m_free.begin() + i);
-            toProcess--;
-        }
-        else
-        {
-            i++;
-        }
-    }
-
-    // Reorders the list.
-    tidyUp();
-    m_used.push_back(node);
+    return free.width() * free.height() - width * height;
+    //return max(abs(free.width() - width), abs(free.height() - height));
 }
 
 
-QRect TextureAtlas::score(int width, int height)
+QRect TextureAtlas::findPrivate(int width, int height, int &index)
 {
-    QRect best(0, 0, width, height);
-    int bssf = std::numeric_limits<int>::max();
-    int blsf = std::numeric_limits<int>::max();
+    QRect bestNode(0, 0, width, height);
+    int bestScore = std::numeric_limits<int>::max(), n = 0;
     bool success = false;
 
-    // Gathers free space via "best short side fit".
-    for (auto it = m_free.begin(); it != m_free.end(); ++it)
+    // Finds the most fitting free rectangle.
+    for (auto it = m_free.begin(); it < m_free.end(); ++it, ++n)
     {
-        if (it->width() >= width && it->height() >= height)
+        // Determines whether the rect fits perfectly.
+        if (width == it->width() && height == it->height())
         {
-            int hleft = std::abs(it->width() - width);
-            int vleft = std::abs(it->height() - height);
-            int szMin = std::min(hleft, vleft);
-            int szMax = std::max(hleft, vleft);
+            bestNode.moveLeft(it->x());
+            bestNode.moveTop(it->y());
+            bestScore = std::numeric_limits<int>::min();
+            index = n;
+            success = true;
+            break;
+        }
 
-            // Does rectangle fit the space?
-            if (szMin < bssf || (szMin == bssf && szMax < blsf))
+        // Determines whether it fits. Wasted space does not matter.
+        else if (width <= it->width() && height <= it->height())
+        {
+            auto s = score(width, height, *it);
+            if (s < bestScore)
             {
-                best.moveLeft(it->x());
-                best.moveTop(it->y());
-                bssf = szMin;
-                blsf = szMax;
+                bestNode.moveLeft(it->x());
+                bestNode.moveTop(it->y());
+                bestScore = s;
+                index = n;
                 success = true;
             }
         }
     }
 
-    // Determines whether a space was found.
-    if (success)
-        return best;
+    return (success) ? bestNode : QRect();
+}
+
+
+void TextureAtlas::split(const QRect& free, const QRect& used)
+{
+    // Compute leftover area.
+    int w = free.width() - used.width();
+    int h = free.height() - used.height();
+
+    // Determines whether a horizontal split would be better.
+    // Tries to make rectangles more even-sized.
+    bool horSplit = (used.width() * h <= used.height() * w);
+
+    // Splits the free rectangle in two new rects.
+    QRect bottom(free.x(), free.y() + used.height(), 0, free.height() - used.height());
+    QRect right(free.x() + used.width(), free.y(), free.width() - used.width(), 0);
+    if (horSplit)
+    {
+        bottom.setWidth(free.width());
+        right.setHeight(used.height());
+    }
     else
-        return QRect();
+    {
+        bottom.setWidth(used.width());
+        right.setHeight(free.height());
+    }
+
+    // Adds both rectangles, if valid, to the free ones.
+    if (bottom.width() > 0 && bottom.height() > 0)
+        m_free.push_back(bottom);
+    if (right.width() > 0 && right.height() > 0)
+        m_free.push_back(right);
 }
 
 
-bool TextureAtlas::split(const QRect& free, const QRect& used)
+void TextureAtlas::merge()
 {
-    // Do rectangles even intersect?
-    if (used.x() >= free.x() + free.width()  || used.x() + used.width()  <= free.x() ||
-        used.y() >= free.y() + free.height() || used.y() + used.height() <= free.y())
-        return false;
-
-    // Is 'used' inside 'free' horizontally?
-    if (used.x() < free.x() + free.width() && used.x() + used.width() > free.x())
-    {
-        if (used.y() > free.y() && used.y() < free.y() + free.height())
-        {
-            QRect node = free;
-            node.setHeight(used.y() - free.y());
-            m_free.push_back(node);
-        }
-        if (used.y() + used.height() < free.y() + free.height())
-        {
-            QRect node = free;
-            node.moveTop(used.y() + used.height());
-            node.setHeight((free.y() + free.height()) - node.y());
-            m_free.push_back(node);
-        }
-    }
-
-    // Is 'used' inside 'free' vertically?
-    if (used.y() < free.y() + free.height() && used.y() + used.height() > free.y())
-    {
-        if (used.x() > free.x() && used.x() < free.x() + free.width())
-        {
-            QRect node = free;
-            node.setWidth(used.x() - free.x());
-            m_free.push_back(node);
-        }
-        if (used.x() + used.width() < free.x() + free.width())
-        {
-            QRect node = free;
-            node.moveLeft(used.x() + used.width());
-            node.setWidth((free.x() + free.width()) - node.x());
-            m_free.push_back(node);
-        }
-    }
-
-    return true;
-}
-
-
-void TextureAtlas::tidyUp()
-{
-    // Removes redundant rectangles.
     for (size_t i = 0; i < m_free.size(); i++)
     {
+        QRect& ifree = m_free.at(i);
         for (size_t j = i + 1; j < m_free.size(); j++)
         {
-            if (contains(m_free.at(i), m_free.at(j)))
+            QRect& jfree = m_free.at(j);
+            if (ifree.width() == jfree.width() && ifree.x() == jfree.x())
             {
-                // i inside j - we can simply delete it.
-                m_free.erase(m_free.begin() + (i--));
-                break;
+                if (ifree.y() == jfree.y() + jfree.height())
+                {
+                    ifree.setTop(ifree.top() - jfree.height());
+                    ifree.setHeight(ifree.height() + jfree.height());
+                    m_free.erase(m_free.begin() + j--);
+                }
+                else if (ifree.y() + ifree.height() == jfree.y())
+                {
+                    ifree.setHeight(ifree.height() + jfree.height());
+                    m_free.erase(m_free.begin() + j--);
+                }
             }
-            if (contains(m_free.at(j), m_free.at(i)))
+            else if (ifree.height() == jfree.height() && ifree.y() == jfree.y())
             {
-                // j inside i - we can simply delete it.
-                m_free.erase(m_free.begin() + (j--));
+                if (ifree.x() == jfree.x() + jfree.width())
+                {
+                    ifree.setLeft(ifree.left() - jfree.width());
+                    ifree.setWidth(ifree.width() + jfree.width());
+                    m_free.erase(m_free.begin() + j--);
+                }
+                else if (ifree.x() + ifree.width() == jfree.x())
+                {
+                    ifree.setWidth(ifree.width() + jfree.width());
+                    m_free.erase(m_free.begin() + j--);
+                }
             }
         }
     }
