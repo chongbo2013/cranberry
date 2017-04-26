@@ -15,6 +15,7 @@ TEMPLATE    =   lib
 CONFIG     +=   c++11
 DEFINES    +=   CRANBERRY_BUILD
 QT         +=   widgets network sql xml
+CONFIG     -= debug_and_release debug_and_release_target
 
 ####################################################################
 #

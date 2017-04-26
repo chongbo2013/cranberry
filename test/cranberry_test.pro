@@ -5,6 +5,7 @@ CONFIG += c++11
 TARGET = cranberry_test
 CONFIG += console
 CONFIG -= app_bundle
+CONFIG -= debug_and_release debug_and_release_target
 
 TEMPLATE = app
 
@@ -22,7 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-unix|win32: LIBS += -L$$PWD/../bin/gcc/debug/ -lcranberry
+unix|win32: LIBS += -L$$PWD/../bin/windows_x86/debug/ -lcranberry
 
 INCLUDEPATH += $$PWD/../include
 DEPENDPATH += $$PWD/../include
