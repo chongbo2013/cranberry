@@ -15,7 +15,7 @@ TEMPLATE    =   lib
 CONFIG     +=   c++11
 DEFINES    +=   CRANBERRY_BUILD
 QT         +=   widgets network sql xml
-CONFIG     -= debug_and_release debug_and_release_target
+CONFIG     -=   debug_and_release debug_and_release_target
 
 ####################################################################
 #
@@ -34,24 +34,6 @@ win32 {
 ####################################################################
 gcc {
     QMAKE_LFLAGS    +=  -static-libgcc -static-libstdc++
-}
-
-####################################################################
-#
-# OUTPUT DIRECTORIES
-####################################################################
-CONFIG(debug, debug|release) {
-    DESTDIR         =   debug
-    OBJECTS_DIR     =   debug/obj/
-    MOC_DIR         =   debug/moc/
-    RCC_DIR         =   debug/res/
-    UI_DIR          =   debug/ui/
-} else {
-    DESTDIR         =   release
-    OBJECTS_DIR     =   release/obj/
-    MOC_DIR         =   release/moc/
-    RCC_DIR         =   release/res/
-    UI_DIR          =   release/ui/
 }
 
 ####################################################################
@@ -133,3 +115,13 @@ SOURCES +=  src/System/GameTime.cpp \
             src/Graphics/Animation/Animation.cpp \
             src/System/DebugLog.cpp \
             src/Graphics/System/TextureAtlas.cpp
+
+
+# Copyright message
+message(--------------------------------------------------------------------)
+message(|)
+message(|   cranberry: C++ game engine using the Qt framework and OpenGL/ES.)
+message(|   Copyright (C) 2017 Nicolas Kogler)
+message(|   License: Lesser General Public License 3.0)
+message(|)
+message(--------------------------------------------------------------------)

@@ -33,3 +33,13 @@ HEADERS += \
 
 RESOURCES += \
     test_res.qrc
+
+
+# Copyright message
+message(--------------------------------------------------------------------)
+message(|)
+message(|   cranberry: C++ game engine using the Qt framework and OpenGL/ES.)
+message(|   Copyright (C) 2017 Nicolas Kogler)
+message(|   License: Lesser General Public License 3.0)
+message(|)
+message(--------------------------------------------------------------------)
