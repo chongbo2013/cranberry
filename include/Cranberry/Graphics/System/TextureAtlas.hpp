@@ -1,4 +1,4 @@
-//
+﻿//
 //  cranberry: C++ game engine using the Qt framework and OpenGL/ES.
 //  Copyright (C) 2017 Nicolas Kogler
 //
@@ -24,6 +24,9 @@
 
 // Cranberry headers
 #include <Cranberry/Config.hpp>
+
+// Qt headers
+#include <QRectF>
 
 // Standard headers
 #include <vector>

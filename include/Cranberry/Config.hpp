@@ -23,7 +23,7 @@
 
 
 // Qt headers
-#include <QtCore>
+#include <qcompilerdetection.h>
 
 // Standard headers
 #include <cstdint>
@@ -40,7 +40,7 @@
 #ifdef CRANBERRY_BUILD
     #define CRANBERRY_EXPORT Q_DECL_EXPORT
 #else
-    #define CRANBERRY_EXPORT
+    #define CRANBERRY_EXPORT Q_DECL_IMPORT
 #endif
 
 ///

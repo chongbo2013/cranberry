@@ -21,6 +21,7 @@
 #include <Cranberry/System/GLShader.hpp>
 
 // Qt headers
+#include <QFile>
 #include <QOpenGLContext>
 #include <QOpenGLShaderProgram>
 

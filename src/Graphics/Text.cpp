@@ -22,6 +22,7 @@
 
 // Qt headers
 #include <QPainter>
+#include <QUuid>
 
 
 CRANBERRY_BEGIN_NAMESPACE

@@ -25,6 +25,9 @@
 // Cranberry headers
 #include <Cranberry/Config.hpp>
 
+// Qt headers
+#include <QRectF>
+
 
 CRANBERRY_BEGIN_NAMESPACE
 
