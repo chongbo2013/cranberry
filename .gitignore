@@ -43,3 +43,4 @@ test/bin2**
 test/.qmake.cache
 test/.qmake.stash
 testenv/**
+examples/*/bin/**

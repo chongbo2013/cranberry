@@ -83,7 +83,8 @@ HEADERS +=  include/Cranberry/Config.hpp \
             include/Cranberry/Graphics/Animation/Animation.hpp \
             include/Cranberry/Graphics/Animation/AnimationFrame.hpp \
             include/Cranberry/System/DebugLog.hpp \
-            include/Cranberry/Graphics/System/TextureAtlas.hpp
+            include/Cranberry/Graphics/System/TextureAtlas.hpp \
+            include/Cranberry/System/Random.hpp
 
 
 ####################################################################
@@ -114,7 +115,8 @@ SOURCES +=  src/System/GameTime.cpp \
             src/Graphics/Animation/AnimationFrame.cpp \
             src/Graphics/Animation/Animation.cpp \
             src/System/DebugLog.cpp \
-            src/Graphics/System/TextureAtlas.cpp
+            src/Graphics/System/TextureAtlas.cpp \
+            src/System/Random.cpp
 
 
 # Copyright message
