@@ -25,6 +25,7 @@
 
 
 // Cranberry headers
+#include <Cranberry/Config.hpp>
 
 // Qt headers
 
@@ -84,3 +85,9 @@ private:
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////
+
+
+CRANBERRY_END_NAMESPACE
+
+
+#endif

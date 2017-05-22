@@ -45,7 +45,7 @@ gcc {
 ##
 ################################################################################
 INCLUDEPATH         +=      include
-RESOURCES           +=      resources/shader.qrc
+#RESOURCES           +=      resources/shader.qrc
 
 
 ################################################################################
@@ -53,11 +53,13 @@ RESOURCES           +=      resources/shader.qrc
 ##
 ################################################################################
 HEADERS     +=      include/Cranberry/Config.hpp \
-                    include/Cranberry/System/Debug.hpp
+                    include/Cranberry/System/Debug.hpp \
+                    include/Cranberry/System/GameTime.hpp
 
 
 ################################################################################
 ## MISCELLANEOUS
 ##
 ################################################################################
-SOURCES     +=      src/System/GameTime.cpp
+SOURCES     +=      src/System/Debug.cpp \
+                    src/System/GameTime.cpp \
