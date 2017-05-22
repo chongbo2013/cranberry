@@ -1,8 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>shaders/image_fragment.glsl</file>
-        <file>shaders/image_vertex.glsl</file>
-        <file>shaders/primitive_vertex.glsl</file>
-        <file>shaders/primitive_fragment.glsl</file>
-    </qresource>
-</RCC>
