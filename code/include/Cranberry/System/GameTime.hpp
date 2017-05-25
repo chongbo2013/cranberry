@@ -127,6 +127,7 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \class GameTime
 /// \ingroup System
 ///
 /// You will most likely only need to use the delta time. The delta time

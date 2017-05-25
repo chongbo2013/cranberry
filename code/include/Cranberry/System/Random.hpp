@@ -190,6 +190,7 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \class Random
 /// \ingroup System
 ///
 /// With this class, you can easily generate reliable random numbers,

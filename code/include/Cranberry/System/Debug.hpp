@@ -113,6 +113,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \class Debug
 /// \ingroup System
 ///
 /// You will not need to interact with the Debug class directly, since the two

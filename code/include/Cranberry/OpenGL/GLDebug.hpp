@@ -79,6 +79,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \class GLDebug
 /// \ingroup OpenGL
 ///
 /// The glDebug macro should be used along with every call to an OpenGL
