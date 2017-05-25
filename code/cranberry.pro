@@ -55,7 +55,8 @@ INCLUDEPATH         +=      include
 HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Debug.hpp \
                     include/Cranberry/System/GameTime.hpp \
-    include/Cranberry/System/Random.hpp
+                    include/Cranberry/System/Random.hpp \
+                    include/Cranberry/OpenGL/GLDebug.hpp
 
 
 ################################################################################
@@ -64,4 +65,5 @@ HEADERS     +=      include/Cranberry/Config.hpp \
 ################################################################################
 SOURCES     +=      src/System/Debug.cpp \
                     src/System/GameTime.cpp \
-    src/System/Random.cpp
+                    src/System/Random.cpp \
+                    src/OpenGL/GLDebug.cpp
