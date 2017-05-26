@@ -70,3 +70,4 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/System/Random.cpp \
                     src/OpenGL/OpenGLVertex.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
+                    src/OpenGL/OpenGLShader.cpp
