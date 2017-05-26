@@ -21,7 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/System/Debug.hpp>
-#include <Cranberry/OpenGL/GLDebug.hpp>
+#include <Cranberry/OpenGL/OpenGLDebug.hpp>
 
 // Qt headers
 #include <QDebug>

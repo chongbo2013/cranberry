@@ -20,7 +20,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/OpenGL/GLVertex.hpp>
+#include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
 
 CRANBERRY_USING_NAMESPACE
