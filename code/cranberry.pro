@@ -56,8 +56,9 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Debug.hpp \
                     include/Cranberry/System/GameTime.hpp \
                     include/Cranberry/System/Random.hpp \
-                    include/Cranberry/OpenGL/GLDebug.hpp \
-                    include/Cranberry/OpenGL/GLVertex.hpp
+                    include/Cranberry/OpenGL/OpenGLDebug.hpp \
+                    include/Cranberry/OpenGL/OpenGLVertex.hpp \
+                    include/Cranberry/OpenGL/OpenGLShader.hpp
 
 
 ################################################################################
@@ -67,5 +68,5 @@ HEADERS     +=      include/Cranberry/Config.hpp \
 SOURCES     +=      src/System/Debug.cpp \
                     src/System/GameTime.cpp \
                     src/System/Random.cpp \
-                    src/OpenGL/GLDebug.cpp \
-                    src/OpenGL/GLVertex.cpp
+                    src/OpenGL/OpenGLVertex.cpp \
+                    src/OpenGL/OpenGLDebug.cpp \
