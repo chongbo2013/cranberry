@@ -100,7 +100,7 @@ public:
 /// \def cranError
 ///
 ////////////////////////////////////////////////////////////////////////////////
-#define cranError(msg) (Debug::showError(QString(msg), __LINE__, __FILE__, CRANBERRY_FUNC))
+#define cranError(msg) (priv::Debug::showError(QString(msg), __LINE__, __FILE__, CRANBERRY_FUNC))
 
 ////////////////////////////////////////////////////////////////////////////////
 /// In debug mode, prints the warning to the console. In release mode, does
@@ -109,7 +109,7 @@ public:
 /// \def cranWarning
 ///
 ////////////////////////////////////////////////////////////////////////////////
-#define cranWarning(msg) (Debug::showWarning(QString(msg), __LINE__, __FILE__, CRANBERRY_FUNC))
+#define cranWarning(msg) (priv::Debug::showWarning(QString(msg), __LINE__, __FILE__, CRANBERRY_FUNC))
 
 
 ////////////////////////////////////////////////////////////////////////////////
