@@ -204,6 +204,22 @@ private:
 /// object.setShaderProgram(shader);
 /// \endcode
 ///
+/// How to design the shaders? It is safe to use GLSL code that is
+/// equivalent to shader code from OpenGL version 3.0 to 3.3:
+///
+/// \code
+/// // %0 is important - replaced with either 330 or 300 es!
+/// #version %0
+///
+/// layout(location = 0) in vec3 in_xyz;
+/// ...
+///
+/// void main()
+/// {
+///     ...
+/// }
+/// \endcode
+///
 ////////////////////////////////////////////////////////////////////////////////
 
 
