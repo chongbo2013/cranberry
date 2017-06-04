@@ -20,6 +20,6 @@ contains(QMAKE_PLATFORM, bsd) { kgl_os = freebsd }
 contains(QMAKE_PLATFORM, android) { kgl_os = android }
 contains(QMAKE_PLATFORM, blackberry) { kgl_os = blackberry }
 contains(QMAKE_PLATFORM, winphone) { kgl_os = winphone }
-contains(CONFIG, debug) { kgl_mode = debug } else { kgl_mode = release }
+CONFIG(debug, debug|release) { kgl_mode = debug } else { kgl_mode = release }
 
 kgl_path = $${kgl_os}_$${kgl_arch}_$${kgl_cc}/$${kgl_mode}

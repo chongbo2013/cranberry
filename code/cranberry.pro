@@ -59,10 +59,10 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/OpenGL/OpenGLVertex.hpp \
                     include/Cranberry/OpenGL/OpenGLShader.hpp \
                     include/Cranberry/Graphics/Base/IRenderable.hpp \
-    include/Cranberry/Graphics/Base/ITransformable.hpp \
-    include/Cranberry/Graphics/Base/Enumerations.hpp \
-    include/Cranberry/System/Emitters/RenderableEmitter.hpp \
-    include/Cranberry/System/Emitters/TransformableEmitter.hpp
+                    include/Cranberry/Graphics/Base/ITransformable.hpp \
+                    include/Cranberry/Graphics/Base/Enumerations.hpp \
+                    include/Cranberry/System/Emitters/RenderableEmitter.hpp \
+                    include/Cranberry/System/Emitters/TransformableEmitter.hpp
 
 
 ################################################################################
@@ -76,7 +76,7 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
                     src/Graphics/Base/IRenderable.cpp \
-    src/Graphics/Base/ITransformable.cpp
+                    src/Graphics/Base/ITransformable.cpp
 
 ################################################################################
 ## OUTPUT
