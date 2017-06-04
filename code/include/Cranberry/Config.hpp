@@ -73,6 +73,16 @@
 #define CRANBERRY_END_NAMESPACE         }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// These macroes simplify the use of forward declarations for Qt and cranberry.
+/// Note: As for now, all Qt classes reside in the global namespace.
+///
+/// \def CRANBERRY_FORWARD_CRAN CRANBERRY_FORWARD_QT
+///
+////////////////////////////////////////////////////////////////////////////////
+#define CRANBERRY_FORWARD_CRAN(x)   CRANBERRY_BEGIN_NAMESPACE class x; CRANBERRY_END_NAMESPACE
+#define CRANBERRY_FORWARD_QT(x)     namespace { class x; }
+
+////////////////////////////////////////////////////////////////////////////////
 /// These macroes are to be used inside classes in order to declare the
 /// constructor, destructor, copy constructor and/or move constructor as either
 /// default or deleted.
