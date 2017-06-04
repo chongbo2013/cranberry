@@ -26,6 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/System/GameTime.hpp>
+#include <Cranberry/System/Emitters/RenderableEmitter.hpp>
 
 // Qt headers
 #include <QObject>
@@ -48,7 +49,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IRenderable : public QObject
+class CRANBERRY_GRAPHICS_EXPORT IRenderable
 {
 public:
 
@@ -56,15 +57,10 @@ public:
     CRANBERRY_DISABLE_MOVE(IRenderable)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Constructs a new IRenderable instance. Setting a name is not required,
-    /// but recommended, since it can be easily retrieved by name and it
-    /// simplifies debugging by being able to track down the error source.
-    ///
-    /// \param (opt) name Name of this object.
-    /// \param (opt) parent Parent of this object.
+    /// Constructs a new IRenderable instance.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    IRenderable(QString name = "", QObject* parent = nullptr);
+    IRenderable();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Destructs this IRenderable instance and calls IRenderable::destroy() as
@@ -125,6 +121,14 @@ public:
     OpenGLShader* shaderProgram() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the name of this object.
+    ///
+    /// \returns the name.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const QString& name() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Specifies the shader program. If the given program is nullptr, the
     /// default shader program will be used instead.
     ///
@@ -132,6 +136,24 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setShaderProgram(OpenGLShader* program);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Setting a name is not required, but recommended, since it can be easily
+    /// retrieved by name and it simplifies debugging by being able to track
+    /// down the error source.
+    ///
+    /// \param name New name of this object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setName(const QString& name);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Returns the emitter for this object.
+    ///
+    /// \returns a pointer to the emitter.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    RenderableEmitter* emitter() const;
 
 
 signals:
@@ -172,11 +194,11 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    Window*         m_renderTarget;   ///< Target to render object on
-    OpenGLShader*   m_defaultProgram; ///< Default shader program
-    OpenGLShader*   m_customProgram;  ///< Custom shader program
-
-    Q_OBJECT
+    Window*           m_renderTarget;   ///< Target to render object on
+    OpenGLShader*     m_defaultProgram; ///< Default shader program
+    OpenGLShader*     m_customProgram;  ///< Custom shader program
+    QString           m_name;           ///< Name of the object
+    RenderableEmitter m_emitter;        ///< Emits signals for this class
 };
 
 

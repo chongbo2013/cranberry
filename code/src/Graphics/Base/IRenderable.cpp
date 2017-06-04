@@ -41,14 +41,12 @@ const QString e_02("%0 [%1] - There is no default shader program.");
 }
 
 
-IRenderable::IRenderable(QString name, QObject* parent)
-    : QObject(parent)
-    , gl(nullptr)
+IRenderable::IRenderable()
+    : gl(nullptr)
     , m_renderTarget(nullptr)
     , m_defaultProgram(nullptr)
     , m_customProgram(nullptr)
 {
-    setObjectName(name);
 }
 
 
@@ -71,21 +69,22 @@ bool IRenderable::create(Window* renderTarget)
         // TODO: Uncomment as soon as Window was coded.
         //if ((renderTarget = Window::activeWindow()) == nullptr)
         //{
-        //    return cranError(e_01.arg(CRANBERRY_FUNC, objectName()));
+        //    return cranError(e_01.arg(CRANBERRY_FUNC, m_name));
         //}
     }
 
     // TODO: Uncomment as soon as Window was coded.
     //gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
+    m_emitter.emitCreated();
 
-    emit created();
     return true;
 }
 
 
 void IRenderable::destroy()
 {
+    m_emitter.emitDestroyed();
     delete m_customProgram;
 }
 
@@ -94,11 +93,17 @@ OpenGLShader* IRenderable::shaderProgram() const
 {
     if (Q_UNLIKELY(m_defaultProgram == nullptr))
     {
-        cranError(e_02.arg(CRANBERRY_FUNC, objectName()));
+        cranError(e_02.arg(CRANBERRY_FUNC, m_name));
         return nullptr;
     }
 
     return (m_customProgram != nullptr) ? m_customProgram : m_defaultProgram;
+}
+
+
+const QString& IRenderable::name() const
+{
+    return m_name;
 }
 
 
@@ -111,4 +116,10 @@ void IRenderable::setShaderProgram(OpenGLShader* program)
 void IRenderable::setDefaultShaderProgram(OpenGLShader* program)
 {
     m_defaultProgram = program;
+}
+
+
+void IRenderable::setName(const QString& name)
+{
+    m_name = name;
 }
