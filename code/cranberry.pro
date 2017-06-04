@@ -13,7 +13,6 @@
 ################################################################################
 QT             +=       widgets network sql xml
 CONFIG         +=       c++11
-CONFIG         -=       debug_and_release debug_and_release_target
 DEFINES        +=       CRANBERRY_BUILD
 TEMPLATE        =       lib
 TARGET          =       cranberry
@@ -58,11 +57,12 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Random.hpp \
                     include/Cranberry/OpenGL/OpenGLDebug.hpp \
                     include/Cranberry/OpenGL/OpenGLVertex.hpp \
-                    include/Cranberry/OpenGL/OpenGLShader.hpp
+                    include/Cranberry/OpenGL/OpenGLShader.hpp \
+                    include/Cranberry/Graphics/Base/IRenderable.hpp
 
 
 ################################################################################
-## MISCELLANEOUS
+## SOURCE FILES
 ##
 ################################################################################
 SOURCES     +=      src/System/Debug.cpp \
@@ -70,4 +70,18 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/System/Random.cpp \
                     src/OpenGL/OpenGLVertex.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
-                    src/OpenGL/OpenGLShader.cpp
+                    src/OpenGL/OpenGLShader.cpp \
+                    src/Graphics/Base/IRenderable.cpp
+
+################################################################################
+## OUTPUT
+##
+################################################################################
+include(platforms.pri)
+message(Writing library to: $${PWD}/bin/$${kgl_path})
+
+DESTDIR     = $${PWD}/bin/$${kgl_path}
+OBJECTS_DIR = $${DESTDIR}/obj
+MOC_DIR     = $${OBJECTS_DIR}
+RCC_DIR     = $${OBJECTS_DIR}
+UI_DIR      = $${OBJECTS_DIR}
