@@ -29,8 +29,6 @@
 
 
 // Forward declarations
-class QOpenGLShaderProgram;
-class QOpenGLShader;
 
 
 CRANBERRY_BEGIN_NAMESPACE

@@ -76,11 +76,11 @@
 /// These macroes simplify the use of forward declarations for Qt and cranberry.
 /// Note: As for now, all Qt classes reside in the global namespace.
 ///
-/// \def CRANBERRY_FORWARD_CRAN CRANBERRY_FORWARD_QT
+/// \def CRANBERRY_FORWARD_C CRANBERRY_FORWARD_Q
 ///
 ////////////////////////////////////////////////////////////////////////////////
-#define CRANBERRY_FORWARD_CRAN(x)   CRANBERRY_BEGIN_NAMESPACE class x; CRANBERRY_END_NAMESPACE
-#define CRANBERRY_FORWARD_QT(x)     namespace { class x; }
+#define CRANBERRY_FORWARD_C(x)  CRANBERRY_BEGIN_NAMESPACE class x; CRANBERRY_END_NAMESPACE
+#define CRANBERRY_FORWARD_Q(x)  QT_BEGIN_NAMESPACE class x; QT_END_NAMESPACE
 
 ////////////////////////////////////////////////////////////////////////////////
 /// These macroes are to be used inside classes in order to declare the
@@ -140,7 +140,7 @@
             f = str.find_first_of("(");             \
             str.erase(f, -1);                       \
             return str;                             \
-        } (func)                                    \
+        } (func).c_str()                            \
     }
 #else
     #define CRANBERRY_CONVERT_FUNC(func) (func)
@@ -160,7 +160,7 @@
     {                                           \
         s.erase(s.find_last_of("::") - 1, 1);   \
         return s;                               \
-    } (type)                                    \
+    } (type).c_str()                            \
 }
 
 ////////////////////////////////////////////////////////////////////////////////
