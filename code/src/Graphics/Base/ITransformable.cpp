@@ -32,8 +32,11 @@ CRANBERRY_USING_NAMESPACE
 
 ITransformable::ITransformable()
     : m_moveDir(MoveNone)
-    , m_rotateDir(RotateNone)
-    , m_scaleDir(ScaleNone)
+    , m_rotateDirX(RotateNone)
+    , m_rotateDirY(RotateNone)
+    , m_rotateDirZ(RotateNone)
+    , m_scaleDirX(ScaleNone)
+    , m_scaleDirY(ScaleNone)
     , m_fadeDir(FadeNone)
     , m_rotateAxes(AxisNone)
     , m_isMoving(false)
@@ -50,7 +53,9 @@ ITransformable::ITransformable()
     , m_speedFade(1.f)
     , m_targetMoveX(0.f)
     , m_targetMoveY(0.f)
-    , m_targetRotate(0.f)
+    , m_targetRotateX(0.f)
+    , m_targetRotateY(0.f)
+    , m_targetRotateZ(0.f)
     , m_targetScaleX(0.f)
     , m_targetScaleY(0.f)
     , m_targetOpacity(0.f)
@@ -58,8 +63,11 @@ ITransformable::ITransformable()
     , m_y(0.f)
     , m_width(0.f)
     , m_height(0.f)
-    , m_angle(0.f)
-    , m_scale(1.f)
+    , m_angleX(0.f)
+    , m_angleY(0.f)
+    , m_angleZ(0.f)
+    , m_scaleX(1.f)
+    , m_scaleY(1.f)
     , m_originX(0.f)
     , m_originY(0.f)
 {
@@ -239,7 +247,7 @@ QPainterPath ITransformable::bounds() const
 }
 
 
-TransformableEmitter* ITransformable::signal() const
+TransformableEmitter* ITransformable::signal()
 {
     return &m_emitter;
 }
@@ -353,8 +361,8 @@ void ITransformable::startMoving(float advanceX, float advanceY)
     // Calculates the target position.
     if ((m_moveDir & MoveEast) != 0 && (m_moveDir & MoveWest) == 0) m_targetMoveX = m_x + advanceX;
     else if ((m_moveDir & MoveEast) == 0 && (m_moveDir & MoveWest) != 0) m_targetMoveX = m_x - advanceX;
-    if ((moveDir & MoveSouth) != 0 && (m_moveDir & MoveNorth) == 0) m_targetMoveY = m_y + advanceY;
-    else if ((moveDir & MoveSouth) == 0 && (m_moveDir & MoveNorth) != 0) m_targetMoveY = m_y - advanceY;
+    if ((m_moveDir & MoveSouth) != 0 && (m_moveDir & MoveNorth) == 0) m_targetMoveY = m_y + advanceY;
+    else if ((m_moveDir & MoveSouth) == 0 && (m_moveDir & MoveNorth) != 0) m_targetMoveY = m_y - advanceY;
 
     if (m_moveDir != MoveNone)
     {
@@ -517,19 +525,19 @@ void ITransformable::updateRotate(double delta)
     {
         if (m_rotateDirX == RotateCW)
         {
-            m_angle += (m_speedRotateX * delta);
-            if (m_angle >= m_targetRotateX)
+            m_angleX += (m_speedRotateX * delta);
+            if (m_angleX >= m_targetRotateX)
             {
-                m_angle = m_targetRotateX;
+                m_angleX = m_targetRotateX;
                 stopRotating();
             }
         }
         else
         {
-            m_angle -= (m_speedRotateX * delta);
-            if (m_angle <= m_targetRotateX)
+            m_angleX -= (m_speedRotateX * delta);
+            if (m_angleX <= m_targetRotateX)
             {
-                m_angle = m_targetRotateX;
+                m_angleX = m_targetRotateX;
                 stopRotating();
             }
         }
@@ -538,19 +546,19 @@ void ITransformable::updateRotate(double delta)
     {
         if (m_rotateDirY == RotateCW)
         {
-            m_angle += (m_speedRotateY * delta);
-            if (m_angle >= m_targetRotateY)
+            m_angleY += (m_speedRotateY * delta);
+            if (m_angleY >= m_targetRotateY)
             {
-                m_angle = m_targetRotateY;
+                m_angleY = m_targetRotateY;
                 stopRotating();
             }
         }
         else
         {
-            m_angle -= (m_speedRotateY * delta);
-            if (m_angle <= m_targetRotateY)
+            m_angleY -= (m_speedRotateY * delta);
+            if (m_angleY <= m_targetRotateY)
             {
-                m_angle = m_targetRotateY;
+                m_angleY = m_targetRotateY;
                 stopRotating();
             }
         }
@@ -559,19 +567,19 @@ void ITransformable::updateRotate(double delta)
     {
         if (m_rotateDirZ == RotateCW)
         {
-            m_angle += (m_speedRotateZ * delta);
-            if (m_angle >= m_targetRotateZ)
+            m_angleZ += (m_speedRotateZ * delta);
+            if (m_angleZ >= m_targetRotateZ)
             {
-                m_angle = m_targetRotateZ;
+                m_angleZ = m_targetRotateZ;
                 stopRotating();
             }
         }
         else
         {
-            m_angle -= (m_speedRotateZ * delta);
-            if (m_angle <= m_targetRotateZ)
+            m_angleZ -= (m_speedRotateZ * delta);
+            if (m_angleZ <= m_targetRotateZ)
             {
-                m_angle = m_targetRotateZ;
+                m_angleZ = m_targetRotateZ;
                 stopRotating();
             }
         }

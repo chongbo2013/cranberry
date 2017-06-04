@@ -281,7 +281,7 @@ public:
     /// \returns a pointer to the emitter of this object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TransformableEmitter* signal() const;
+    TransformableEmitter* signal();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the move speed of the object.
@@ -317,7 +317,7 @@ public:
     /// \param dir One or more move directions.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setRotateDirection(RotateDirections dir);
+    void setRotateDirection(RotateDirection dir);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the move direction of the object.
@@ -327,9 +327,9 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setRotateDirection(
-            RotateDirections dirX,
-            RotateDirections dirY,
-            RotateDirections dirZ
+            RotateDirection dirX,
+            RotateDirection dirY,
+            RotateDirection dirZ
             );
 
     ////////////////////////////////////////////////////////////////////////////

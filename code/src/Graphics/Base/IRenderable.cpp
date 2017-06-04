@@ -123,3 +123,9 @@ void IRenderable::setName(const QString& name)
 {
     m_name = name;
 }
+
+
+RenderableEmitter* IRenderable::emitter()
+{
+    return &m_emitter;
+}

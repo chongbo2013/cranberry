@@ -153,7 +153,7 @@ public:
     /// \returns a pointer to the emitter.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    RenderableEmitter* emitter() const;
+    RenderableEmitter* emitter();
 
 
 signals:
