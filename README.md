@@ -1,3 +1,7 @@
+[![License](https://img.shields.io/badge/license-LGPL%203.0-blue.svg?style=flat)](https://github.com/glClear/QGameBoy/blob/master/LICENSE)
+[![Version](https://img.shields.io/badge/version-v1.0.0-blue.svg)](https://github.com/glClear/QGameBoy/releases/latest)
+[![Qt-Framework](https://img.shields.io/badge/Qt-5.0+-green.svg)](http://qt.io)
+[![Builds correctly](https://img.shields.io/badge/build-passing-green.svg)]()
 # cranberry
 C++ game engine using the Qt framework and OpenGL/ES.
 
