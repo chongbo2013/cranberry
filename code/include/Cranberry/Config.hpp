@@ -82,6 +82,19 @@
 #define CRANBERRY_FORWARD_C(x)  CRANBERRY_BEGIN_NAMESPACE class x; CRANBERRY_END_NAMESPACE
 #define CRANBERRY_FORWARD_Q(x)  QT_BEGIN_NAMESPACE class x; QT_END_NAMESPACE
 
+#define TOLIST(...) { __VA_ARGS__ }
+
+////////////////////////////////////////////////////////////////////////////////
+/// A macro for defining global and const variables. Ensures that there are no
+/// multiple definitions.
+///
+/// \def CRANBERRY_GLOBAL_VAR CRANBERRY_CONST_VAR CRANBERRY_CONST_ARR
+///
+////////////////////////////////////////////////////////////////////////////////
+#define CRANBERRY_GLOBAL_VAR(x, y) namespace { x y; }
+#define CRANBERRY_CONST_VAR(x, y, z) namespace { const x y = z; }
+#define CRANBERRY_CONST_ARR(t, n, c, d) namespace { std::array<t, n> c(TOLIST d); }
+
 ////////////////////////////////////////////////////////////////////////////////
 /// These macroes are to be used inside classes in order to declare the
 /// constructor, destructor, copy constructor and/or move constructor as either
