@@ -62,16 +62,16 @@ public:
 
 
 #ifdef QT_DEBUG
-    #define glDebug(x)      \
-    do                      \
-    {                       \
-        x;                  \
-        GLDebug::print(     \
-            #x              \
-            __FILE__,       \
-            CRANBERRY_FUNC, \
-            __LINE__        \
-        );                  \
+    #define glDebug(x)              \
+    do                              \
+    {                               \
+        x;                          \
+        priv::GLDebug::print(       \
+            #x,                     \
+            __FILE__,               \
+            CRANBERRY_FUNC,         \
+            __LINE__                \
+        );                          \
     } while(0)
 #else
     #define glDebug(x) x

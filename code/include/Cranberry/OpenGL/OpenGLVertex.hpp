@@ -103,6 +103,15 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     const float* data() const;
 
+    // Attribute offsets and sizes
+    static constexpr uint  xyzAttrib()  { return 0; }
+    static constexpr uint  rgbaAttrib() { return 1; }
+    static constexpr uint  xyzLength()  { return 3; }
+    static constexpr uint  rgbaLength() { return 4; }
+    static constexpr uint  size()       { return 7; }
+    static constexpr void* xyzOffset()  { return (void*) (nullptr); }
+    static constexpr void* rgbaOffset() { return (void*) (sizeof(float) * 3); }
+
 
 private:
 
@@ -194,6 +203,18 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     const float* data() const;
 
+    // Attribute offsets and sizes
+    static constexpr uint  xyzAttrib()  { return 0; }
+    static constexpr uint  uvAttrib()   { return 1; }
+    static constexpr uint  rgbaAttrib() { return 2; }
+    static constexpr uint  xyzLength()  { return 3; }
+    static constexpr uint  uvLength()   { return 2; }
+    static constexpr uint  rgbaLength() { return 4; }
+    static constexpr uint  size()       { return 9; }
+    static constexpr void* xyzOffset()  { return (void*) (nullptr); }
+    static constexpr void* uvOffset()   { return (void*) (sizeof(float) * 3); }
+    static constexpr void* rgbaOffset() { return (void*) (sizeof(float) * 5); }
+
 
 private:
 
@@ -206,6 +227,11 @@ private:
 
 template <size_t n> using Vertices = std::array<Vertex, n>;
 template <size_t n> using TexVertices = std::array<TextureVertex, n>;
+using QuadVertices = std::array<TextureVertex, 4>;
+
+
+// Convert
+#define QUADS_TO_TRIANGLES(x) (x / 2 * 3)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +243,7 @@ template <size_t n> using TexVertices = std::array<TextureVertex, n>;
 ///
 /// \code
 /// // header
-/// class Triangle : public IDrawable, public IUpdatable
+/// class Triangle : public IRenderable, public ITransformable
 /// {
 /// private:
 ///
