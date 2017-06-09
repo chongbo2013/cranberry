@@ -11,7 +11,7 @@
 ## GENERAL SETTINGS
 ##
 ################################################################################
-QT             +=       widgets network sql xml
+QT             +=       widgets xml
 CONFIG         +=       c++11
 DEFINES        +=       CRANBERRY_BUILD
 TEMPLATE        =       lib
@@ -62,7 +62,9 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/ITransformable.hpp \
                     include/Cranberry/Graphics/Base/Enumerations.hpp \
                     include/Cranberry/System/Emitters/RenderableEmitter.hpp \
-                    include/Cranberry/System/Emitters/TransformableEmitter.hpp
+                    include/Cranberry/System/Emitters/TransformableEmitter.hpp \
+    include/Cranberry/Graphics/Base/ITexture.hpp \
+    include/Cranberry/OpenGL/OpenGLDefaultShaders.hpp
 
 
 ################################################################################
@@ -76,7 +78,9 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
                     src/Graphics/Base/IRenderable.cpp \
-                    src/Graphics/Base/ITransformable.cpp
+                    src/Graphics/Base/ITransformable.cpp \
+    src/OpenGL/OpenGLDefaultShaders.cpp \
+    src/Graphics/Base/ITexture.cpp
 
 ################################################################################
 ## OUTPUT
