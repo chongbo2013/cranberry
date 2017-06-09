@@ -111,6 +111,14 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves a pointer to the render target.
+    ///
+    /// \returns a pointer to the render target.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    Window* renderTarget() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves a pointer to the shader program. If no custom shader program
     /// was specified using IRenderable::setShaderProgram, the default shader
     /// program for this object will be returned.
@@ -200,6 +208,9 @@ private:
     QString           m_name;           ///< Name of the object
     RenderableEmitter m_emitter;        ///< Emits signals for this class
 };
+
+
+#define ERRARG(x) x.arg(CRANBERRY_FUNC, name())
 
 
 ////////////////////////////////////////////////////////////////////////////////

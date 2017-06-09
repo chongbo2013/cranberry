@@ -31,14 +31,8 @@
 CRANBERRY_USING_NAMESPACE
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Constants
-////////////////////////////////////////////////////////////////////////////////
-namespace
-{
-const QString e_01("%0 [%1] - The given render target is invalid.");
-const QString e_02("%0 [%1] - There is no default shader program.");
-}
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - The given render target is invalid.")
+CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - There is no default shader program.")
 
 
 IRenderable::IRenderable()
@@ -69,7 +63,7 @@ bool IRenderable::create(Window* renderTarget)
         // TODO: Uncomment as soon as Window was coded.
         //if ((renderTarget = Window::activeWindow()) == nullptr)
         //{
-        //    return cranError(e_01.arg(CRANBERRY_FUNC, m_name));
+        //    return cranError(ERRARG(e_01));
         //}
     }
 
@@ -84,8 +78,15 @@ bool IRenderable::create(Window* renderTarget)
 
 void IRenderable::destroy()
 {
+    //m_renderTarget->makeCurrent();
     m_emitter.emitDestroyed();
     delete m_customProgram;
+}
+
+
+Window* IRenderable::renderTarget() const
+{
+    return m_renderTarget;
 }
 
 
@@ -93,7 +94,7 @@ OpenGLShader* IRenderable::shaderProgram() const
 {
     if (Q_UNLIKELY(m_defaultProgram == nullptr))
     {
-        cranError(e_02.arg(CRANBERRY_FUNC, m_name));
+        cranError(ERRARG(e_02));
         return nullptr;
     }
 
