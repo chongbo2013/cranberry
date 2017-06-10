@@ -11,7 +11,7 @@
 ## GENERAL SETTINGS
 ##
 ################################################################################
-QT             +=       widgets xml
+QT             +=       widgets gamepad xml
 CONFIG         +=       c++11
 DEFINES        +=       CRANBERRY_BUILD
 TEMPLATE        =       lib
@@ -63,8 +63,16 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/Enumerations.hpp \
                     include/Cranberry/System/Emitters/RenderableEmitter.hpp \
                     include/Cranberry/System/Emitters/TransformableEmitter.hpp \
-    include/Cranberry/Graphics/Base/ITexture.hpp \
-    include/Cranberry/OpenGL/OpenGLDefaultShaders.hpp
+                    include/Cranberry/Graphics/Base/ITexture.hpp \
+                    include/Cranberry/OpenGL/OpenGLDefaultShaders.hpp \
+                    include/Cranberry/Input/KeyReleaseEvent.hpp \
+                    include/Cranberry/Input/KeyboardState.hpp \
+                    include/Cranberry/Input/MouseMoveEvent.hpp \
+                    include/Cranberry/Input/MouseReleaseEvent.hpp \
+                    include/Cranberry/Input/MouseState.hpp \
+                    include/Cranberry/Input/GamepadReleasedEvent.hpp \
+                    include/Cranberry/Input/Enumerations.hpp \
+                    include/Cranberry/Input/GamepadState.hpp
 
 
 ################################################################################
@@ -79,8 +87,15 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
                     src/Graphics/Base/IRenderable.cpp \
                     src/Graphics/Base/ITransformable.cpp \
-    src/OpenGL/OpenGLDefaultShaders.cpp \
-    src/Graphics/Base/ITexture.cpp
+                    src/OpenGL/OpenGLDefaultShaders.cpp \
+                    src/Graphics/Base/ITexture.cpp \
+                    src/Input/KeyReleaseEvent.cpp \
+                    src/Input/KeyboardState.cpp \
+                    src/Input/MouseMoveEvent.cpp \
+                    src/Input/MouseReleaseEvent.cpp \
+                    src/Input/MouseState.cpp \
+                    src/Input/GamepadReleasedEvent.cpp \
+    src/Input/GamepadState.cpp
 
 ################################################################################
 ## OUTPUT
