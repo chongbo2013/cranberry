@@ -72,7 +72,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/MouseState.hpp \
                     include/Cranberry/Input/GamepadReleasedEvent.hpp \
                     include/Cranberry/Input/Enumerations.hpp \
-                    include/Cranberry/Input/GamepadState.hpp
+                    include/Cranberry/Input/GamepadState.hpp \
+                    include/Cranberry/Window/WindowSettings.hpp
 
 
 ################################################################################
@@ -95,7 +96,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/MouseReleaseEvent.cpp \
                     src/Input/MouseState.cpp \
                     src/Input/GamepadReleasedEvent.cpp \
-    src/Input/GamepadState.cpp
+                    src/Input/GamepadState.cpp \
+                    src/Window/WindowSettings.cpp
 
 ################################################################################
 ## OUTPUT
