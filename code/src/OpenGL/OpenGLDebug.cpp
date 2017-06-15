@@ -36,12 +36,13 @@ void priv::GLDebug::print(
         std::string expr,
         std::string file,
         std::string func,
-        long long line)
+        long long line
+        )
 {
     auto* gl = QOpenGLContext::currentContext()->functions();
     if (gl == nullptr)
     {
-        cranError("No active OpenGL context.");
+        cranError("OpenGLDebug: No active OpenGL context.");
         return;
     }
 

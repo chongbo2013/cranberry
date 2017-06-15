@@ -97,7 +97,7 @@ private:
 /// is pressed.
 ///
 /// \code
-/// void onMousePressed(const MouseState& mouse)
+/// void onMouseButtonDown(const MouseState& mouse)
 /// {
 ///     if (mouse.isButtonDown(Qt::LeftButton))
 ///     {
