@@ -37,28 +37,28 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 /// Holds the Gamepad plus the Gamepad-Button recently released.
 ///
-/// \class GamepadReleasedEvent
+/// \class GamepadReleaseEvent
 /// \author Nicolas Kogler
 /// \date June 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_INPUT_EXPORT GamepadReleasedEvent
+class CRANBERRY_INPUT_EXPORT GamepadReleaseEvent
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(GamepadReleasedEvent)
-    CRANBERRY_DEFAULT_COPY(GamepadReleasedEvent)
-    CRANBERRY_DEFAULT_MOVE(GamepadReleasedEvent)
+    CRANBERRY_DEFAULT_DTOR(GamepadReleaseEvent)
+    CRANBERRY_DEFAULT_COPY(GamepadReleaseEvent)
+    CRANBERRY_DEFAULT_MOVE(GamepadReleaseEvent)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Constructs a GamepadReleasedEvent with the gamepad that sent it and
+    /// Constructs a GamepadReleaseEvent with the gamepad that sent it and
     /// the gamepad button that was recently released.
     ///
     /// \param pad Associated gamepad.
     /// \param button Released button.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    GamepadReleasedEvent(QGamepad* pad, GamepadButton button);
+    GamepadReleaseEvent(QGamepad* pad, GamepadButton button);
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -90,14 +90,14 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class GamepadReleasedEvent
+/// \class GamepadReleaseEvent
 /// \ingroup Input
 ///
-/// Use the convenient GamepadReleasedEvent::wasReleased() event to determine
+/// Use the convenient GamepadReleaseEvent::wasReleased() event to determine
 /// whether a gamepad button was released.
 ///
 /// \code
-/// void onGamepadButtonReleased(const GamepadReleasedEvent& event)
+/// void onGamepadButtonRelease(const GamepadReleaseEvent& event)
 /// {
 ///     if (event.wasReleased(cran::GamepadButtonA)
 ///     {

@@ -20,7 +20,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Input/GamepadReleasedEvent.hpp>
+#include <Cranberry/Input/GamepadReleaseEvent.hpp>
 
 // Qt headers
 #include <QGamepad>
@@ -29,20 +29,20 @@
 CRANBERRY_USING_NAMESPACE
 
 
-GamepadReleasedEvent::GamepadReleasedEvent(QGamepad* pad, GamepadButton button)
+GamepadReleaseEvent::GamepadReleaseEvent(QGamepad* pad, GamepadButton button)
     : m_pad(pad)
     , m_button(button)
 {
 }
 
 
-QGamepad* GamepadReleasedEvent::gamepad() const
+QGamepad* GamepadReleaseEvent::gamepad() const
 {
     return m_pad;
 }
 
 
-bool GamepadReleasedEvent::wasReleased(GamepadButton button) const
+bool GamepadReleaseEvent::wasReleased(GamepadButton button) const
 {
     return m_button == button;
 }
