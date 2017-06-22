@@ -204,6 +204,9 @@ private:
 /// object.setShaderProgram(shader);
 /// \endcode
 ///
+/// The program will automatically be linked as soon as both shader types have
+/// been specified successfully.
+///
 /// How to design the shaders? It is safe to use GLSL code that is
 /// equivalent to shader code from OpenGL version 3.0 to 3.3:
 ///

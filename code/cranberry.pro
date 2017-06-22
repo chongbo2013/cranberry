@@ -44,7 +44,7 @@ gcc {
 ##
 ################################################################################
 INCLUDEPATH         +=      include
-#RESOURCES           +=      resources/shader.qrc
+RESOURCES           +=      resources/glsl.qrc
 
 
 ################################################################################
@@ -74,7 +74,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadState.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
-    include/Cranberry/Input/GamepadReleaseEvent.hpp
+                    include/Cranberry/Input/GamepadReleaseEvent.hpp
 
 
 ################################################################################
@@ -98,8 +98,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/MouseState.cpp \
                     src/Input/GamepadState.cpp \
                     src/Window/WindowSettings.cpp \
-    src/Window/Window.cpp \
-    src/Input/GamepadReleaseEvent.cpp
+                    src/Window/Window.cpp \
+                    src/Input/GamepadReleaseEvent.cpp
 
 ################################################################################
 ## OUTPUT

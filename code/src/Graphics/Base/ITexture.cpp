@@ -22,8 +22,10 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/ITexture.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
+#include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 // Qt headers
 #include <QOpenGLBuffer>
@@ -137,9 +139,7 @@ bool ITexture::createTexture(const QImage& img)
 
 void ITexture::initializeData()
 {
-    // TODO: Uncomment when cran::Window was created.
-    //setDefaultShaderProgram()
-
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     setSize((float) m_texture->width(), (float) m_texture->height());
     setSourceRectangle({ 0.f, 0.f, width(), height() });
     setOrigin({ width() / 2.f, height() / 2.f });
@@ -187,11 +187,10 @@ void ITexture::render()
         cranError(ERRARG(e_04));
         return;
     }
-    // TODO: Uncomment when cran::Window was created.
-    //else if (!renderTarget()->isCurrent())
-    //{
-    //    renderTarget()->makeCurrent();
-    //}
+    else if (QOpenGLContext::currentContext() != renderTarget()->context())
+    {
+        renderTarget()->makeCurrent();
+    }
 
     bindObjects();
     writeVertices();
@@ -204,9 +203,8 @@ void ITexture::render()
 
 QMatrix4x4 ITexture::buildMatrix()
 {
-    // TODO: Uncomment when cran::Window was created.
-    float fw = /*renderTarget()->width();*/ 0;
-    float fh = /*renderTarget()->height();*/ 0;
+    float fw = static_cast<float>(renderTarget()->width());
+    float fh = static_cast<float>(renderTarget()->height());
 
     // TODO: Not cheap - maybe optimize this?!
     QMatrix4x4 proj, tran, rot, scale, orig, norig;
@@ -225,6 +223,11 @@ QMatrix4x4 ITexture::buildMatrix()
 
 void ITexture::bindObjects()
 {
+    // Binds the texture to unit 0.
+    // TODO: Actually support blending between two textures!
+    glDebug(gl->glActiveTexture(GL_TEXTURE0));
+    glDebug(m_texture->bind());
+
     glDebug(m_vertexBuffer->bind());
     glDebug(m_indexBuffer->bind());
     glDebug(shaderProgram()->program()->bind());
@@ -233,6 +236,7 @@ void ITexture::bindObjects()
 
 void ITexture::releaseObjects()
 {
+    glDebug(m_texture->release());
     glDebug(m_vertexBuffer->release());
     glDebug(m_indexBuffer->release());
     glDebug(shaderProgram()->program()->release());
@@ -258,10 +262,10 @@ void ITexture::modifyProgram()
 {
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
-    glDebug(program->setUniformValue("uniTexture", GL_ZERO));
-    glDebug(program->setUniformValue("uniMatrix", buildMatrix()));
-    glDebug(program->setUniformValue("uniOpacity", opacity()));
-    glDebug(program->setUniformValue("uniBlend", (uint) m_blendMode));
+    glDebug(program->setUniformValue("u_tex", GL_ZERO));
+    glDebug(program->setUniformValue("u_mvp", buildMatrix()));
+    glDebug(program->setUniformValue("u_opac", opacity()));
+    glDebug(program->setUniformValue("u_mode", (uint) m_blendMode));
 
     glDebug(program->enableAttributeArray(priv::TextureVertex::xyzAttrib()));
     glDebug(program->enableAttributeArray(priv::TextureVertex::uvAttrib()));
@@ -302,11 +306,6 @@ void ITexture::modifyAttribs()
 
 void ITexture::drawElements()
 {
-    // Binds the texture to unit 0.
-    // TODO: Actually support blending between two textures!
-    glDebug(gl->glActiveTexture(GL_TEXTURE0));
-    glDebug(m_texture->bind());
-
     // Renders the elements specified by the index buffer.
     glDebug(gl->glDrawElements(
                 GL_TRIANGLES,

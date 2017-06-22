@@ -23,6 +23,7 @@
 #include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 // Qt headers
 #include <QOpenGLFunctions>
@@ -60,15 +61,14 @@ bool IRenderable::create(Window* renderTarget)
 {
     if (renderTarget == nullptr)
     {
-        // TODO: Uncomment as soon as Window was coded.
-        //if ((renderTarget = Window::activeWindow()) == nullptr)
-        //{
-        //    return cranError(ERRARG(e_01));
-        //}
+        if ((renderTarget = Window::activeWindow()) == nullptr)
+        {
+            return cranError(ERRARG(e_01));
+        }
     }
 
     // TODO: Uncomment as soon as Window was coded.
-    //gl = renderTarget->context()->functions();
+    gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
     m_emitter.emitCreated();
 
