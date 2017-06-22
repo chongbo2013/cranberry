@@ -23,6 +23,8 @@
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
+#include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
+#include <Cranberry/OpenGL/OpenGLShader.hpp>
 
 // Qt headers
 #include <QOpenGLFunctions>
@@ -33,6 +35,7 @@ CRANBERRY_USING_NAMESPACE
 
 
 CRANBERRY_GLOBAL_VAR(Window*, g_window)
+CRANBERRY_CONST_VAR(QString, c_path, ":/cb/glsl/%0_%1.glsl")
 CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT|
                                        GL_STENCIL_BUFFER_BIT|
                                        GL_DEPTH_BUFFER_BIT)
@@ -128,7 +131,32 @@ void Window::initializeGL()
     glDebug(m_gl->glEnable(GL_MULTISAMPLE));
     glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
 
+    // Loads some default shader programs.
+    OpenGLDefaultShaders::add("cb.glsl.texture", loadShader("texture"));
+
     onInit();
+}
+
+
+void Window::destroyGL()
+{
+    // Unloads all the default shader programs.
+    OpenGLDefaultShaders::remove("cb.glsl.texture");
+
+    onExit();
+}
+
+
+OpenGLShader* Window::loadShader(const char* name)
+{
+    QString vpath = c_path.arg(name, "vert");
+    QString fpath = c_path.arg(name, "frag");
+    OpenGLShader* s = new OpenGLShader;
+
+    s->setVertexShaderFromFile(vpath);
+    s->setFragmentShaderFromFile(fpath);
+
+    return s;
 }
 
 
@@ -255,7 +283,7 @@ bool Window::event(QEvent* event)
     if (event->type() == QEvent::Close)
     {
         makeCurrent();
-        onExit();
+        destroyGL();
         doneCurrent();
     }
     else if (event->type() == QEvent::Show)
