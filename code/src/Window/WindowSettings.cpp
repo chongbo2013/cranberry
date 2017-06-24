@@ -67,6 +67,12 @@ bool WindowSettings::useVerticalSync() const
 }
 
 
+const QString& WindowSettings::title() const
+{
+    return m_title;
+}
+
+
 const QSize& WindowSettings::size() const
 {
     return m_size;
@@ -106,6 +112,12 @@ void WindowSettings::setDoubleBuffered(bool value)
 void WindowSettings::setVerticalSync(bool value)
 {
     m_useVerticalSync = value;
+}
+
+
+void WindowSettings::setTitle(const QString& title)
+{
+    m_title = title;
 }
 
 
