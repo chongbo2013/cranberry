@@ -48,6 +48,7 @@ ITexture::ITexture()
     : IRenderable()
     , ITransformable()
     , m_blendMode(BlendNone)
+    , m_effect(EffectNone)
     , m_texture(nullptr)
     , m_vertexBuffer(nullptr)
     , m_indexBuffer(nullptr)
@@ -266,6 +267,7 @@ void ITexture::modifyProgram()
     glDebug(program->setUniformValue("u_mvp", buildMatrix()));
     glDebug(program->setUniformValue("u_opac", opacity()));
     glDebug(program->setUniformValue("u_mode", (uint) m_blendMode));
+    glDebug(program->setUniformValue("u_effect", (uint) m_effect));
 
     glDebug(program->enableAttributeArray(priv::TextureVertex::xyzAttrib()));
     glDebug(program->enableAttributeArray(priv::TextureVertex::uvAttrib()));
@@ -366,6 +368,12 @@ void ITexture::setBlendColor(
 void ITexture::setBlendMode(BlendModes modes)
 {
     m_blendMode = modes;
+}
+
+
+void ITexture::setEffect(Effect effect)
+{
+    m_effect = effect;
 }
 
 

@@ -32,8 +32,11 @@ out vec4 o_pixel;
 uniform sampler2D u_tex;
 uniform float u_opac;
 uniform int u_mode;
+uniform int u_effect;
 
 // Functions
+vec4 applyBlending(vec4);
+vec4 applyEffects(vec4);
 vec4 applyMultiply(vec4, vec4);
 vec4 applyScreen(vec4, vec4);
 vec4 applyOverlay(vec4, vec4);
@@ -43,6 +46,10 @@ vec4 applySubtract(vec4, vec4);
 vec4 applyDiff(vec4, vec4);
 vec4 applyDarken(vec4, vec4);
 vec4 applyLighten(vec4, vec4);
+vec4 applyGrayscale(vec4);
+vec4 applySepia(vec4);
+vec4 applyInvert(vec4);
+vec4 applySilhouette(vec4);
 
 
 void main()
@@ -50,28 +57,35 @@ void main()
     vec4 vecOpac = vec4(1.0, 1.0, 1.0, u_opac);
     vec4 vecPixel = texture(u_tex, o_uv);
 
-    // Apply blend modes
-    if ((u_mode & 0x0001) != 0) { // Multiply
-        vecPixel = applyMultiply(vecPixel, o_rgba);
-    } if ((u_mode & 0x0002) != 0) { // Screen
-        vecPixel = applyScreen(vecPixel, o_rgba);
-    } if ((u_mode & 0x0004) != 0) { // Overlay
-        vecPixel = applyOverlay(vecPixel, o_rgba);
-    } if ((u_mode & 0x0008) != 0) { // Divide
-        vecPixel = applyDivide(vecPixel, o_rgba);
-    } if ((u_mode & 0x0010) != 0) { // Add
-        vecPixel = applyAdd(vecPixel, o_rgba);
-    } if ((u_mode & 0x0020) != 0) { // Subtract
-        vecPixel = applySubtract(vecPixel, o_rgba);
-    } if ((u_mode & 0x0040) != 0) { // Difference
-        vecPixel = applyDiff(vecPixel, o_rgba);
-    } if ((u_mode & 0x0080) != 0) { // Darken
-        vecPixel = applyDarken(vecPixel, o_rgba);
-    } if ((u_mode & 0x0100) != 0) { // Lighten
-        vecPixel = applyLighten(vecPixel, o_rgba);
-    }
+    vecPixel = applyBlending(vecPixel);
+    vecPixel = applyEffects(vecPixel);
 
     o_pixel = vecPixel * vecOpac;
+}
+
+
+vec4 applyBlending(vec4 p)
+{
+    if ((u_mode & 0x0001) != 0) return applyMultiply(p, o_rgba);
+    if ((u_mode & 0x0002) != 0) return applyScreen(p, o_rgba);
+    if ((u_mode & 0x0004) != 0) return applyOverlay(p, o_rgba);
+    if ((u_mode & 0x0008) != 0) return applyDivide(p, o_rgba);
+    if ((u_mode & 0x0010) != 0) return applyAdd(p, o_rgba);
+    if ((u_mode & 0x0020) != 0) return applySubtract(p, o_rgba);
+    if ((u_mode & 0x0040) != 0) return applyDiff(p, o_rgba);
+    if ((u_mode & 0x0080) != 0) return applyDarken(p, o_rgba);
+    if ((u_mode & 0x0100) != 0) return applyLighten(p, o_rgba);
+    return p;
+}
+
+
+vec4 applyEffects(vec4 p)
+{
+    if (u_effect == 1) return applyGrayscale(p);
+    if (u_effect == 2) return applySepia(p);
+    if (u_effect == 3) return applyInvert(p);
+    if (u_effect == 4) return applySilhouette(p);
+    return p;
 }
 
 
@@ -154,4 +168,35 @@ vec4 applyLighten(vec4 pixel, vec4 blend)
                 max(pixel.g, blend.g),
                 max(pixel.b, blend.b),
                 max(pixel.a, blend.a));
+}
+
+
+vec4 applyGrayscale(vec4 p)
+{
+    float gray = p.r * 0.3 + p.g + 0.59 + p.b * 0.11;
+    return vec4(gray, gray, gray, p.a);
+}
+
+
+vec4 applySepia(vec4 p)
+{
+    float r = p.r * 0.393 + p.g * 0.769 + p.b * 0.189;
+    float g = p.g * 0.349 + p.g * 0.686 + p.b * 0.168;
+    float b = p.b * 0.272 + p.g * 0.534 + p.b * 0.131;
+    return vec4(r, g, b, p.a);
+}
+
+
+vec4 applyInvert(vec4 p)
+{
+    float r = 1.0 - p.r;
+    float g = 1.0 - p.g;
+    float b = 1.0 - p.b;
+    return vec4(r, g, b, p.a);
+}
+
+
+vec4 applySilhouette(vec4 p)
+{
+    return vec4(0, 0, 0, p.a);
 }

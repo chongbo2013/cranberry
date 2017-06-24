@@ -53,6 +53,21 @@ enum BlendMode
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/// This enum specifies the image effects within cranberry.
+///
+/// \enum Effect
+///
+////////////////////////////////////////////////////////////////////////////////
+enum Effect
+{
+    EffectNone,
+    EffectGrayscale,
+    EffectSepia,
+    EffectInvert,
+    EffectSilhouette
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /// This enum specifies the movement directions within cranberry. Multiple move
 /// directions can also be combined by using the logical OR operator.
 ///

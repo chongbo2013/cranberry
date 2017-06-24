@@ -343,6 +343,7 @@ bool Window::event(QEvent* event)
 #ifdef QT_DEBUG
 void Window::calculateFramerate()
 {
+    const static QString format = "%0 (%1 fps)";
     double ms = m_time.deltaTime() * 1000.0;
     double fps = 1000.0 / ms;
 

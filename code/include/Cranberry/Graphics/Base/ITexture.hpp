@@ -167,6 +167,14 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void setBlendMode(BlendModes modes);
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the effect to render this object with.
+    ///
+    /// \param effect EffectNone does not modify the image.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setEffect(Effect effect);
+
 
 protected:
 
@@ -197,6 +205,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     priv::QuadVertices  m_vertices;
     BlendModes          m_blendMode;
+    Effect              m_effect;
     QOpenGLTexture*     m_texture;
     QOpenGLBuffer*      m_vertexBuffer;
     QOpenGLBuffer*      m_indexBuffer;
