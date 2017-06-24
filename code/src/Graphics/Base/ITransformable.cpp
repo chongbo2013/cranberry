@@ -68,6 +68,7 @@ ITransformable::ITransformable()
     , m_angleZ(0.f)
     , m_scaleX(1.f)
     , m_scaleY(1.f)
+    , m_opacity(1.f)
     , m_originX(0.f)
     , m_originY(0.f)
 {
