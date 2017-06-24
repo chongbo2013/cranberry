@@ -52,13 +52,6 @@ class Vertex
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(Vertex)
-    CRANBERRY_DEFAULT_COPY(Vertex)
-    CRANBERRY_DEFAULT_MOVE(Vertex)
-
-    Vertex();
-
-
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the position of the vertex.
     ///
@@ -118,7 +111,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    std::array<float, 7> m_fields;
+    float m_fields[7] = { 0, 0, 0, 0, 0, 0, 1 };
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -134,13 +127,6 @@ private:
 class TextureVertex
 {
 public:
-
-    CRANBERRY_DEFAULT_DTOR(TextureVertex)
-    CRANBERRY_DEFAULT_COPY(TextureVertex)
-    CRANBERRY_DEFAULT_MOVE(TextureVertex)
-
-    TextureVertex();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the position of the vertex.
@@ -210,7 +196,7 @@ public:
     static constexpr uint  xyzLength()  { return 3; }
     static constexpr uint  uvLength()   { return 2; }
     static constexpr uint  rgbaLength() { return 4; }
-    static constexpr uint  size()       { return 9; }
+    static constexpr uint  size()       { return sizeof(float) * 9; }
     static constexpr void* xyzOffset()  { return (void*) (nullptr); }
     static constexpr void* uvOffset()   { return (void*) (sizeof(float) * 3); }
     static constexpr void* rgbaOffset() { return (void*) (sizeof(float) * 5); }
@@ -221,7 +207,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    std::array<float, 9> m_fields;
+     float m_fields[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 1 };
 };
 
 

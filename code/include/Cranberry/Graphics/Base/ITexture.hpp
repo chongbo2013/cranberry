@@ -174,6 +174,7 @@ protected:
     QOpenGLTexture* texture() const;
     QOpenGLBuffer* buffer() const;
     void requestUpdate();
+    virtual void initializeData();
 
 
 private:
@@ -183,7 +184,6 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     bool createBuffers();
     bool createTexture(const QImage& img);
-    void initializeData();
     auto buildMatrix() -> QMatrix4x4;
     void bindObjects();
     void releaseObjects();
