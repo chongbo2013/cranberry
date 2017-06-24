@@ -73,8 +73,6 @@ OpenGLShader::~OpenGLShader()
         }
 
         delete m_program;
-        delete m_vertex;
-        delete m_fragment;
     }
 }
 
