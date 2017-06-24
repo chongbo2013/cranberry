@@ -46,7 +46,8 @@ bool OpenGLDefaultShaders::add(const QString& name, OpenGLShader* program)
 bool OpenGLDefaultShaders::remove(const QString& name)
 {
     if (!g_programs.contains(name)) return false;
-    delete g_programs.take(name);
+    auto* program = g_programs.take(name);
+    delete program;
     return true;
 }
 
