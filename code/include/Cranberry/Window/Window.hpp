@@ -178,7 +178,12 @@ private:
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
     OpenGLShader* loadShader(const char* name);
+    void parseSettings();
+    void loadDefaultShaders();
     void destroyGL();
+#ifdef QT_DEBUG
+    void calculateFramerate();
+#endif
 
     ////////////////////////////////////////////////////////////////////////////
     // Members

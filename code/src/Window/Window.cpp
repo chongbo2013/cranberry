@@ -28,6 +28,7 @@
 
 // Qt headers
 #include <QOpenGLFunctions>
+#include <QOpenGLVertexArrayObject>
 #include <QtEvents>
 
 
@@ -109,6 +110,7 @@ QOpenGLFunctions* Window::functions() const
 void Window::setSettings(const WindowSettings& settings)
 {
     m_settings = settings;
+    parseSettings();
 }
 
 
@@ -120,21 +122,60 @@ Window* Window::activeWindow()
 
 void Window::initializeGL()
 {
-    const QColor& cc = m_settings.clearColor();
-
     m_gl = context()->functions();
     m_gl->initializeOpenGLFunctions();
 
+    const QColor& cc = m_settings.clearColor();
     glDebug(m_gl->glClearColor(cc.redF(), cc.greenF(), cc.blueF(), cc.alphaF()));
     glDebug(m_gl->glEnable(GL_BLEND));
     glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     glDebug(m_gl->glEnable(GL_MULTISAMPLE));
     glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
 
-    // Loads some default shader programs.
-    OpenGLDefaultShaders::add("cb.glsl.texture", loadShader("texture"));
+    // Create a single VAO which will be bound all the time.
+    auto* vao = new QOpenGLVertexArrayObject(this);
+    if (!vao->create())
+    {
+        cranError("Window: OpenGL VAOs are not supported.");
+    }
+    else
+    {
+        vao->bind();
+    }
 
+    loadDefaultShaders();
     onInit();
+}
+
+
+void Window::parseSettings()
+{
+    QSurfaceFormat sf = format();
+    sf.setSwapInterval((m_settings.useVerticalSync()) ? 1 : 0);
+    sf.setSwapBehavior((m_settings.isDoubleBuffered())
+                       ? QSurfaceFormat::DoubleBuffer
+                       : QSurfaceFormat::SingleBuffer
+                       );
+    setFormat(sf);
+    setTitle(m_settings.title());
+    setPosition(m_settings.position());
+    resize(m_settings.size());
+
+    if (!m_settings.isResizable())
+    {
+        setMinimumSize(m_settings.size());
+        setMaximumSize(m_settings.size());
+    }
+    if (m_settings.isFullscreen())
+    {
+        setWindowState(Qt::WindowFullScreen);
+    }
+}
+
+
+void Window::loadDefaultShaders()
+{
+    OpenGLDefaultShaders::add("cb.glsl.texture", loadShader("texture"));
 }
 
 
@@ -171,6 +212,10 @@ void Window::paintGL()
 
     // Updating & rendering.
     m_time.update();
+#ifdef QT_DEBUG
+    calculateFramerate();
+#endif
+
     onUpdate(m_time);
     glDebug(m_gl->glClear(c_clearMask));
     onRender();
@@ -293,3 +338,14 @@ bool Window::event(QEvent* event)
 
     return QOpenGLWindow::event(event);
 }
+
+
+#ifdef QT_DEBUG
+void Window::calculateFramerate()
+{
+    double ms = m_time.deltaTime() * 1000.0;
+    double fps = 1000.0 / ms;
+
+    setTitle(format.arg(m_settings.title(), QString::number(fps)));
+}
+#endif
