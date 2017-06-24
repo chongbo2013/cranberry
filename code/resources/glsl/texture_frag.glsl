@@ -107,23 +107,14 @@ vec4 applyScreen(vec4 pixel, vec4 blend)
 
 vec4 applyOverlay(vec4 pixel, vec4 blend)
 {
-    // Red channel
-    if (pixel.r < 0.5)
-        pixel.r = 2 * pixel.r * blend.r;
-    else
-        pixel.r = 1 - (2 * (1 - pixel.r) * (1 - blend.r));
+    if (pixel.r < 0.5) pixel.r = 2 * pixel.r * blend.r;
+    else pixel.r = 1 - (2 * (1 - pixel.r) * (1 - blend.r));
 
-    // Green channel
-    if (pixel.g < 0.5)
-        pixel.g = 2 * pixel.g * blend.g;
-    else
-        pixel.g = 1 - (2 * (1 - pixel.g) * (1 - blend.g));
+    if (pixel.g < 0.5) pixel.g = 2 * pixel.g * blend.g;
+    else pixel.g = 1 - (2 * (1 - pixel.g) * (1 - blend.g));
 
-    // Blue channel
-    if (pixel.b < 0.5)
-        pixel.b = 2 * pixel.b * blend.b;
-    else
-        pixel.b = 1 - (2 * (1 - pixel.b) * (1 - pixel.b));
+    if (pixel.b < 0.5) pixel.b = 2 * pixel.b * blend.b;
+    else pixel.b = 1 - (2 * (1 - pixel.b) * (1 - pixel.b));
 
     return pixel;
 }
