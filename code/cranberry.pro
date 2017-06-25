@@ -77,6 +77,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
+    include/Cranberry/Graphics/Base/TextureAtlas.hpp
 
 
 ################################################################################
@@ -103,6 +104,7 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
                     src/Window/Window.cpp \
+    src/Graphics/Base/TextureAtlas.cpp
 
 ################################################################################
 ## OUTPUT

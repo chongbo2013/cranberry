@@ -176,6 +176,18 @@ public:
     void setEffect(Effect effect);
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the maximum texture size on the current hardware. This is
+    /// needed to pack multiple textures into a single one, while trying to
+    /// create as big textures as possible.
+    ///
+    /// \note Needs an active OpenGL context.
+    /// \returns the maximum size (in pixels).
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    static int maxSize();
+
+
 protected:
 
     priv::QuadVertices& vertices();
