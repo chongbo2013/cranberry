@@ -399,3 +399,16 @@ void ITexture::requestUpdate()
 {
     m_update = true;
 }
+
+
+int ITexture::maxSize()
+{
+    if (QOpenGLContext::currentContext() == nullptr) return 0;
+
+    GLint texSize;
+    QOpenGLContext::currentContext()
+            ->functions()
+            ->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
+
+    return texSize;
+}
