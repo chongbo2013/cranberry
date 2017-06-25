@@ -178,7 +178,7 @@ public:
 
 protected:
 
-    const priv::QuadVertices& vertices() const;
+    priv::QuadVertices& vertices();
     QOpenGLTexture* texture() const;
     QOpenGLBuffer* buffer() const;
     void requestUpdate();

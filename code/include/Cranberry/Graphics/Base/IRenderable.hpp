@@ -161,7 +161,7 @@ public:
     /// \returns a pointer to the emitter.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    RenderableEmitter* emitter();
+    RenderableEmitter* renderableEmitter();
 
 
 protected:

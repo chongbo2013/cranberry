@@ -281,7 +281,7 @@ public:
     /// \returns a pointer to the emitter of this object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TransformableEmitter* signal();
+    TransformableEmitter* transformableEmitter();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the move speed of the object.
@@ -532,6 +532,8 @@ private:
     void updateRotate(double delta);
     void updateScale(double delta);
     void updateFade(double delta);
+    void checkMove();
+    void checkScale();
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
@@ -545,9 +547,11 @@ private:
     ScaleDirection       m_scaleDirY;
     FadeDirection        m_fadeDir;
     RotateAxes           m_rotateAxes;
-    bool                 m_isMoving;
+    bool                 m_isMovingX;
+    bool                 m_isMovingY;
     bool                 m_isRotating;
-    bool                 m_isScaling;
+    bool                 m_isScalingX;
+    bool                 m_isScalingY;
     bool                 m_isFading;
     float                m_speedMoveX;
     float                m_speedMoveY;

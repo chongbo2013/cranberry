@@ -126,7 +126,7 @@ void IRenderable::setName(const QString& name)
 }
 
 
-RenderableEmitter* IRenderable::emitter()
+RenderableEmitter* IRenderable::renderableEmitter()
 {
     return &m_emitter;
 }

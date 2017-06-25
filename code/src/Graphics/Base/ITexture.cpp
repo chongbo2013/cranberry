@@ -218,7 +218,7 @@ QMatrix4x4 ITexture::buildMatrix()
     orig.translate(origin());
     norig.translate(origin() * -1);
 
-    return proj * tran * orig * rot * norig * scale;
+    return proj * tran * orig * rot * norig * orig * scale * norig;
 }
 
 
@@ -377,7 +377,7 @@ void ITexture::setEffect(Effect effect)
 }
 
 
-const priv::QuadVertices& ITexture::vertices() const
+priv::QuadVertices& ITexture::vertices()
 {
     return m_vertices;
 }
