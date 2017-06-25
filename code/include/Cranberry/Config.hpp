@@ -199,6 +199,8 @@
     #define noexcept
 #endif
 
+#define ERRARG(x) x.arg(CRANBERRY_FUNC, name())
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \ingroup System

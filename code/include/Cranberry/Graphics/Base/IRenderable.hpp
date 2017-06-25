@@ -193,9 +193,6 @@ private:
 };
 
 
-#define ERRARG(x) x.arg(CRANBERRY_FUNC, name())
-
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \class IRenderable
 /// \ingroup Graphics

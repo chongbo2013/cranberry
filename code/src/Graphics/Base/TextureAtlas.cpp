@@ -74,6 +74,12 @@ TextureAtlas::TextureAtlas(int size, Window* renderTarget)
 }
 
 
+TextureAtlas::~TextureAtlas()
+{
+    m_texture->destroy();
+}
+
+
 bool TextureAtlas::insert(const QImage& img)
 {
     // Finds a fit.

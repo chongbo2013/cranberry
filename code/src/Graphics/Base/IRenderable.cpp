@@ -67,7 +67,6 @@ bool IRenderable::create(Window* renderTarget)
         }
     }
 
-    // TODO: Uncomment as soon as Window was coded.
     gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
     m_emitter.emitCreated();

@@ -595,7 +595,7 @@ private:
 /// \code
 /// void start()
 /// {
-///     connect(sprite->signal(), SIGNAL(stoppedMoving()), this, SLOT(stop()));
+///     connect(sprite->transformableEmitter(), SIGNAL(stoppedMoving()), this, SLOT(stop()));
 ///     sprite->startMoving(100, 80);
 /// }
 ///
