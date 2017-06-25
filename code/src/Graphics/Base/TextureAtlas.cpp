@@ -108,6 +108,24 @@ bool TextureAtlas::canInsert() const
 }
 
 
+const QRect& TextureAtlas::lastRectangle() const
+{
+    return m_used.last();
+}
+
+
+const QVector<QRect>& TextureAtlas::rectangles() const
+{
+    return m_used;
+}
+
+
+ITexture* TextureAtlas::texture() const
+{
+    return m_texture;
+}
+
+
 int TextureAtlas::score(int width, int height, const QRect& free)
 {
     return free.width() * free.height() - width * height;

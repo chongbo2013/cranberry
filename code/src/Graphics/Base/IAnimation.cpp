@@ -150,6 +150,12 @@ AnimationEmitter* IAnimation::animationEmitter()
 }
 
 
+void IAnimation::saveAtlas(TextureAtlas* atlas)
+{
+    m_atlases.append(atlas);
+}
+
+
 bool IAnimation::createInternal(
         const QVector<QImage>& frames,
         const QVector<qreal>& durations,
@@ -164,7 +170,8 @@ bool IAnimation::createInternal(
         }
     }
 
-    renderTarget->makeCurrent();
+    m_renderTarget = renderTarget;
+    m_renderTarget->makeCurrent();
 
     qint32 maxSize = ITexture::maxSize();
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget);
