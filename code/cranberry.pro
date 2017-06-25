@@ -55,16 +55,18 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Debug.hpp \
                     include/Cranberry/System/GameTime.hpp \
                     include/Cranberry/System/Random.hpp \
+                    include/Cranberry/System/Emitters/RenderableEmitter.hpp \
+                    include/Cranberry/System/Emitters/TransformableEmitter.hpp \
+                    include/Cranberry/System/Emitters/BackgroundEmitter.hpp \
                     include/Cranberry/OpenGL/OpenGLDebug.hpp \
                     include/Cranberry/OpenGL/OpenGLVertex.hpp \
                     include/Cranberry/OpenGL/OpenGLShader.hpp \
+                    include/Cranberry/OpenGL/OpenGLDefaultShaders.hpp \
                     include/Cranberry/Graphics/Base/IRenderable.hpp \
                     include/Cranberry/Graphics/Base/ITransformable.hpp \
-                    include/Cranberry/Graphics/Base/Enumerations.hpp \
-                    include/Cranberry/System/Emitters/RenderableEmitter.hpp \
-                    include/Cranberry/System/Emitters/TransformableEmitter.hpp \
                     include/Cranberry/Graphics/Base/ITexture.hpp \
-                    include/Cranberry/OpenGL/OpenGLDefaultShaders.hpp \
+                    include/Cranberry/Graphics/Base/Enumerations.hpp \
+                    include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Input/KeyReleaseEvent.hpp \
                     include/Cranberry/Input/KeyboardState.hpp \
                     include/Cranberry/Input/MouseMoveEvent.hpp \
@@ -72,9 +74,9 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/MouseState.hpp \
                     include/Cranberry/Input/Enumerations.hpp \
                     include/Cranberry/Input/GamepadState.hpp \
+                    include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
-                    include/Cranberry/Input/GamepadReleaseEvent.hpp
 
 
 ################################################################################
@@ -87,9 +89,10 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/OpenGL/OpenGLVertex.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
+                    src/OpenGL/OpenGLDefaultShaders.cpp \
                     src/Graphics/Base/IRenderable.cpp \
                     src/Graphics/Base/ITransformable.cpp \
-                    src/OpenGL/OpenGLDefaultShaders.cpp \
+                    src/Graphics/Background.cpp \
                     src/Graphics/Base/ITexture.cpp \
                     src/Input/KeyReleaseEvent.cpp \
                     src/Input/KeyboardState.cpp \
@@ -97,9 +100,9 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/MouseReleaseEvent.cpp \
                     src/Input/MouseState.cpp \
                     src/Input/GamepadState.cpp \
+                    src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
                     src/Window/Window.cpp \
-                    src/Input/GamepadReleaseEvent.cpp
 
 ################################################################################
 ## OUTPUT
