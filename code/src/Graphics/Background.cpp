@@ -57,6 +57,12 @@ bool Background::isScrolling() const
 }
 
 
+void Background::setScrollView(const QRectF& view)
+{
+    m_view = view;
+}
+
+
 void Background::setScrollPosition(const QVector2D& pos)
 {
     m_scrollX = pos.x();
@@ -206,11 +212,18 @@ void Background::prepareTexture()
 
 void Background::updateUVs()
 {
+    // Gathers the view.
+    float winX = (m_view.isNull()) ? 0.f : m_view.x();
+    float winY = (m_view.isNull()) ? 0.f : m_view.y();
+    float winW = (m_view.isNull()) ? renderTarget()->width()  : m_view.width();
+    float winH = (m_view.isNull()) ? renderTarget()->height() : m_view.height();
+
     // Calculates the amount of repeated images.
-    float winX = renderTarget()->width();
-    float winY = renderTarget()->height();
-    float repeatX = winX / texture()->width();
-    float repeatY = winY / texture()->height();
+    float repeatX = winW / texture()->width();
+    float repeatY = winH / texture()->height();
+
+    winW += winX;
+    winH += winY;
 
     // Calculates the texture coordinates.
     float uvX = m_scrollX / texture()->width();
@@ -219,10 +232,10 @@ void Background::updateUVs()
     float uvH = repeatY - uvY;
 
     // Modifies the vertices to fill the entire window.
-    vertices().at(0).xyz(0.f,  0.f,  0.f);
-    vertices().at(1).xyz(winX, 0.f,  0.f);
-    vertices().at(2).xyz(winX, winY, 0.f);
-    vertices().at(3).xyz(0.f,  winY, 0.f);
+    vertices().at(0).xyz(winX, winY, 0.f);
+    vertices().at(1).xyz(winW, winY, 0.f);
+    vertices().at(2).xyz(winW, winH, 0.f);
+    vertices().at(3).xyz(winX, winH, 0.f);
 
     // Applies the coordinates.
     vertices().at(0).uv(-uvX, -uvY);

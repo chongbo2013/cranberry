@@ -75,6 +75,16 @@ public:
     bool isScrolling() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the view in which the scrolling background should be shown.
+    /// By passing a null rectangle ["QRectF()"] the entire window will be
+    /// taken as view. By default, this is the entire window.
+    ///
+    /// \param view View in which to show background.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setScrollView(const QRectF& view);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Specifies the scroll position.
     ///
     /// \param pos Scroll position in pixels.
@@ -149,6 +159,7 @@ private:
     float             m_targetScrollX; ///< Target scroll pos X
     float             m_targetScrollY; ///< Target scroll pos Y
     bool              m_isScrolling;   ///< Is currently scrolling?
+    QRectF            m_view;          ///> Current view
     ScrollMode        m_scrollMode;    ///< Normal or Infinite?
     MoveDirections    m_scrollDir;     ///< Directions to move background in
     BackgroundEmitter m_emitter;       ///< Holds the signals for this object
