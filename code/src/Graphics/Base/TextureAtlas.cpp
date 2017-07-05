@@ -61,7 +61,9 @@ TextureAtlas::TextureAtlas(int size, Window* renderTarget)
     }
 
     tex->setSize(size, size);
-    tex->allocateStorage(QOpenGLTexture::RGBA, QOpenGLTexture::UInt8);
+    tex->setFormat(QOpenGLTexture::RGBA8_UNorm);
+    tex->allocateStorage();
+
     if (!tex->isStorageAllocated())
     {
         cranError("TextureAtlas: Texture storage could not be allocated.");
@@ -71,6 +73,8 @@ TextureAtlas::TextureAtlas(int size, Window* renderTarget)
     m_texture->create(tex, renderTarget);
     m_texId = tex->textureId();
     gl = renderTarget->functions();
+
+    m_free.push_back(QRect(0, 0, size, size));
 }
 
 
@@ -204,9 +208,9 @@ void TextureAtlas::split(const QRect& free, const QRect& used)
 void TextureAtlas::drawIntoTexture(QImage img, const QRect& src)
 {
     // Ensures the image is ARGB32.
-    if (img.format() != QImage::Format_ARGB32)
+    if (img.format() != QImage::Format_RGBA8888)
     {
-        img = img.convertToFormat(QImage::Format_ARGB32);
+        img = img.convertToFormat(QImage::Format_RGBA8888);
     }
 
     // Writes the new data into the texture.
