@@ -219,6 +219,14 @@ public:
     RotateDirection rotateDirectionZ() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the rotate mode.
+    ///
+    /// \returns the rotate mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    RotateMode rotateMode() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the X-scale direction of the object.
     ///
     /// \returns the X-scale direction.
@@ -341,6 +349,14 @@ public:
     void setRotateAxes(RotateAxes axes);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the rotate mode of the object.
+    ///
+    /// \param mode RotateOnce or RotateForever.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setRotateMode(RotateMode mode);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Specifies the scale speed of the object.
     ///
     /// \param speedX Horizontal scale speed.
@@ -444,7 +460,7 @@ public:
     /// \param advance Amount of degrees to rotate object by.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startRotating(float advance);
+    void startRotating(float advance = 0);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Rotates the object by \p advance degrees. Use
@@ -547,6 +563,7 @@ private:
     ScaleDirection       m_scaleDirY;
     FadeDirection        m_fadeDir;
     RotateAxes           m_rotateAxes;
+    RotateMode           m_rotateMode;
     bool                 m_isMovingX;
     bool                 m_isMovingY;
     bool                 m_isRotating;

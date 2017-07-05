@@ -32,13 +32,14 @@ CRANBERRY_USING_NAMESPACE
 
 ITransformable::ITransformable()
     : m_moveDir(MoveNone)
-    , m_rotateDirX(RotateNone)
-    , m_rotateDirY(RotateNone)
-    , m_rotateDirZ(RotateNone)
+    , m_rotateDirX(RotateCW)
+    , m_rotateDirY(RotateCW)
+    , m_rotateDirZ(RotateCW)
     , m_scaleDirX(ScaleNone)
     , m_scaleDirY(ScaleNone)
     , m_fadeDir(FadeNone)
-    , m_rotateAxes(AxisNone)
+    , m_rotateAxes(AxisZ)
+    , m_rotateMode(RotateOnce)
     , m_isMovingX(false)
     , m_isMovingY(false)
     , m_isRotating(false)
@@ -192,6 +193,12 @@ RotateDirection ITransformable::rotateDirectionZ() const
 }
 
 
+RotateMode ITransformable::rotateMode() const
+{
+    return m_rotateMode;
+}
+
+
 ScaleDirection ITransformable::scaleDirectionX() const
 {
     return m_scaleDirX;
@@ -298,6 +305,12 @@ void ITransformable::setRotateDirection(
 void ITransformable::setRotateAxes(RotateAxes axes)
 {
     m_rotateAxes = axes;
+}
+
+
+void ITransformable::setRotateMode(RotateMode mode)
+{
+    m_rotateMode = mode;
 }
 
 
@@ -537,12 +550,12 @@ void ITransformable::updateMove(double delta)
 
 void ITransformable::updateRotate(double delta)
 {
-    if (m_rotateDirX != RotateNone)
+    if ((m_rotateAxes & AxisX) != 0 && m_rotateDirX != RotateNone)
     {
         if (m_rotateDirX == RotateCW)
         {
             m_angleX += (m_speedRotateX * delta);
-            if (m_angleX >= m_targetRotateX)
+            if (m_rotateMode == RotateOnce && m_angleX >= m_targetRotateX)
             {
                 m_angleX = m_targetRotateX;
                 stopRotating();
@@ -551,19 +564,19 @@ void ITransformable::updateRotate(double delta)
         else
         {
             m_angleX -= (m_speedRotateX * delta);
-            if (m_angleX <= m_targetRotateX)
+            if (m_rotateMode == RotateOnce && m_angleX <= m_targetRotateX)
             {
                 m_angleX = m_targetRotateX;
                 stopRotating();
             }
         }
     }
-    else if (m_rotateDirY != RotateNone)
+    else if ((m_rotateAxes & AxisY) != 0 && m_rotateDirY != RotateNone)
     {
         if (m_rotateDirY == RotateCW)
         {
             m_angleY += (m_speedRotateY * delta);
-            if (m_angleY >= m_targetRotateY)
+            if (m_rotateMode == RotateOnce && m_angleY >= m_targetRotateY)
             {
                 m_angleY = m_targetRotateY;
                 stopRotating();
@@ -572,19 +585,19 @@ void ITransformable::updateRotate(double delta)
         else
         {
             m_angleY -= (m_speedRotateY * delta);
-            if (m_angleY <= m_targetRotateY)
+            if (m_rotateMode == RotateOnce && m_angleY <= m_targetRotateY)
             {
                 m_angleY = m_targetRotateY;
                 stopRotating();
             }
         }
     }
-    else if (m_rotateDirZ != RotateNone)
+    else if ((m_rotateAxes & AxisZ) != 0 && m_rotateDirZ != RotateNone)
     {
         if (m_rotateDirZ == RotateCW)
         {
             m_angleZ += (m_speedRotateZ * delta);
-            if (m_angleZ >= m_targetRotateZ)
+            if (m_rotateMode == RotateOnce && m_angleZ >= m_targetRotateZ)
             {
                 m_angleZ = m_targetRotateZ;
                 stopRotating();
@@ -593,7 +606,7 @@ void ITransformable::updateRotate(double delta)
         else
         {
             m_angleZ -= (m_speedRotateZ * delta);
-            if (m_angleZ <= m_targetRotateZ)
+            if (m_rotateMode == RotateOnce && m_angleZ <= m_targetRotateZ)
             {
                 m_angleZ = m_targetRotateZ;
                 stopRotating();
