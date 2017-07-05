@@ -136,6 +136,48 @@ public:
     void render();
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the blend color that will be applied on this object. Depends
+    /// on the blend mode used.
+    ///
+    /// \param color Color to use for blending.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBlendColor(const QColor& color);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the blend color that will be applied on this object. Depends
+    /// on the blend mode used.
+    ///
+    /// \param tl Top left vertex.
+    /// \param tr Top right vertex.
+    /// \param br Bottom right vertex.
+    /// \param bl Bottom left vertex.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBlendColor(
+            const QColor& tl,
+            const QColor& tr,
+            const QColor& br,
+            const QColor& bl
+            );
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the blend mode to render this object with.
+    ///
+    /// \param modes One or multiple blending modes.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBlendMode(BlendModes modes);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the effect to render this object with.
+    ///
+    /// \param effect EffectNone does not modify the image.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setEffect(Effect effect);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the name of this object.
     ///
     /// \returns the name of this object.
@@ -163,14 +205,6 @@ public:
 protected:
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Saves the given atlas and stores it in the list of atlases.
-    ///
-    /// \param atlas Valid texture atlas.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void saveAtlas(TextureAtlas* atlas);
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Creates the texture atlases internally.
     ///
     /// \param frames Frames to insert.
@@ -185,6 +219,11 @@ protected:
             );
 
 private:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////
+    void saveAtlas(TextureAtlas* atlas);
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
@@ -205,10 +244,17 @@ private:
 /// \class IAnimation
 /// \ingroup Graphics
 ///
-/// More detailed description, code examples.
+/// This class is the base for all animations.
 ///
 /// \code
-/// ...
+/// class GifAnimation : public IAnimation
+/// {
+/// public:
+///
+///     bool create(const QString& path, Window* renderTarget) override;
+///
+///     ...
+/// };
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

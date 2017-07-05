@@ -24,13 +24,10 @@
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
 
-// Qt headers
-
-// Standard headers
-
 
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - The given render target is invalid.")
+CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 
 
 CRANBERRY_USING_NAMESPACE
@@ -57,6 +54,7 @@ IAnimation::~IAnimation()
 bool IAnimation::isNull() const
 {
     return m_renderTarget == nullptr ||
+           m_currentFrame == nullptr ||
            m_frames.isEmpty()        ||
            m_atlases.isEmpty();
 }
@@ -103,7 +101,16 @@ void IAnimation::update(const GameTime& time)
         {
             // Jump to the next frame and handle overflow.
             int frameIndex = m_currentFrame->frame + 1;
-            if (frameIndex >= m_frames.size()) frameIndex = 0;
+            if (frameIndex >= m_frames.size())
+            {
+                frameIndex = 0;
+
+                if (m_mode == AnimateOnce)
+                {
+                    m_isAnimating = false;
+                    m_emitter.emitStoppedAnimating();
+                }
+            }
 
             // Specify the next frame and reset timer.
             m_elapsedTime = 0.0;
@@ -129,6 +136,45 @@ void IAnimation::render()
     texture->setScale(scaleX(), scaleY());
     texture->setSourceRectangle(m_currentFrame->rect);
     texture->render();
+}
+
+
+void IAnimation::setBlendColor(const QColor& color)
+{
+    setBlendColor(color, color, color, color);
+}
+
+
+void IAnimation::setBlendColor(
+        const QColor& tl,
+        const QColor& tr,
+        const QColor& br,
+        const QColor& bl
+        )
+{
+
+    for (auto* atlas : m_atlases)
+    {
+        atlas->texture()->setBlendColor(tl, tr, br, bl);
+    }
+}
+
+
+void IAnimation::setBlendMode(BlendModes modes)
+{
+    for (auto* atlas : m_atlases)
+    {
+        atlas->texture()->setBlendMode(modes);
+    }
+}
+
+
+void IAnimation::setEffect(Effect effect)
+{
+    for (auto* atlas : m_atlases)
+    {
+        atlas->texture()->setEffect(effect);
+    }
 }
 
 
@@ -173,11 +219,11 @@ bool IAnimation::createInternal(
     m_renderTarget = renderTarget;
     m_renderTarget->makeCurrent();
 
-    qint32 maxSize = ITexture::maxSize();
+    qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget);
     Frame currentFrame;
 
-    // Searches a nice place in the atlas for every frame.
+    // Finds a nice place in the atlas for every frame.
     for (int i = 0; i < frames.size(); i++)
     {
         const QImage& img = frames.at(i);
@@ -200,6 +246,7 @@ bool IAnimation::createInternal(
 
     // Adds the last atlas to the list.
     saveAtlas(currentAtlas);
+    m_currentFrame = &m_frames[0];
 
     return true;
 }
