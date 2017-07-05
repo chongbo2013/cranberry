@@ -12,7 +12,7 @@
 ##
 ################################################################################
 QT             +=       widgets gamepad xml
-CONFIG         +=       c++11
+CONFIG         +=       c++11 exceptions
 DEFINES        +=       CRANBERRY_BUILD
 TEMPLATE        =       lib
 TARGET          =       cranberry
@@ -82,9 +82,10 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Emitters/AnimationEmitter.hpp \
                     include/Cranberry/Graphics/GifAnimation.hpp \
                     include/Cranberry/Graphics/CranAnimation.hpp \
-    include/Cranberry/Graphics/Base/IShape.hpp \
-    include/Cranberry/Graphics/Polygon.hpp \
-    include/Cranberry/Graphics/Ellipse.hpp
+                    include/Cranberry/Graphics/Base/IShape.hpp \
+                    include/Cranberry/Graphics/Polygon.hpp \
+                    include/Cranberry/Graphics/Ellipse.hpp \
+                    include/Cranberry/Game/Game.hpp
 
 
 ################################################################################
@@ -115,9 +116,10 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/IAnimation.cpp \
                     src/Graphics/GifAnimation.cpp \
                     src/Graphics/CranAnimation.cpp \
-    src/Graphics/Base/IShape.cpp \
-    src/Graphics/Polygon.cpp \
-    src/Graphics/Ellipse.cpp
+                    src/Graphics/Base/IShape.cpp \
+                    src/Graphics/Polygon.cpp \
+                    src/Graphics/Ellipse.cpp \
+                    src/Game/Game.cpp
 
 ################################################################################
 ## OUTPUT

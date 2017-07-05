@@ -206,6 +206,8 @@ private:
     qint32            m_keyCount;
     qint32            m_padCount;
     qint32            m_btnCount;
+
+    friend class Game;
 };
 
 

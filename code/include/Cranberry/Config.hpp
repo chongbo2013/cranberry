@@ -94,6 +94,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #define CRANBERRY_GLOBAL_VAR(x, y) namespace { x y; }
+#define CRANBERRY_GLOBAL_VAR_A(x, y, z) namespace { x y = z; }
 #define CRANBERRY_CONST_VAR(x, y, z) namespace { const x y = z; }
 #define CRANBERRY_CONST_ARR(t, n, c, d) namespace { std::array<t, n> c(TOLIST d); }
 
