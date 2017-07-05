@@ -1,0 +1,8 @@
+﻿<RCC>
+    <qresource prefix="/cb">
+        <file>glsl/shape_frag.glsl</file>
+        <file>glsl/shape_vert.glsl</file>
+        <file>glsl/texture_frag.glsl</file>
+        <file>glsl/texture_vert.glsl</file>
+    </qresource>
+</RCC>

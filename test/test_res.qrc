@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>pattern.png</file>
-        <file>earth.gif</file>
-    </qresource>
-</RCC>
