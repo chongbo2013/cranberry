@@ -69,7 +69,7 @@ public:
 ///
 /// \code
 /// CranAnimation cba;
-/// cba.create(":/anims/foo.cba", this);
+/// cba.create(":/anims/foo.json", this);
 /// cba.setPosition(QVector2D(100, 100));
 /// cba.setEffect(EffectSepia);
 /// cba.startAnimation(AnimateOnce)
