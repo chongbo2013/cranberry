@@ -85,7 +85,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/IShape.hpp \
                     include/Cranberry/Graphics/Polygon.hpp \
                     include/Cranberry/Graphics/Ellipse.hpp \
-                    include/Cranberry/Game/Game.hpp
+                    include/Cranberry/Game/Game.hpp \
+                    include/Cranberry/Graphics/Text.hpp
 
 
 ################################################################################
@@ -119,16 +120,17 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/IShape.cpp \
                     src/Graphics/Polygon.cpp \
                     src/Graphics/Ellipse.cpp \
-                    src/Game/Game.cpp
+                    src/Game/Game.cpp \
+                    src/Graphics/Text.cpp
 
 ################################################################################
 ## OUTPUT
 ##
 ################################################################################
 include(platforms.pri)
-message(Writing library to: $${PWD}/bin/$${kgl_path})
+message(Writing library to: $${PWD}/../bin/$${kgl_path})
 
-DESTDIR     = $${PWD}/bin/$${kgl_path}
+DESTDIR     = $${PWD}/../bin/$${kgl_path}
 OBJECTS_DIR = $${DESTDIR}/obj
 MOC_DIR     = $${OBJECTS_DIR}
 RCC_DIR     = $${OBJECTS_DIR}

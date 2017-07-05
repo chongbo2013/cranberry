@@ -50,8 +50,8 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT IShape
-        : public IRenderable
-        , public ITransformable
+    : public IRenderable
+    , public ITransformable
 {
 public:
 
