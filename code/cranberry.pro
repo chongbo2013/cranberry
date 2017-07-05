@@ -81,7 +81,9 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/IAnimation.hpp \
                     include/Cranberry/System/Emitters/AnimationEmitter.hpp \
                     include/Cranberry/Graphics/GifAnimation.hpp \
-                    include/Cranberry/Graphics/CranAnimation.hpp
+                    include/Cranberry/Graphics/CranAnimation.hpp \
+    include/Cranberry/Graphics/Base/IShape.hpp \
+    include/Cranberry/Graphics/Polygon.hpp
 
 
 ################################################################################
@@ -111,7 +113,9 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
                     src/Graphics/Base/IAnimation.cpp \
                     src/Graphics/GifAnimation.cpp \
-                    src/Graphics/CranAnimation.cpp
+                    src/Graphics/CranAnimation.cpp \
+    src/Graphics/Base/IShape.cpp \
+    src/Graphics/Polygon.cpp
 
 ################################################################################
 ## OUTPUT
