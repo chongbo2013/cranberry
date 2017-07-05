@@ -44,8 +44,8 @@ bool Polygon::create(float radius, uint sides, Window* renderTarget)
     // Generates the vertices.
     for (uint i = 1; i <= sides; i++)
     {
-        qreal c = cX + radius * cos(2 * i * spi);
-        qreal s = cY + radius * sin(2 * i * spi);
+        qreal c = cX + radius * qCos(2 * i * spi);
+        qreal s = cY + radius * qSin(2 * i * spi);
 
         points.append(QVector2D(c, s));
     }
