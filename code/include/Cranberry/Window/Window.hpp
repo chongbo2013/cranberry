@@ -126,6 +126,14 @@ public:
     void setSettings(const WindowSettings& settings);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Takes a screenshot of this window and returns it as pixmap.
+    ///
+    /// \returns the current contents of the window.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QPixmap takeScreenshot();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the currently active window.
     ///
     /// \returns the active window.
@@ -205,10 +213,20 @@ private:
 /// \class Window
 /// \ingroup Window
 ///
-/// More detailed description, code examples.
+/// This class is the base for all custom game windows. Override all the methods
+/// you need for your game and put your game logic inside them.
 ///
 /// \code
-/// ...
+/// class MyWindow final : public cran::Window
+/// {
+/// protected:
+///
+///     void onInit() override;
+///     void onExit() override;
+///     void onRender() override;
+///
+///     ...
+/// };
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

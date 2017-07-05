@@ -29,6 +29,7 @@
 // Qt headers
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
+#include <QScreen>
 #include <QtEvents>
 
 
@@ -111,6 +112,12 @@ void Window::setSettings(const WindowSettings& settings)
 {
     m_settings = settings;
     parseSettings();
+}
+
+
+QPixmap Window::takeScreenshot()
+{
+    return screen()->grabWindow(winId());
 }
 
 
