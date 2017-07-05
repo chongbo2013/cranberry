@@ -26,6 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
+#include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
 #include <Cranberry/Graphics/Base/TextureAtlas.hpp>
 #include <Cranberry/System/Emitters/AnimationEmitter.hpp>
@@ -46,7 +47,9 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IAnimation : public ITransformable
+class CRANBERRY_GRAPHICS_EXPORT IAnimation
+        : public IRenderable
+        , public ITransformable
 {
 public:
 
@@ -82,7 +85,7 @@ public:
     /// \returns true if this animation is null.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool isNull() const;
+    bool isNull() const override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether the animation is running.
@@ -121,7 +124,7 @@ public:
     /// Destroys all texture atlases used by this class.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void destroy();
+    void destroy() override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Runs the animation.
@@ -141,13 +144,13 @@ public:
     /// \param time Contains the delta time.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void update(const GameTime& time);
+    void update(const GameTime& time) override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Renders the current frame with all transformations.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void render();
+    void render() override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the blend color that will be applied on this object. Depends
@@ -192,22 +195,6 @@ public:
     void setEffect(Effect effect);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the name of this object.
-    ///
-    /// \returns the name of this object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    const QString& name() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the name of this object.
-    ///
-    /// \param name Name of the object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setName(const QString& name);
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the emitter object for this instance.
     ///
     /// \returns a pointer to the emitter.
@@ -248,7 +235,6 @@ private:
     QVector<TextureAtlas*> m_atlases;
     QString                m_name;
     Frame*                 m_currentFrame;
-    Window*                m_renderTarget;
     qreal                  m_elapsedTime;
     bool                   m_isAnimating;
 };

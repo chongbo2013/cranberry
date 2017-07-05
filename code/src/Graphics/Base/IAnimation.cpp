@@ -21,6 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/IAnimation.hpp>
+#include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
 
@@ -34,10 +35,10 @@ CRANBERRY_USING_NAMESPACE
 
 
 IAnimation::IAnimation()
-    : ITransformable()
+    : IRenderable()
+    , ITransformable()
     , m_mode(AnimateOnce)
     , m_currentFrame(nullptr)
-    , m_renderTarget(nullptr)
     , m_elapsedTime(0.0)
     , m_isAnimating(false)
 
@@ -53,7 +54,7 @@ IAnimation::~IAnimation()
 
 bool IAnimation::isNull() const
 {
-    return m_renderTarget == nullptr ||
+    return IRenderable::isNull()     ||
            m_currentFrame == nullptr ||
            m_frames.isEmpty()        ||
            m_atlases.isEmpty();
@@ -82,6 +83,9 @@ void IAnimation::destroy()
 
     m_frames.clear();
     m_atlases.clear();
+    m_currentFrame = nullptr;
+
+    IRenderable::destroy();
 }
 
 
@@ -140,6 +144,7 @@ void IAnimation::render()
 
     // Copies all transformations and renders the current texture.
     ITexture* texture = m_atlases[m_currentFrame->atlas]->texture();
+    texture->setShaderProgram(shaderProgram());
     texture->setPosition(pos());
     texture->setAngle(angle());
     texture->setOpacity(opacity());
@@ -188,18 +193,6 @@ void IAnimation::setEffect(Effect effect)
 }
 
 
-const QString& IAnimation::name() const
-{
-    return m_name;
-}
-
-
-void IAnimation::setName(const QString& name)
-{
-    m_name = name;
-}
-
-
 AnimationEmitter* IAnimation::animationEmitter()
 {
     return &m_emitter;
@@ -215,22 +208,15 @@ void IAnimation::saveAtlas(TextureAtlas* atlas)
 bool IAnimation::createInternal(
         const QVector<QImage>& frames,
         const QVector<qreal>& durations,
-        Window* renderTarget
+        Window* rt
         )
 {
-    if (renderTarget == nullptr)
-    {
-        if ((renderTarget = Window::activeWindow()) == nullptr)
-        {
-            return cranError(ERRARG(e_02));
-        }
-    }
+    if (!IRenderable::create(rt)) return false;
 
-    m_renderTarget = renderTarget;
-    m_renderTarget->makeCurrent();
+    renderTarget()->makeCurrent();
 
     qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
-    TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget);
+    TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
     Frame currentFrame;
 
     // Finds a nice place in the atlas for every frame.
@@ -242,7 +228,7 @@ bool IAnimation::createInternal(
         {
             // Atlas is full; create new one.
             saveAtlas(currentAtlas);
-            currentAtlas = new TextureAtlas(maxSize, renderTarget);
+            currentAtlas = new TextureAtlas(maxSize, renderTarget());
         }
 
         currentAtlas->insert(img);
@@ -256,6 +242,7 @@ bool IAnimation::createInternal(
 
     // Adds the last atlas to the list.
     saveAtlas(currentAtlas);
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     m_currentFrame = &m_frames[0];
 
     return true;
