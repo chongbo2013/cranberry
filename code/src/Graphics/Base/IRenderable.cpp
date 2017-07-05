@@ -77,9 +77,11 @@ bool IRenderable::create(Window* renderTarget)
 
 void IRenderable::destroy()
 {
-    //m_renderTarget->makeCurrent();
+    if (m_customProgram != m_defaultProgram) delete m_customProgram;
+
+    m_customProgram = nullptr;
+    m_renderTarget = nullptr;
     m_emitter.emitDestroyed();
-    delete m_customProgram;
 }
 
 

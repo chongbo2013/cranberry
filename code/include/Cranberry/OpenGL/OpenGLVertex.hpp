@@ -34,6 +34,7 @@
 
 // Standard headers
 #include <array>
+#include <vector>
 
 
 CRANBERRY_BEGIN_PRIV_NAMESPACE
@@ -101,7 +102,7 @@ public:
     static constexpr uint  rgbaAttrib() { return 1; }
     static constexpr uint  xyzLength()  { return 3; }
     static constexpr uint  rgbaLength() { return 4; }
-    static constexpr uint  size()       { return 7; }
+    static constexpr uint  size()       { return sizeof(float) * 7; }
     static constexpr void* xyzOffset()  { return (void*) (nullptr); }
     static constexpr void* rgbaOffset() { return (void*) (sizeof(float) * 3); }
 
@@ -214,6 +215,7 @@ private:
 template <size_t n> using Vertices = std::array<Vertex, n>;
 template <size_t n> using TexVertices = std::array<TextureVertex, n>;
 using QuadVertices = std::array<TextureVertex, 4>;
+using VarVertices = std::vector<Vertex>;
 
 
 // Convert
