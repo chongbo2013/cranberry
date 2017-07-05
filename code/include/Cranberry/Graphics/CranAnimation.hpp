@@ -57,7 +57,7 @@ public:
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool create(const QString& path, Window* renderTarget) override;
+    bool create(const QString& path, Window* renderTarget = nullptr) override;
 };
 
 
