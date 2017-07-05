@@ -77,9 +77,11 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
-    include/Cranberry/Graphics/Base/TextureAtlas.hpp \
-    include/Cranberry/Graphics/Base/IAnimation.hpp \
-    include/Cranberry/System/Emitters/AnimationEmitter.hpp
+                    include/Cranberry/Graphics/Base/TextureAtlas.hpp \
+                    include/Cranberry/Graphics/Base/IAnimation.hpp \
+                    include/Cranberry/System/Emitters/AnimationEmitter.hpp \
+                    include/Cranberry/Graphics/GifAnimation.hpp \
+                    include/Cranberry/Graphics/CranAnimation.hpp
 
 
 ################################################################################
@@ -106,8 +108,10 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
                     src/Window/Window.cpp \
-    src/Graphics/Base/TextureAtlas.cpp \
-    src/Graphics/Base/IAnimation.cpp
+                    src/Graphics/Base/TextureAtlas.cpp \
+                    src/Graphics/Base/IAnimation.cpp \
+                    src/Graphics/GifAnimation.cpp \
+                    src/Graphics/CranAnimation.cpp
 
 ################################################################################
 ## OUTPUT

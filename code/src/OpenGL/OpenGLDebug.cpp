@@ -89,13 +89,15 @@ void priv::GLDebug::print(
         }
 
         // Prints the message.
-        qDebug().noquote() << "OpenGL error occured";
-        qDebug().noquote() << "of type: " << type;
-        qDebug().noquote() << "in file: " << file.c_str();
-        qDebug().noquote() << "in func: " << func.c_str();
-        qDebug().noquote() << "in line: " << line;
-        qDebug().noquote() << "by call: " << expr.c_str();
-        qDebug().noquote() << "details: \"" << desc << "\"";
+        qDebug() << "\n---";
+        qDebug().noquote() << "/!\\ OpenGL error occured /!\\";
+        qDebug().noquote() << "of type:" << type;
+        qDebug().noquote() << "in file:" << file.c_str();
+        qDebug().noquote() << "in func:" << func.c_str();
+        qDebug().noquote() << "in line:" << line;
+        qDebug().noquote() << "by call:" << expr.c_str();
+        qDebug().noquote() << "\n    " << desc;
+        qDebug() << "---\n\n";
 
         error = gl->glGetError();
     }

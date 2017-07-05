@@ -40,12 +40,18 @@ bool priv::Debug::showError(
         const std::string func
         )
 {
+    QString fiStr = QString(file.c_str());
+    QString fuStr = QString(func.c_str());
+    QString liStr = QString::number(line);
+
 #ifdef QT_DEBUG
-    qDebug().noquote() << "Cranberry threw an error";
-    qDebug().noquote() << "in file \"" << file.c_str();
-    qDebug().noquote() << "in func \"" << func.c_str();
-    qDebug().noquote() << "in line \"" << line << ": ";
-    qDebug().noquote() << "\"" << msg << "\"";
+    qDebug() << "\n---";
+    qDebug() << "/!\\ Cranberry threw an error /!\\";
+    qDebug() << "in file" << fiStr;
+    qDebug() << "in func" << fuStr;
+    qDebug() << "in line" << liStr;
+    qDebug().noquote() << "\n    " << msg;
+    qDebug() << "---\n\n";
 #else
     // Prepares the strings.
     QString strLine = QString::number(line);
@@ -76,12 +82,18 @@ bool priv::Debug::showWarning(
         const std::string file,
         const std::string func)
 {
+    QString fiStr = QString(file.c_str());
+    QString fuStr = QString(func.c_str());
+    QString liStr = QString::number(line);
+
 #ifdef QT_DEBUG
-    qDebug().noquote() << "Cranberry threw a warning";
-    qDebug().noquote() << "in file \"" << file.c_str();
-    qDebug().noquote() << "in func \"" << func.c_str();
-    qDebug().noquote() << "in line \"" << line << ": ";
-    qDebug().noquote() << "\"" << msg << "\"";
+    qDebug() << "\n---";
+    qDebug() << "/!\\ Cranberry threw a warning /!\\";
+    qDebug() << "in file" << fiStr;
+    qDebug() << "in func" << fuStr;
+    qDebug() << "in line" << liStr;
+    qDebug().noquote() << "\n    " << msg;
+    qDebug() << "---\n\n";
 #else
     // Simply ignore warnings in release mode.
     Q_UNUSED(msg)

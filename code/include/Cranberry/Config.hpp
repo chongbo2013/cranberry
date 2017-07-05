@@ -154,6 +154,9 @@
             str.erase(0, f + 1);                    \
             f = str.find_first_of("(");             \
             str.erase(f, -1);                       \
+            f = str.find_first_of(" ");             \
+            str.erase(0, f + 1);                    \
+            str.append("()");                       \
             return str;                             \
         } (func).c_str()                            \
     }
@@ -200,6 +203,9 @@
 #endif
 
 #define ERRARG(x) x.arg(CRANBERRY_FUNC, name())
+#define ERRARG_1(x, y) x.arg(CRANBERRY_FUNC, name(), y)
+#define ERRARG_2(x, y, z) x.arg(CRANBERRY_FUNC, name(), y, z)
+#define ERRARG_3(x, y, z, w) x.arg(CRANBERRY_FUNC, name(), y, z, w)
 
 
 ////////////////////////////////////////////////////////////////////////////////
