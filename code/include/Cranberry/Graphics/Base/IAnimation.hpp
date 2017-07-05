@@ -93,6 +93,20 @@ public:
     bool isAnimating() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Creates a raw animation from a given set of frames and durations.
+    ///
+    /// \param frames Frames of the animation.
+    /// \param durations Duration of each frame.
+    /// \returns true if created successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool createRawAnimation(
+            const QVector<QImage>& frames,
+            const QVector<qreal>& durations,
+            Window* renderTarget = nullptr
+            );
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates a new animation by loading the file at the given path and
     /// extracting the animation data. Devired classes must implement this.
     ///
@@ -244,7 +258,8 @@ private:
 /// \class IAnimation
 /// \ingroup Graphics
 ///
-/// This class is the base for all animations.
+/// This class is the base for all animations. Use createRawAnimation() if you
+/// want to show an animation from a given set of frames and frame lengths.
 ///
 /// \code
 /// class GifAnimation : public IAnimation
