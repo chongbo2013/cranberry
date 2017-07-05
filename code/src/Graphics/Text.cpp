@@ -1,0 +1,212 @@
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+// Cranberry - C++ game engine based on the Qt5 framework.
+// Copyright (C) 2017 Nicolas Kogler
+//
+// Cranberry is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Cranberry is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Cranberry. If not, see <http://www.gnu.org/licenses/>.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+// Cranberry headers
+#include <Cranberry/Graphics/Text.hpp>
+#include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
+#include <Cranberry/System/Debug.hpp>
+#include <Cranberry/Window/Window.hpp>
+
+// Qt headers
+#include <QBrush>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPen>
+#include <QStaticText>
+
+
+CRANBERRY_USING_NAMESPACE
+
+
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Cannot render invalid object.")
+
+
+Text::Text()
+    : IRenderable()
+    , ITransformable()
+    , m_text("{empty}")
+    , m_textPen(new QPen(Qt::white))
+    , m_outlineBrush(new QBrush(Qt::black))
+    , m_texture(new ITexture)
+    , m_outlineWidth(0)
+    , m_textUpdate(true)
+{
+    m_options.setAlignment(Qt::AlignLeft | Qt::AlignTop | Qt::AlignBaseline);
+    m_options.setWrapMode(QTextOption::NoWrap);
+}
+
+
+Text::~Text()
+{
+    delete m_textPen;
+    delete m_outlineBrush;
+    delete m_texture;
+}
+
+
+const QString& Text::text() const
+{
+    return m_text;
+}
+
+
+const QFont& Text::font() const
+{
+    return m_font;
+}
+
+
+QColor Text::textColor() const
+{
+    return m_textPen->color();
+}
+
+
+QColor Text::outlineColor() const
+{
+    return m_outlineBrush->color();
+}
+
+
+int Text::outlineWidth() const
+{
+    return m_outlineWidth;
+}
+
+
+void Text::setText(const QString& str)
+{
+    m_text = str;
+    m_textUpdate = true;
+}
+
+
+void Text::setFont(const QFont& font)
+{
+    m_font = font;
+    m_textUpdate = true;
+}
+
+
+void Text::setTextColor(const QColor& color)
+{
+    m_textPen->setColor(color);
+    m_textUpdate = true;
+}
+
+
+void Text::setTextOptions(const QTextOption& option)
+{
+    m_options = option;
+    m_textUpdate = true;
+}
+
+
+void Text::setOutlineColor(const QColor& color)
+{
+    m_outlineBrush->setColor(color);
+    m_textUpdate = true;
+}
+
+
+void Text::setOutlineWidth(int width)
+{
+    m_outlineWidth = width;
+    m_textUpdate = true;
+}
+
+
+bool Text::create(Window* rt)
+{
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+
+    return IRenderable::create(rt);
+}
+
+
+void Text::destroy()
+{
+    if (!m_texture->isNull()) m_texture->destroy();
+
+    IRenderable::destroy();
+}
+
+
+void Text::update(const GameTime& time)
+{
+    updateTransform(time);
+}
+
+
+void Text::render()
+{
+    if (Q_UNLIKELY(isNull()))
+    {
+        cranError(ERRARG(e_01));
+        return;
+    }
+
+    if (m_textUpdate)
+    {
+        createTexture();
+        m_textUpdate = false;
+    }
+
+    // Copies all transformations.
+    m_texture->setShaderProgram(shaderProgram());
+    m_texture->setPosition(pos());
+    m_texture->setAngle(angle());
+    m_texture->setOpacity(opacity());
+    m_texture->setScale(scaleX(), scaleY());
+    m_texture->render();
+}
+
+
+void Text::createTexture()
+{
+    if (!m_texture->isNull()) m_texture->destroy();
+
+    // Base image
+    QSize sz = QFontMetrics(m_font).boundingRect(m_text).size();
+    QImage img = QImage(sz, QImage::Format_ARGB32);
+    img.fill(Qt::transparent);
+
+    // Rendering hints
+    QPainter painter(&img);
+    painter.setRenderHints(
+            QPainter::HighQualityAntialiasing |
+            QPainter::SmoothPixmapTransform   |
+            QPainter::TextAntialiasing        |
+            QPainter::Antialiasing
+            );
+
+    // Appearance
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.setFont(m_font);
+    painter.setPen(*m_textPen);
+    painter.setBrush(*m_outlineBrush);
+
+    // Text
+    painter.drawText(QRect(QPoint(), sz), m_text, m_options);
+    painter.end();
+
+    m_texture->create(img, renderTarget());
+}
