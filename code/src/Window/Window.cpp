@@ -183,6 +183,7 @@ void Window::parseSettings()
 void Window::loadDefaultShaders()
 {
     OpenGLDefaultShaders::add("cb.glsl.texture", loadShader("texture"));
+    OpenGLDefaultShaders::add("cb.glsl.shape", loadShader("shape"));
 }
 
 
@@ -190,6 +191,7 @@ void Window::destroyGL()
 {
     // Unloads all the default shader programs.
     OpenGLDefaultShaders::remove("cb.glsl.texture");
+    OpenGLDefaultShaders::remove("cb.glsl.shape");
 
     onExit();
 }
