@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT CranAnimation : public IAnimation
+class CRANBERRY_GRAPHICS_EXPORT CranAnimation final : public IAnimation
 {
 public:
 
