@@ -49,6 +49,7 @@ Text::Text()
     , m_outlineWidth(0)
     , m_textUpdate(true)
 {
+    m_options.setAlignment(Qt::AlignLeft | Qt::AlignTop);
     m_options.setWrapMode(QTextOption::NoWrap);
 }
 
