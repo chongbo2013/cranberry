@@ -96,6 +96,8 @@ void Text::setText(const QString& str)
 {
     m_text = str;
     m_textUpdate = true;
+
+    recalculateSize();
 }
 
 
@@ -103,6 +105,8 @@ void Text::setFont(const QFont& font)
 {
     m_font = font;
     m_textUpdate = true;
+
+    recalculateSize();
 }
 
 
@@ -131,6 +135,8 @@ void Text::setOutlineWidth(int width)
 {
     m_outlineWidth = width;
     m_textUpdate = true;
+
+    recalculateSize();
 }
 
 
@@ -186,8 +192,10 @@ void Text::createTexture()
 
     // Find perfect size for the image.
     QFontMetrics fm(m_font);
+    QPoint pt(m_outlineWidth / 2, m_outlineWidth / 2);
     QSize sz = fm.boundingRect(m_text).size();
     sz.setWidth(sz.width() + m_outlineWidth);
+    sz.setHeight(sz.height() + m_outlineWidth);
 
     if ((sz.width() % 2) != 0) sz.rwidth() += 1;
     if ((sz.height() % 2) != 0) sz.rheight() += 1;
@@ -215,7 +223,7 @@ void Text::createTexture()
         stroker.setWidth(m_outlineWidth);
 
         QPainterPath ppath;
-        ppath.addText(0, fm.ascent(), m_font, m_text);
+        ppath.addText(pt.x(), pt.y() + fm.ascent(), m_font, m_text);
         painter.setBrush(*m_outlineBrush);
         painter.setPen(Qt::NoPen);
         painter.drawPath(stroker.createStroke(ppath));
@@ -226,10 +234,21 @@ void Text::createTexture()
     painter.setPen(*m_textPen);
 
     // Text
-    painter.drawText(QRect(QPoint(), sz), m_text, m_options);
+    painter.drawText(QRect(pt, sz), m_text, m_options);
     painter.end();
 
     m_texture->create(img, renderTarget());
     m_texture->texture()->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
     m_texture->texture()->setWrapMode(QOpenGLTexture::ClampToEdge);
+
+    setSize(m_texture->width(), m_texture->height());
+}
+
+
+void Text::recalculateSize()
+{
+    QFontMetrics fm(m_font);
+    QSize sz = fm.boundingRect(m_text).size();
+    sz.setWidth(sz.width() + m_outlineWidth);
+    setSize(sz.width(), sz.height());
 }
