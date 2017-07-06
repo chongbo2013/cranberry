@@ -49,7 +49,6 @@ Text::Text()
     , m_outlineWidth(0)
     , m_textUpdate(true)
 {
-    m_options.setAlignment(Qt::AlignLeft | Qt::AlignTop | Qt::AlignBaseline);
     m_options.setWrapMode(QTextOption::NoWrap);
 }
 
@@ -184,13 +183,18 @@ void Text::createTexture()
 {
     if (!m_texture->isNull()) m_texture->destroy();
 
+    // Find perfect size for the image.
+    QFontMetrics fm(m_font);
+    QSize sz = fm.boundingRect(m_text).size();
+    sz.setWidth(sz.width() + m_outlineWidth);
+
     // Base image
-    QSize sz = QFontMetrics(m_font).boundingRect(m_text).size();
     QImage img = QImage(sz, QImage::Format_ARGB32);
     img.fill(Qt::transparent);
 
     // Rendering hints
     QPainter painter(&img);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.setRenderHints(
             QPainter::HighQualityAntialiasing |
             QPainter::SmoothPixmapTransform   |
@@ -198,11 +202,24 @@ void Text::createTexture()
             QPainter::Antialiasing
             );
 
+    // Outline test
+    if (m_outlineWidth > 0)
+    {
+        QPainterPathStroker stroker;
+        stroker.setJoinStyle(Qt::RoundJoin);
+        stroker.setCapStyle(Qt::RoundCap);
+        stroker.setWidth(m_outlineWidth);
+
+        QPainterPath ppath;
+        ppath.addText(0, fm.ascent(), m_font, m_text);
+        painter.setBrush(*m_outlineBrush);
+        painter.setPen(Qt::NoPen);
+        painter.drawPath(stroker.createStroke(ppath));
+    }
+
     // Appearance
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.setFont(m_font);
     painter.setPen(*m_textPen);
-    painter.setBrush(*m_outlineBrush);
 
     // Text
     painter.drawText(QRect(QPoint(), sz), m_text, m_options);
