@@ -30,7 +30,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPen>
-#include <QStaticText>
+#include <QOpenGLTexture>
 
 
 CRANBERRY_USING_NAMESPACE
@@ -189,6 +189,9 @@ void Text::createTexture()
     QSize sz = fm.boundingRect(m_text).size();
     sz.setWidth(sz.width() + m_outlineWidth);
 
+    if ((sz.width() % 2) != 0) sz.rwidth() += 1;
+    if ((sz.height() % 2) != 0) sz.rheight() += 1;
+
     // Base image
     QImage img = QImage(sz, QImage::Format_ARGB32);
     img.fill(Qt::transparent);
@@ -227,4 +230,6 @@ void Text::createTexture()
     painter.end();
 
     m_texture->create(img, renderTarget());
+    m_texture->texture()->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
+    m_texture->texture()->setWrapMode(QOpenGLTexture::ClampToEdge);
 }

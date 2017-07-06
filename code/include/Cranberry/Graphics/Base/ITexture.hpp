@@ -75,6 +75,14 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the underlying QOpenGLTexture.
+    ///
+    /// \returns the underlying QOpenGLTexture.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QOpenGLTexture* texture() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Reimplements IRenderable::isNull(). Adds the condition that the
     /// underlying texture and vertex buffer are valid.
     ///
@@ -191,7 +199,6 @@ public:
 protected:
 
     priv::QuadVertices& vertices();
-    QOpenGLTexture* texture() const;
     QOpenGLBuffer* buffer() const;
     void requestUpdate();
     virtual void initializeData();
