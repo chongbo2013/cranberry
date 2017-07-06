@@ -244,16 +244,19 @@ QVector3D ITransformable::rotateAxes() const
 QPainterPath ITransformable::bounds() const
 {
     QPainterPath path;
-    QTransform trans;
+    QTransform transform;
 
-    if ((m_rotateAxes & AxisX) != 0) trans.rotate(m_angleX, Qt::XAxis);
-    if ((m_rotateAxes & AxisY) != 0) trans.rotate(m_angleY, Qt::YAxis);
-    if ((m_rotateAxes & AxisZ) != 0) trans.rotate(m_angleZ, Qt::ZAxis);
+    path.addRect(m_x / m_scaleX, m_y / m_scaleY, m_width, m_height);
+    transform.translate(m_originX, m_originY);
 
-    trans.scale(m_scaleX, m_scaleY);
-    path.addRect(m_x, m_y, m_width, m_height);
+    if ((m_rotateAxes & AxisX) != 0) transform.rotate(m_angleX, Qt::XAxis);
+    if ((m_rotateAxes & AxisY) != 0) transform.rotate(m_angleY, Qt::YAxis);
+    if ((m_rotateAxes & AxisZ) != 0) transform.rotate(m_angleZ, Qt::ZAxis);
 
-    return trans.map(path);
+    transform.scale(m_scaleX, m_scaleY);
+    transform.translate(-m_originX, -m_originY);
+
+    return transform.map(path);
 }
 
 
