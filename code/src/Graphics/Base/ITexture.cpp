@@ -69,6 +69,7 @@ bool ITexture::isNull() const
            m_texture == nullptr        ||
            m_vertexBuffer == nullptr   ||
            m_indexBuffer == nullptr    ||
+          !m_texture->isCreated()      ||
           !m_vertexBuffer->isCreated() ||
           !m_indexBuffer->isCreated();
 }
