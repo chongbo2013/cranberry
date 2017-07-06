@@ -210,7 +210,6 @@ private:
     QTextOption   m_options;
     ITexture*     m_texture;
     int           m_outlineWidth;
-    int           m_textHeight;
     bool          m_textUpdate;
 };
 
@@ -219,10 +218,20 @@ private:
 /// \class Text
 /// \ingroup Graphics
 ///
-/// More detailed description, code examples.
+/// This class renders text, optionally with an outline. Supports all
+/// all transformations that ITransformable provides.
 ///
 /// \code
+/// Text text;
+/// text.setText("Hello world!");
+/// text.setFont(QFont(...));
+/// text.setOutlineWidth(4);
+/// text.setAngle(20);
+/// text.create(this);
+///
 /// ...
+///
+/// text.render();
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////
