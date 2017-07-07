@@ -21,6 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Text.hpp>
+#include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
@@ -29,7 +30,7 @@
 #include <QBrush>
 #include <QPainter>
 #include <QPainterPath>
-#include <QPen>
+#include <QOpenGLFunctions>
 #include <QOpenGLTexture>
 
 
@@ -37,16 +38,21 @@ CRANBERRY_USING_NAMESPACE
 
 
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Cannot render invalid object.")
+CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Texture could not be created.")
+CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 
 
 Text::Text()
     : IRenderable()
     , ITransformable()
-    , m_text("{empty}")
     , m_textPen(new QPen(Qt::white))
     , m_outlineBrush(new QBrush(Qt::black))
     , m_texture(new ITexture)
     , m_outlineWidth(0)
+    , m_columnLimit(-1)
+    , m_rowLimit(-1)
+    , m_lastWidth(0)
+    , m_lastHeight(0)
     , m_textUpdate(true)
 {
     m_options.setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -97,7 +103,7 @@ void Text::setText(const QString& str)
     m_text = str;
     m_textUpdate = true;
 
-    recalculateSize();
+    recalcSize();
 }
 
 
@@ -106,7 +112,7 @@ void Text::setFont(const QFont& font)
     m_font = font;
     m_textUpdate = true;
 
-    recalculateSize();
+    recalcSize();
 }
 
 
@@ -121,6 +127,8 @@ void Text::setTextOptions(const QTextOption& option)
 {
     m_options = option;
     m_textUpdate = true;
+
+    recalcSize();
 }
 
 
@@ -136,15 +144,16 @@ void Text::setOutlineWidth(int width)
     m_outlineWidth = width;
     m_textUpdate = true;
 
-    recalculateSize();
+    recalcSize();
 }
 
 
 bool Text::create(Window* rt)
 {
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    if (!IRenderable::create(rt)) return false;
 
-    return IRenderable::create(rt);
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    return true;
 }
 
 
@@ -172,7 +181,7 @@ void Text::render()
 
     if (m_textUpdate)
     {
-        createTexture();
+        updateTexture();
         m_textUpdate = false;
     }
 
@@ -186,22 +195,84 @@ void Text::render()
 }
 
 
+void Text::updateTexture()
+{
+    if (m_texture->isNull())
+    {
+        createTexture();
+    }
+
+    auto size = measureText();
+    if (size.width() > m_lastWidth || size.height() > m_lastHeight)
+    {
+        resizeTexture(size);
+    }
+
+    renderToTexture();
+}
+
+
 void Text::createTexture()
 {
-    if (!m_texture->isNull()) m_texture->destroy();
+    QOpenGLTexture* texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+    if (!texture->create())
+    {
+        cranError(ERRARG(e_02));
+        delete texture;
+        return;
+    }
 
-    // Find perfect size for the image.
+    // Smoothen the texture and avoid pixel fragments.
+    texture->setMinificationFilter(QOpenGLTexture::Linear);
+    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture->setWrapMode(QOpenGLTexture::ClampToEdge);
+
+    // Creates a new ITexture on base of the QOpenGLTexture.
+    m_texture->create(texture, renderTarget());
+}
+
+
+void Text::resizeTexture(QSizeF base)
+{
+    // Finds a suitable size for the texture.
+    float w, h;
+    if (m_columnLimit <= 0 || m_rowLimit <= 0)
+    {
+        w = base.width();
+        h = base.height();
+    }
+    else
+    {
+        auto s = findPerfectSize();
+        w = s.width();
+        h = s.height();
+    }
+
+    m_texture->texture()->bind();
+
+    // Allocates storage for the texture, without initial pixel data.
+    glDebug(gl->glTexImage2D(
+                GL_TEXTURE_2D,  GL_ZERO, GL_RGBA8,
+                int(w), int(h), GL_ZERO, GL_RGBA,
+                GL_UNSIGNED_BYTE, nullptr
+                ));
+
+    m_texture->texture()->release();
+    m_texture->setSize(w, h);
+    m_texture->setOrigin({ w / 2, h / 2 });
+    m_texture->setSourceRectangle({ 0, 0, w, h });
+    m_lastWidth = w;
+    m_lastHeight = h;
+}
+
+
+void Text::renderToTexture()
+{
     QFontMetrics fm(m_font);
     QPoint pt(m_outlineWidth / 2, m_outlineWidth / 2);
-    QSize sz = fm.boundingRect(m_text).size();
-    sz.setWidth(sz.width() + m_outlineWidth);
-    sz.setHeight(sz.height() + m_outlineWidth);
-
-    if ((sz.width() % 2) != 0) sz.rwidth() += 1;
-    if ((sz.height() % 2) != 0) sz.rheight() += 1;
 
     // Base image
-    QImage img = QImage(sz, QImage::Format_ARGB32);
+    QImage img = QImage(width(), height(), QImage::Format_ARGB32);
     img.fill(Qt::transparent);
 
     // Rendering hints
@@ -234,21 +305,58 @@ void Text::createTexture()
     painter.setPen(*m_textPen);
 
     // Text
-    painter.drawText(QRect(pt, sz), m_text, m_options);
+    painter.drawText(QRect(pt, img.size()), m_text, m_options);
     painter.end();
 
-    m_texture->create(img, renderTarget());
-    m_texture->texture()->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
-    m_texture->texture()->setWrapMode(QOpenGLTexture::ClampToEdge);
+    m_texture->texture()->bind();
 
-    setSize(m_texture->width(), m_texture->height());
+    // Renders all pixels into the texture.
+    glDebug(gl->glTexSubImage2D(
+                GL_TEXTURE_2D, GL_ZERO,
+                0, 0, img.width(), img.height(),
+                GL_RGBA, GL_UNSIGNED_BYTE, img.constBits()
+                ));
+
+    img.save("C:/Users/kogler/Desktop/img.png");
+
+    m_texture->texture()->release();
 }
 
 
-void Text::recalculateSize()
+void Text::recalcSize()
+{
+    QSizeF s = measureText();
+    setSize(s.width(), s.height());
+}
+
+
+QSizeF Text::findPerfectSize()
+{
+    QFontMetrics fm(m_font);
+    QSize sz = fm.boundingRect('x').size();
+
+    sz.setWidth(sz.width() * m_columnLimit + m_outlineWidth);
+    sz.setHeight(sz.height() * m_rowLimit + m_outlineWidth);
+
+    // Align to power of 2.
+    if ((sz.width() % 2) != 0) sz.rwidth() += 1;
+    if ((sz.height() % 2) != 0) sz.rheight() += 1;
+
+    return sz;
+}
+
+
+QSizeF Text::measureText()
 {
     QFontMetrics fm(m_font);
     QSize sz = fm.boundingRect(m_text).size();
+
     sz.setWidth(sz.width() + m_outlineWidth);
-    setSize(sz.width(), sz.height());
+    sz.setHeight(sz.height() + m_outlineWidth);
+
+    // Align to power of 2.
+    if ((sz.width() % 2) != 0) sz.rwidth() += 1;
+    if ((sz.height() % 2) != 0) sz.rheight() += 1;
+
+    return sz;
 }

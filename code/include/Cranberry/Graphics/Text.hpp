@@ -44,7 +44,11 @@ CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// This class is capable of rendering text.
+/// This class is capable of rendering text. If you have a static text, calling
+/// create() and not doing anything else is fine. But in case you need dynamic
+/// text that changes very often, invoke setColumnLimit() and setRowLimit().
+/// Cranberry will calculate the optimal texture size from these two parameters,
+/// but is still able to resize the texture in case text happens to be bigger.
 ///
 /// \class Text
 /// \author Nicolas Kogler
@@ -113,6 +117,22 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     int outlineWidth() const;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the maximum amount of characters per line.
+    ///
+    /// \returns the column limit.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int columnLimit() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the maximum amount of lines.
+    ///
+    /// \returns the row limit.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int rowLimit() const;
+
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the string to be displayed.
@@ -162,15 +182,36 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void setOutlineWidth(int width);
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the maximum amount of characters per line. A negative value
+    /// indicates that the size of the texture is adjusted to the size of the
+    /// text.
+    ///
+    /// \param limit Character limit per line.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setColumnLimit(int limit);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the maximum amount of lines for that object. A negative value
+    /// indicates that the size of the texture is adjusted to the size of the
+    /// text.
+    ///
+    /// \param limit Line limit.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setRowLimit(int limit);
+
 
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the OpenGL resources for this object.
     ///
     /// \param renderTarget Target to render text on.
+    /// \param (opt) size Initial size of the texture.
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool create(Window* renderTarget);
+    bool create(Window* renderTarget = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Destroys the OpenGL resources for this object.
@@ -198,8 +239,13 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
+    void updateTexture();
     void createTexture();
-    void recalculateSize();
+    void resizeTexture(QSizeF);
+    void renderToTexture();
+    void recalcSize();
+    auto findPerfectSize() -> QSizeF;
+    auto measureText() -> QSizeF;
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
@@ -211,6 +257,10 @@ private:
     QTextOption   m_options;
     ITexture*     m_texture;
     int           m_outlineWidth;
+    int           m_columnLimit;
+    int           m_rowLimit;
+    float         m_lastWidth;
+    float         m_lastHeight;
     bool          m_textUpdate;
 };
 
