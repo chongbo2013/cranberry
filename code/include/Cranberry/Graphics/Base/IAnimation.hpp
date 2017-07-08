@@ -210,12 +210,29 @@ protected:
     ///
     /// \param frames Frames to insert.
     /// \param durations Duration of each frame (in milliseconds).
+    /// \param renderTarget The target to show animation on.
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
     bool createInternal(
             const QVector<QImage>& frames,
             const QVector<qreal>& durations,
+            Window* renderTarget
+            );
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the texture atlases but skips packing the frames, since they are
+    /// already specified through the \p frames parameter.
+    ///
+    /// \param sheets The spritesheets to use.
+    /// \param frames The frames to use.
+    /// \param renderTarget The target to show animation on.
+    /// \returns true if created successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool createInternal(
+            const QVector<QImage>& sheets,
+            const QVector<Frame>& frames,
             Window* renderTarget
             );
 

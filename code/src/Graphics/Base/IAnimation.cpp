@@ -213,8 +213,6 @@ bool IAnimation::createInternal(
 {
     if (!IRenderable::create(rt)) return false;
 
-    renderTarget()->makeCurrent();
-
     qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
     Frame currentFrame;
@@ -244,6 +242,30 @@ bool IAnimation::createInternal(
     saveAtlas(currentAtlas);
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     m_currentFrame = &m_frames[0];
+
+    return true;
+}
+
+
+bool IAnimation::createInternal(
+        const QVector<QImage>& sheets,
+        const QVector<Frame>& frames,
+        Window* rt
+        )
+{
+    if (!IRenderable::create(rt)) return false;
+
+    // Creates texture atlases out of the sheets.
+    for (const QImage& img : sheets)
+    {
+        saveAtlas(new TextureAtlas(img, renderTarget()));
+    }
+
+    // Simply copies the frames since everything is prepared.
+    m_frames = frames;
+    m_currentFrame = &m_frames[0];
+
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;
 }
