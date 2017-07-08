@@ -79,7 +79,7 @@ TextureAtlas::TextureAtlas(int size, Window* renderTarget)
 
 
 TextureAtlas::TextureAtlas(const QImage& img, Window* renderTarget)
-    : m_size(img.size())
+    : m_size(img.size().width())
     , m_usedSpace(0)
     , m_occupancy(1.0)
     , m_texture(new ITexture)
