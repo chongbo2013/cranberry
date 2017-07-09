@@ -138,7 +138,8 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the shader program. If the given program is nullptr, the
-    /// default shader program will be used instead.
+    /// default shader program will be used instead. Will NOT take ownership
+    /// of \p program. You need to free it yourself.
     ///
     /// \param program Program to use. Nullptr yields default shader program.
     ///
