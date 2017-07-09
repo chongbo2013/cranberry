@@ -161,6 +161,7 @@ Game* Game::instance()
 }
 
 
+#ifdef QT_DEBUG
 void Game::cranberryLogo()
 {
     qDebug() << "-------------------------------------------------------";
@@ -191,3 +192,4 @@ void Game::cranberryLogo()
     qDebug() << "              \"\"\"  Y88!!!!!!!d8P";
     qDebug() << "                      \"\"\"\"\"\"\"\n\n";
 }
+#endif
