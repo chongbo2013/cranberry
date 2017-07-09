@@ -108,6 +108,12 @@ QOpenGLFunctions* Window::functions() const
 }
 
 
+uint Window::vao() const
+{
+    return m_vao;
+}
+
+
 void Window::setSettings(const WindowSettings& settings)
 {
     m_settings = settings;
@@ -148,6 +154,7 @@ void Window::initializeGL()
     else
     {
         vao->bind();
+        m_vao = vao->objectId();
     }
 
     loadDefaultShaders();

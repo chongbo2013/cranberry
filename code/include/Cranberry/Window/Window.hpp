@@ -118,6 +118,14 @@ public:
     QOpenGLFunctions* functions() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Returns the default VAO for this render target.
+    ///
+    /// \returns this render target's VAO.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    uint vao() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Specify the settings for this window. Call this before you call start().
     ///
     /// \param settings New window settings.
@@ -206,6 +214,7 @@ private:
     qint32            m_keyCount;
     qint32            m_padCount;
     qint32            m_btnCount;
+    uint              m_vao;
 
     friend class Game;
 };
