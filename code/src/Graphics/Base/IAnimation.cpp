@@ -77,6 +77,16 @@ bool IAnimation::createRawAnimation(
 }
 
 
+bool IAnimation::createRawAnimation(
+        const QVector<QImage>& images,
+        const QVector<Frame>& frames,
+        Window* renderTarget
+        )
+{
+    return createInternal(images, frames, renderTarget);
+}
+
+
 void IAnimation::destroy()
 {
     for (auto* atlas : m_atlases) delete atlas;
@@ -84,6 +94,7 @@ void IAnimation::destroy()
     m_frames.clear();
     m_atlases.clear();
     m_currentFrame = nullptr;
+    m_isAnimating = false;
 
     IRenderable::destroy();
 }
@@ -96,6 +107,12 @@ void IAnimation::startAnimation(AnimationMode mode)
     m_currentFrame = &m_frames[0];
 
     m_isAnimating = true;
+}
+
+
+void IAnimation::startIdle()
+{
+    m_currentFrame = &m_idleFrame;
 }
 
 
@@ -160,6 +177,15 @@ void IAnimation::render()
     texture->setScale(scaleX(), scaleY());
     texture->setSourceRectangle(m_currentFrame->rect);
     texture->render();
+}
+
+
+void IAnimation::setIdleFrame(uint atlas, const QRectF& frame)
+{
+    m_idleFrame.atlas = atlas;
+    m_idleFrame.rect = frame;
+    m_idleFrame.duration = 0;
+    m_idleFrame.frame = -1;
 }
 
 

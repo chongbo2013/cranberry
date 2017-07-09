@@ -110,6 +110,20 @@ public:
             );
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Creates a raw animation from a given set of  images and frames.
+    ///
+    /// \param images Images of the animation.
+    /// \param frames Frames of the animation.
+    /// \returns true if created successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool createRawAnimation(
+            const QVector<QImage> &images,
+            const QVector<Frame> &frames,
+            Window *renderTarget = nullptr
+            );
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates a new animation by loading the file at the given path and
     /// extracting the animation data. Devired classes must implement this.
     ///
@@ -131,6 +145,12 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void startAnimation(AnimationMode mode);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Switches into idle mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startIdle();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Resumes the animation, while leaving the mode, current frame or elapsed
@@ -158,6 +178,16 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void render() override;
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the idle frame (animation doing nothing).
+    ///
+    /// \param atlas Atlas in which the idle frame resides.
+    /// \param frame Source rectangle of the idle frame.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setIdleFrame(uint atlas, const QRectF& frame);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the blend color that will be applied on this object. Depends
@@ -267,6 +297,7 @@ private:
     QVector<Frame>         m_frames;
     QVector<TextureAtlas*> m_atlases;
     QString                m_name;
+    Frame                  m_idleFrame;
     Frame*                 m_currentFrame;
     qreal                  m_elapsedTime;
     bool                   m_isAnimating;
