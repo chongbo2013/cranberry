@@ -247,10 +247,21 @@ private:
 /// \class SpriteBatch
 /// \ingroup Graphics
 ///
-/// More detailed description, code examples.
+/// The SpriteBatch class should be mainly used to apply post-processing
+/// effects (even transitions) to a large group of objects.
 ///
 /// \code
+/// // Applies the sepia effect to multiple objects.
+/// m_batch = new SpriteBatch;
+/// m_batch->create(this);
+/// m_batch->addObject(m_animation);
+/// m_batch->addObject(m_text);
 /// ...
+/// m_batch->setEffect(EffectSepia);
+///
+/// ...
+///
+/// m_batch->render();
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////
