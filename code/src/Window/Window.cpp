@@ -297,7 +297,10 @@ void Window::keyReleaseEvent(QKeyEvent* event)
     m_keyState.setKeyState(event->key(), false);
     m_keyCount--;
 
-    onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+    if (!event->isAutoRepeat())
+    {
+        onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+    }
 }
 
 
