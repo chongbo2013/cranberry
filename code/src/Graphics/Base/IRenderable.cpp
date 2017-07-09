@@ -26,6 +26,7 @@
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
+#include <QApplication>
 #include <QOpenGLFunctions>
 
 
@@ -148,4 +149,15 @@ IRenderable::operator QString() const
     }
 
     return s;
+}
+
+
+QString cranResourcePath(const QString& src)
+{
+    if (src.startsWith(":/"))
+    {
+        return src;
+    }
+
+    return qApp->applicationFilePath() + "/" + src;
 }

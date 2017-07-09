@@ -203,6 +203,9 @@ private:
 };
 
 
+extern QString cranResourcePath(const QString& src);
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \class IRenderable
 /// \ingroup Graphics
