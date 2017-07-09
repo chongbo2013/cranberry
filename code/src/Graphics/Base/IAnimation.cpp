@@ -92,6 +92,15 @@ void IAnimation::destroy()
 void IAnimation::startAnimation(AnimationMode mode)
 {
     m_mode = mode;
+    m_elapsedTime = 0.0;
+    m_currentFrame = &m_frames[0];
+
+    m_isAnimating = true;
+}
+
+
+void IAnimation::resumeAnimation()
+{
     m_isAnimating = true;
 }
 
