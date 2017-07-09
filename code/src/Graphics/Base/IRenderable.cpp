@@ -152,7 +152,7 @@ IRenderable::operator QString() const
 }
 
 
-QString cranResourcePath(const QString& src)
+QString cran::cranResourcePath(const QString& src)
 {
     if (src.startsWith(":/"))
     {

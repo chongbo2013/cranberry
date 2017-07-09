@@ -93,6 +93,7 @@ void IAnimation::startAnimation(AnimationMode mode)
 void IAnimation::startIdle()
 {
     m_currentFrame = &m_idleFrame;
+    m_isAnimating = false;
 }
 
 
