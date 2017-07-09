@@ -358,3 +358,27 @@ QSizeF Text::measureText()
 
     return sz;
 }
+
+
+Text::operator QString() const
+{
+    QString s;
+    QString cr = " r=" + QString::number(m_textPen->color().red());
+    QString cg = " g=" + QString::number(m_textPen->color().green());
+    QString cb = " b=" + QString::number(m_textPen->color().blue());
+    QString ca = " a=" + QString::number(m_textPen->color().alpha());
+    QString dr = " r=" + QString::number(m_outlineBrush->color().red());
+    QString dg = " g=" + QString::number(m_outlineBrush->color().green());
+    QString db = " b=" + QString::number(m_outlineBrush->color().blue());
+    QString da = " a=" + QString::number(m_outlineBrush->color().alpha());
+
+    s.append(IRenderable::operator QString());
+    s.append(ITransformable::operator QString());
+    s.append("-- Text\n");
+    s.append(QString("Text: ") + m_text + "\n");
+    s.append(QString("Color:") + cr + cg + cb + ca + "\n");
+    s.append(QString("Outline width: ") + QString::number(m_outlineWidth) + "\n");
+    s.append(QString("Outline color:" + dr + dg + db + da + "\n\n"));
+
+    return s;
+}

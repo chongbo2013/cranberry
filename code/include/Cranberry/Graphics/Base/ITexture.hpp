@@ -185,6 +185,14 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the maximum texture size on the current hardware. This is
     /// needed to pack multiple textures into a single one, while trying to
     /// create as big textures as possible.

@@ -41,6 +41,7 @@ IRenderable::IRenderable()
     , m_renderTarget(nullptr)
     , m_defaultProgram(nullptr)
     , m_customProgram(nullptr)
+    , m_name("<no name>")
 {
 }
 
@@ -130,4 +131,23 @@ void IRenderable::setName(const QString& name)
 RenderableEmitter* IRenderable::renderableEmitter()
 {
     return &m_emitter;
+}
+
+
+IRenderable::operator QString() const
+{
+    QString s;
+
+    s.append("--------------------------------------------------------\n");
+    s.append("--- Cranberry object\n");
+    s.append("-- Renderable\n");
+    s.append(QString("Name: ") + m_name + "\n");
+    s.append(QString("Is valid: ") + ((isNull())? "false\n" : "true\n"));
+
+    if (!isNull())
+    {
+        s.append(QString("Render target: " + m_renderTarget->settings().title() + "\n\n"));
+    }
+
+    return s;
 }

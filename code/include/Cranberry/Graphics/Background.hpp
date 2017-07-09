@@ -140,6 +140,15 @@ public:
     virtual void update(const GameTime& time) override;
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
+
+
 protected:
 
     void initializeData() override;

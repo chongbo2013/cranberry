@@ -351,3 +351,19 @@ void IShape::drawElements()
     uint mode = (m_filled) ? renderModeFilled() : renderModeWired();
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
 }
+
+
+IShape::operator QString() const
+{
+    QString s;
+    uint m = (m_filled) ? renderModeFilled() : renderModeWired();
+
+    s.append(IRenderable::operator QString());
+    s.append(ITransformable::operator QString());
+    s.append("-- Shape\n");
+    s.append(QString("Vertex count: ") + QString::number(vertexCount()) + "\n");
+    s.append(QString("Is filled: ") + ((m_filled) ? "true\n" : "false\n"));
+    s.append(QString("Render mode: ") + QString::number(m) + "\n\n");
+
+    return s;
+}

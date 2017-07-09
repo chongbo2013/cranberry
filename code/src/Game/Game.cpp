@@ -25,6 +25,7 @@
 
 // Qt headers
 #include <QApplication>
+#include <QDebug>
 #include <QMessageBox>
 
 // Standard headers
@@ -70,6 +71,10 @@ Game::Game(int& argc, char* argv[])
     std::signal(SIGTERM, &cranberryGlobalSignalHandler);
     std::signal(SIGFPE, &cranberryGlobalSignalHandler);
     std::signal(SIGILL, &cranberryGlobalSignalHandler);
+
+#ifdef QT_DEBUG
+    cranberryLogo();
+#endif
 }
 
 
@@ -153,4 +158,36 @@ void Game::exit(int exitCode)
 Game* Game::instance()
 {
     return g_instance;
+}
+
+
+void Game::cranberryLogo()
+{
+    qDebug() << "-------------------------------------------------------";
+    qDebug() << "Cranberry - C++ game engine based on the Qt5 framework.";
+    qDebug() << "Copyright (C) 2017 Nicolas Kogler";
+    qDebug() << "License - Lesser General Public License (LGPL) 3.0";
+    qDebug() << "Version" << CRANBERRY_VERSION;
+    qDebug() << "\n";
+    qDebug() << "                       d888P";
+    qDebug() << "             d8b d8888P:::P";
+    qDebug() << "            d:::888b::::::P";
+    qDebug() << "           d:::dP8888b:d8P";
+    qDebug() << "          d:::dP 88b  Yb   .d8888b.";
+    qDebug() << "         d::::P  88Yb  Yb .P::::::Y8b";
+    qDebug() << "         8:::8   88`Yb  YbP::::::::::b";
+    qDebug() << "         8:::P   88 `8   8!:::::::::::b";
+    qDebug() << "         8:dP    88  Yb d!!!::::::::::8";
+    qDebug() << "         8P    ..88   Yb8!!!::::::::::P";
+    qDebug() << "          .d8:::::Yb  d888VKb:!:!::!:8";
+    qDebug() << "         d::::::::::dP:::::::::b!!!!8";
+    qDebug() << "        8!!::::::::P::::::::::::b!8P";
+    qDebug() << "        8:!!::::::d::::::::::::::b";
+    qDebug() << "        8:!:::::::8!:::::::::::::8";
+    qDebug() << "        8:!!!:::::8!:::::::::::::8";
+    qDebug() << "        Yb:!!:::::8!!::::::::::::8";
+    qDebug() << "         8b:!!!:!!8!!!:!:::::!!:dP";
+    qDebug() << "          `8b:!!!:Yb!!!!:::::!d88";
+    qDebug() << "            \"\"\"  Y88!!!!!!!d8P";
+    qDebug() << "                  \"\"\"\"\"\"\"\n\n";
 }

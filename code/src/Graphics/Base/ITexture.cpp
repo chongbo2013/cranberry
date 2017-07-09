@@ -413,3 +413,16 @@ int ITexture::maxSize()
 
     return texSize;
 }
+
+
+ITexture::operator QString() const
+{
+    QString s;
+
+    s.append(IRenderable::operator QString());
+    s.append(ITransformable::operator QString());
+    s.append("-- Texture\n");
+    s.append("OpenGL texture ID: " + QString::number(m_texture->textureId()) + "\n\n");
+
+    return s;
+}
