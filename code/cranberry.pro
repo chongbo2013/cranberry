@@ -14,6 +14,7 @@
 QT             +=       widgets gamepad xml
 CONFIG         +=       c++11 exceptions
 DEFINES        +=       CRANBERRY_BUILD
+DEFINES        +=       CRANBERRY_VERSION=\\\"1.0.0\\\"
 TEMPLATE        =       lib
 TARGET          =       cranberry
 
