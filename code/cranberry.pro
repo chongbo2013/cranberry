@@ -89,7 +89,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Game/Game.hpp \
                     include/Cranberry/Graphics/Text.hpp \
                     include/Cranberry/Graphics/SpriteBatch.hpp \
-    include/Cranberry/Graphics/Sprite.hpp
+    include/Cranberry/Graphics/Sprite.hpp \
+    include/Cranberry/Graphics/RawAnimation.hpp
 
 
 ################################################################################
@@ -126,7 +127,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Game/Game.cpp \
                     src/Graphics/Text.cpp \
                     src/Graphics/SpriteBatch.cpp \
-    src/Graphics/Sprite.cpp
+    src/Graphics/Sprite.cpp \
+    src/Graphics/RawAnimation.cpp
 
 ################################################################################
 ## OUTPUT

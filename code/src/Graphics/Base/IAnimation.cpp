@@ -67,26 +67,6 @@ bool IAnimation::isAnimating() const
 }
 
 
-bool IAnimation::createRawAnimation(
-        const QVector<QImage> &frames,
-        const QVector<qreal> &durations,
-        Window* renderTarget
-        )
-{
-    return createInternal(frames, durations, renderTarget);
-}
-
-
-bool IAnimation::createRawAnimation(
-        const QVector<QImage>& images,
-        const QVector<Frame>& frames,
-        Window* renderTarget
-        )
-{
-    return createInternal(images, frames, renderTarget);
-}
-
-
 void IAnimation::destroy()
 {
     for (auto* atlas : m_atlases) delete atlas;
