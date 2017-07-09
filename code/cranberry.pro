@@ -90,7 +90,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Text.hpp \
                     include/Cranberry/Graphics/SpriteBatch.hpp \
     include/Cranberry/Graphics/Sprite.hpp \
-    include/Cranberry/Graphics/RawAnimation.hpp
+    include/Cranberry/Graphics/RawAnimation.hpp \
+    include/Cranberry/System/Receivers/SpriteReceiver.hpp
 
 
 ################################################################################
@@ -128,7 +129,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Text.cpp \
                     src/Graphics/SpriteBatch.cpp \
     src/Graphics/Sprite.cpp \
-    src/Graphics/RawAnimation.cpp
+    src/Graphics/RawAnimation.cpp \
+    src/System/Receivers/SpriteReceiver.cpp
 
 ################################################################################
 ## OUTPUT
