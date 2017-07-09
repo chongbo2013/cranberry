@@ -20,7 +20,9 @@
 
 
 // Cranberry headers
+#include <Cranberry/Graphics/RawAnimation.hpp>
 #include <Cranberry/Graphics/Sprite.hpp>
+#include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
 
 // Qt headers
@@ -55,6 +57,12 @@ QRectF getJsonRect(QJsonObject& obj)
 }
 
 
+Sprite::Movement::~Movement()
+{
+    delete anim;
+}
+
+
 Sprite::Sprite()
     : IRenderable()
     , ITransformable()
@@ -62,6 +70,15 @@ Sprite::Sprite()
     , m_isRunning(false)
     , m_isBlocking(false)
 {
+    m_receiver.setSprite(this);
+
+    // Movement should stop as soon as tile-based stuff is finished.
+    QObject::connect(
+            transformableEmitter(),
+            SIGNAL(stoppedMoving()),
+            &m_receiver,
+            SLOT(stoppedRunning())
+            );
 }
 
 
@@ -94,9 +111,11 @@ bool Sprite::create(const QString& path, Window* rt)
 {
     if (!IRenderable::create(rt)) return false;
 
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+
     // Attempts to load the file.
     QFile file(path);
-    if (file.open(QFile::ReadOnly))
+    if (!file.open(QFile::ReadOnly))
     {
         return cranError(ERRARG_1(e_01, path));
     }
@@ -126,30 +145,29 @@ bool Sprite::create(const QString& path, Window* rt)
 
         // Loads the movements.
         QJsonArray movements = top.value("movements").toArray();
-        foreach (QJsonValue move, movements)
+        foreach (QJsonValue m, movements)
         {
-            QJsonObject obj = move.toObject();
-            QJsonValue name = obj.value("name");
+            QJsonObject obj = m.toObject();
+            QJsonValue nme = obj.value("name");
             QJsonValue mode = obj.value("mode");
             QJsonValue advanceX = obj.value("advanceX");
             QJsonValue advanceY = obj.value("advanceY");
             QJsonObject idle = obj.value("idle").toObject();
             QJsonArray frames = obj.value("frames").toArray();
 
-            if (name.isNull() || ((!mode.isNull() && mode.toString() == "tile") &&
-               (advanceX.isNull() || advanceY.isNull())) || frames.isEmpty())
+            if (nme.isNull() || advanceX.isNull() || advanceY.isNull() || frames.isEmpty())
             {
                 return cranError(ERRARG(e_04));
             }
 
-            auto move = new Movement;
-            move->name = name.toString();
+            auto* move = new Movement;
+            move->name = nme.toString();
             move->mode = (mode.toString() == "tile") ? MovementTile : MovementDefault;
             move->totalTime = 0.0;
             move->advanceX = advanceX.toDouble();
             move->advanceY = advanceY.toDouble();
             move->idle = getJsonRect(idle);
-            move->anim = new IAnimation;
+            move->anim = new RawAnimation;
 
             QVector<IAnimation::Frame> animFrames;
             qint32 currentFrame = 0;
@@ -168,7 +186,7 @@ bool Sprite::create(const QString& path, Window* rt)
 
                 IAnimation::Frame f;
                 f.atlas = 0;
-                f.duration = duration / 1000.0;
+                f.duration = duration.toDouble() / 1000.0;
                 f.frame = currentFrame;
                 f.rect = getJsonRect(rect);
 
@@ -207,13 +225,21 @@ void Sprite::destroy()
 }
 
 
-void Sprite::runMovement(const QString& name)
+void Sprite::runMovement(const QString& n)
 {
+    if (m_isBlocking) return;
+    if (m_isRunning && m_currentMove)
+    {
+        startMovingBy(m_currentMove->advanceX, m_currentMove->advanceY);
+        resumeMovement();
+        return;
+    }
+
     // Tries to find the movement.
-    auto* m = m_movements.value(name, nullptr);
+    auto* m = m_movements.value(n, nullptr);
     if (m == nullptr)
     {
-        cranError(ERRARG_1(e_06, name));
+        cranError(ERRARG_1(e_06, n));
         return;
     }
 
@@ -221,38 +247,44 @@ void Sprite::runMovement(const QString& name)
     m->anim->startAnimation(AnimateForever);
     if (m->mode == MovementTile)
     {
-        m->anim->startMovingBy(m->advanceX, m->advanceY);
+        float mx = m->advanceX / m->totalTime;
+        float my = m->advanceY / m->totalTime;
+
+        setMoveSpeed(mx, my);
+        startMovingBy(m->advanceX, m->advanceY);
+
         m_isBlocking = true;
     }
 
     m_isRunning = true;
-    m_currentMove = m->anim;
+    m_currentMove = m;
 }
 
 
-void Sprite::runIdle(const QString& name)
+void Sprite::runIdle(const QString& n)
 {
+    if (m_isBlocking) return;
+
     // Tries to find the movement.
-    auto* m = m_movements.value(name, nullptr);
+    auto* m = m_movements.value(n, nullptr);
     if (m == nullptr)
     {
-        cranError(ERRARG_1(e_06, name));
+        cranError(ERRARG_1(e_06, n));
         return;
     }
 
     // Starts the idle mode.
     m->anim->startIdle();
-    m_currentMove = m->anim;
-    m_isBlocking = false;
+    m_currentMove = m;
     m_isRunning = false;
 }
 
 
 void Sprite::resumeMovement()
 {
-    if (!m_currentMove) return;
+    if (m_isBlocking || !m_currentMove) return;
 
-    m_currentMove->resumeAnimation();
+    m_currentMove->anim->resumeAnimation();
     m_isRunning = true;
 }
 
@@ -261,9 +293,12 @@ void Sprite::stopMovement()
 {
     if (!m_currentMove) return;
 
-    m_currentMove->stopAnimation();
-    m_currentMove->stopMoving();
-    m_currentMove = nullptr;
+    m_currentMove->anim->stopAnimation();
+    m_currentMove->anim->stopMoving();
+    m_currentMove->anim->startIdle();
+
+    m_isBlocking = false;
+    m_isRunning = false;
 }
 
 
@@ -271,7 +306,8 @@ void Sprite::update(const GameTime& time)
 {
     if (!m_currentMove) return;
 
-    m_currentMove->update(time);
+    m_currentMove->anim->update(time);
+    updateTransform(time);
 }
 
 
@@ -279,12 +315,12 @@ void Sprite::render()
 {
     if (!m_currentMove) return;
 
-    m_currentMove->setShaderProgram(shaderProgram());
-    m_currentMove->setPosition(pos());
-    m_currentMove->setAngle(angle());
-    m_currentMove->setOpacity(opacity());
-    m_currentMove->setScale(scaleX(), scaleY());
-    m_currentMove->render();
+    m_currentMove->anim->setShaderProgram(shaderProgram());
+    m_currentMove->anim->setPosition(pos());
+    m_currentMove->anim->setAngle(angle());
+    m_currentMove->anim->setOpacity(opacity());
+    m_currentMove->anim->setScale(scaleX(), scaleY());
+    m_currentMove->anim->render();
 }
 
 

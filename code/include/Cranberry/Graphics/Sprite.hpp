@@ -25,16 +25,16 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IAnimation.hpp>
 #include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/System/Receivers/SpriteReceiver.hpp>
 
 // Qt headers
 #include <QHash>
 
 
 // Forward declarations
-CRANBERRY_FORWARD_C(IAnimation)
+CRANBERRY_FORWARD_C(RawAnimation)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -62,9 +62,9 @@ public:
         qreal totalTime;
         QRectF idle;
         MovementMode mode;
-        IAnimation* anim;
+        RawAnimation* anim;
 
-        ~Movement() { delete anim; }
+        ~Movement();
     };
 
 
@@ -218,8 +218,9 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
+    SpriteReceiver            m_receiver;
     QHash<QString, Movement*> m_movements;
-    IAnimation*               m_currentMove;
+    Movement*                 m_currentMove;
     bool                      m_isRunning;
     bool                      m_isBlocking;
 };
