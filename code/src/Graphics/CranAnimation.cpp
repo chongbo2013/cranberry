@@ -42,17 +42,6 @@ CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Invalid spritesheet.")
 CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Frame %2: Invalid rectangle.")
 
 
-QString cranResourcePath(const QString& src)
-{
-    if (src.startsWith(":/"))
-    {
-        return src;
-    }
-
-    return qApp->applicationFilePath() + "/" + src;
-}
-
-
 bool CranAnimation::create(const QString& path, Window* renderTarget)
 {
     QVector<QImage> frames;
