@@ -88,7 +88,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Ellipse.hpp \
                     include/Cranberry/Game/Game.hpp \
                     include/Cranberry/Graphics/Text.hpp \
-                    include/Cranberry/Graphics/SpriteBatch.hpp
+                    include/Cranberry/Graphics/SpriteBatch.hpp \
+    include/Cranberry/Graphics/Sprite.hpp
 
 
 ################################################################################
@@ -124,7 +125,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Ellipse.cpp \
                     src/Game/Game.cpp \
                     src/Graphics/Text.cpp \
-                    src/Graphics/SpriteBatch.cpp
+                    src/Graphics/SpriteBatch.cpp \
+    src/Graphics/Sprite.cpp
 
 ################################################################################
 ## OUTPUT
