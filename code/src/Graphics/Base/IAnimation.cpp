@@ -67,6 +67,12 @@ bool IAnimation::isAnimating() const
 }
 
 
+int IAnimation::frameCount() const
+{
+    return m_frames.size();
+}
+
+
 void IAnimation::destroy()
 {
     for (auto* atlas : m_atlases) delete atlas;
