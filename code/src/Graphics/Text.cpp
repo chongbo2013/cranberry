@@ -288,8 +288,8 @@ void Text::renderToTexture()
     if (m_outlineWidth > 0)
     {
         QPainterPathStroker stroker;
-        stroker.setJoinStyle(Qt::RoundJoin);
-        stroker.setCapStyle(Qt::RoundCap);
+        stroker.setJoinStyle(Qt::BevelJoin);
+        stroker.setCapStyle(Qt::SquareCap);
         stroker.setWidth(m_outlineWidth);
 
         QPainterPath ppath;
