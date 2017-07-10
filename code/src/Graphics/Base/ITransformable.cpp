@@ -456,9 +456,9 @@ void ITransformable::startRotating(bool cwX, bool cwY, bool cwZ)
     m_isRotatingY = (m_rotateAxes & AxisY);
     m_isRotatingZ = (m_rotateAxes & AxisZ);
 
-    m_rotateDirX  = cwX;
-    m_rotateDirY  = cwY;
-    m_rotateDirZ  = cwZ;
+    m_rotateDirX  = cwX ? RotateCW : RotateCCW;
+    m_rotateDirY  = cwY ? RotateCW : RotateCCW;
+    m_rotateDirZ  = cwZ ? RotateCW : RotateCCW;
 }
 
 
