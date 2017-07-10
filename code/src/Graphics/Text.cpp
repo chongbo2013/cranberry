@@ -272,12 +272,11 @@ void Text::renderToTexture()
     QPoint pt(m_outlineWidth / 2, m_outlineWidth / 2);
 
     // Base image
-    QImage img = QImage(width(), height(), QImage::Format_ARGB32);
+    QImage img = QImage(width(), height(), QImage::Format_RGBA8888);
     img.fill(Qt::transparent);
 
     // Rendering hints
     QPainter painter(&img);
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.setRenderHints(
             QPainter::HighQualityAntialiasing |
             QPainter::SmoothPixmapTransform   |
@@ -294,7 +293,7 @@ void Text::renderToTexture()
         stroker.setWidth(m_outlineWidth);
 
         QPainterPath ppath;
-        ppath.addText(pt.x(), pt.y() + fm.ascent(), m_font, m_text);
+        ppath.addText(pt.x(), pt.y() + fm.ascent() - 0.5, m_font, m_text);
         painter.setBrush(*m_outlineBrush);
         painter.setPen(Qt::NoPen);
         painter.drawPath(stroker.createStroke(ppath));
