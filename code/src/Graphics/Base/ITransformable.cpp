@@ -380,32 +380,30 @@ void ITransformable::startMovingBy(float advanceX, float advanceY)
     if (advanceX != 0.f)
     {
         m_isMovingX = true;
+        m_targetMoveX = m_x + advanceX;
 
         if (advanceX < 0)
         {
             m_moveDir |= MoveWest;
-            m_targetMoveX = m_x - advanceX;
         }
         else
         {
             m_moveDir |= MoveEast;
-            m_targetMoveX = m_x + advanceX;
         }
     }
 
     if (advanceY != 0.f)
     {
         m_isMovingY = true;
+        m_targetMoveY = m_y + advanceY;
 
         if (advanceY < 0)
         {
             m_moveDir |= MoveNorth;
-            m_targetMoveY = m_y - advanceY;
         }
         else
         {
             m_moveDir |= MoveSouth;
-            m_targetMoveY = m_y + advanceY;
         }
     }
 }
@@ -450,11 +448,17 @@ void ITransformable::startMovingTo(float targetX, float targetY)
 }
 
 
-void ITransformable::startRotating()
+void ITransformable::startRotating(bool cwX, bool cwY, bool cwZ)
 {
+    if (m_rotateMode != RotateForever) return;
+
     m_isRotatingX = (m_rotateAxes & AxisX);
     m_isRotatingY = (m_rotateAxes & AxisY);
     m_isRotatingZ = (m_rotateAxes & AxisZ);
+
+    m_rotateDirX  = cwX;
+    m_rotateDirY  = cwY;
+    m_rotateDirZ  = cwZ;
 }
 
 

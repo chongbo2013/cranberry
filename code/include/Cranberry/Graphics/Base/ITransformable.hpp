@@ -458,10 +458,13 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Starts rotating the object, but only if rotate mode is RotateForever.
-    /// Do not forget to specify the rotate axes beforehand!
+    ///
+    /// \param cwX Clockwise rotation around X-axis?
+    /// \param cwY Clockwise rotation around Y-axis?
+    /// \param cwZ Clockwise rotation around Z-axis?
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startRotating();
+    void startRotating(bool cwX = true, bool cwY = true, bool cwZ = true);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Rotates the object by \p advance degrees.
