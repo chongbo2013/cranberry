@@ -78,16 +78,16 @@ void GameWindow::onInit()
     // signals & slots
     QObject::connect(
             m_texture->transformableEmitter(),
-            SIGNAL(stoppedMoving()),
+            &TransformableEmitter::stoppedMoving,
             this,
-            SLOT(stoppedMoving())
+            &GameWindow::stoppedMoving
             );
 
     QObject::connect(
             m_texture->transformableEmitter(),
-            SIGNAL(stoppedScaling()),
+            &TransformableEmitter::stoppedScaling,
             this,
-            SLOT(stoppedScaling())
+            &GameWindow::stoppedScaling
             );
 }
 
