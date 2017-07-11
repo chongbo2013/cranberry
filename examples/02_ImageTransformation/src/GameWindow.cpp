@@ -31,7 +31,10 @@
 #define CENTER(w, h)  (QVector2D(CENTER_X(w), CENTER_Y(h)))
 
 
-GameWindow::GameWindow() : Window()
+GameWindow::GameWindow()
+    : Window()
+    , m_texture(nullptr)
+    , m_linkText(nullptr)
 {
     WindowSettings settings;
     settings.setResizable(false);

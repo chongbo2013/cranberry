@@ -32,7 +32,10 @@
 #define CENTER_Y(h)   (WINDOW_HEIGHT / 2 - h / 2)
 
 
-GameWindow::GameWindow() : Window()
+GameWindow::GameWindow()
+    : Window()
+    , m_background(nullptr)
+    , m_linkText(nullptr)
 {
     WindowSettings settings;
     settings.setResizable(false);

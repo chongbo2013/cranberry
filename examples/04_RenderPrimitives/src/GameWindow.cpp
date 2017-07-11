@@ -34,7 +34,12 @@
 #define CENTER_Y(h)   (WINDOW_HEIGHT / 2 - h / 2)
 
 
-GameWindow::GameWindow() : Window()
+GameWindow::GameWindow()
+    : Window()
+    , m_ellipse(nullptr)
+    , m_hexagon(nullptr)
+    , m_decagon(nullptr)
+    , m_polygon(nullptr)
 {
     WindowSettings settings;
     settings.setResizable(false);
