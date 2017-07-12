@@ -35,6 +35,7 @@ CRANBERRY_USING_NAMESPACE
 
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - The given render target is invalid.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - There is no default shader program.")
+CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Cannot render invalid object.")
 
 
 IRenderable::IRenderable()
@@ -82,6 +83,22 @@ void IRenderable::destroy()
     m_customProgram = nullptr;
     m_renderTarget = nullptr;
     m_emitter.emitDestroyed();
+}
+
+
+bool IRenderable::prepareRendering()
+{
+    if (Q_UNLIKELY(isNull()))
+    {
+        return cranError(ERRARG(e_03));
+    }
+
+    if (QOpenGLContext::currentContext() != m_renderTarget->context())
+    {
+        m_renderTarget->makeCurrent();
+    }
+
+    return true;
 }
 
 

@@ -111,6 +111,15 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Prepares the render process by making the target's context current or
+    /// by determining whether the object is null.
+    ///
+    /// \returns true if preparing was successful.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool prepareRendering();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves a pointer to the render target.
     ///
     /// \returns a pointer to the render target.
