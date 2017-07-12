@@ -288,8 +288,7 @@ private:
 /// \class IAnimation
 /// \ingroup Graphics
 ///
-/// This class is the base for all animations. Use createRawAnimation() if you
-/// want to show an animation from a given set of frames and frame lengths.
+/// This class is the base for all animations.
 ///
 /// \code
 /// class GifAnimation : public IAnimation

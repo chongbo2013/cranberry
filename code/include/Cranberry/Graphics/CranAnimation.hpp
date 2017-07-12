@@ -50,9 +50,11 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Creates the animation by loading all data from a CBA file.
+    /// Creates the animation by loading all data from a JSON file. In order to
+    /// get information about the JSON attributes, look up the documentation
+    /// regarding animations ("cranberry/docs/file formats/animation.pdf").
     ///
-    /// \param path Path to a *.cba file.
+    /// \param path Path to a *.json file.
     /// \param renderTarget Target to render animation on.
     /// \returns true if created successfully.
     ///
