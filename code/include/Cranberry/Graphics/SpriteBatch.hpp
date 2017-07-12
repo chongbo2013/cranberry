@@ -26,6 +26,8 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
+#include <Cranberry/Graphics/Base/IRenderable.hpp>
+#include <Cranberry/Graphics/Base/ITransformable.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 #include <Cranberry/System/GameTime.hpp>
 
@@ -35,7 +37,6 @@
 
 // Forward declarations
 CRANBERRY_FORWARD_C(Window)
-CRANBERRY_FORWARD_C(IRenderable)
 CRANBERRY_FORWARD_C(OpenGLShader)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_Q(QOpenGLExtraFunctions)
@@ -53,6 +54,8 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT SpriteBatch
+    : public IRenderable
+    , public ITransformable
 {
 public:
 
@@ -80,7 +83,7 @@ public:
     /// \returns true if this batch is null.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool isNull() const;
+    bool isNull() const override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the necessary OpenGL objects for the sprite batch.
@@ -89,13 +92,13 @@ public:
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool create(Window* renderTarget = nullptr);
+    bool create(Window* renderTarget = nullptr) override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Destroys all the OpenGL objects for the sprite batch.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void destroy();
+    void destroy() override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Adds a new renderable object and puts it at the end of the list.
@@ -129,46 +132,19 @@ public:
     bool removeObject(IRenderable* object);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the shader program that will apply the post-processing effects
-    /// to the batch. When writing a GLSL shader for SpriteBatch, please follow
-    /// the conventions described in the documentation. Will NOT take ownership
-    /// of \p program. You need to free it yourself.
-    ///
-    /// \param program Program that applies the effects.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setShaderProgram(OpenGLShader* program);
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Updates all objects in the sprite batch (e.g. transformations).
     ///
     /// \param time Contains the delta time.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void update(const GameTime& time);
+    void update(const GameTime& time) override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Renders all objects in the batch and applies the effects.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void render();
+    void render() override;
 
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the opacity of the entire scene.
-    ///
-    /// \returns the opacity of the batch.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    float opacity() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the opacity of the entire scene.
-    ///
-    /// \param opacity New opacity of the batch.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setOpacity(float opacity);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the effect to render this object with.
@@ -177,25 +153,6 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setEffect(Effect effect);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the name of this batch.
-    ///
-    /// \returns the name.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    const QString& name() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Setting a name is not required, but recommended, since it can be easily
-    /// retrieved by name and it simplifies debugging by being able to track
-    /// down the error source.
-    ///
-    /// \param name New name of this batch.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setName(const QString& name);
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the string representation of this object.
@@ -224,11 +181,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLFunctions*      gl;
     QOpenGLExtraFunctions* egl;
-    Window*                m_renderTarget;
-    OpenGLShader*          m_shader;
-    OpenGLShader*          m_defaultShader;
     Effect                 m_effect;
     priv::QuadVertices     m_vertices;
     QList<IRenderable*>    m_objects;

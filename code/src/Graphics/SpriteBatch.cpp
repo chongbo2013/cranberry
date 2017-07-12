@@ -37,23 +37,18 @@
 CRANBERRY_USING_NAMESPACE
 
 
-CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - The given render target is invalid.")
-CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Frame buffer could not be created.")
-CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Render buffer could not be created.")
-CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Vertex array could not be created.")
-CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Vertex buffer could not be created.")
-CRANBERRY_CONST_VAR(QString, e_06, "%0 [%1] - Index buffer could not be created.")
-CRANBERRY_CONST_VAR(QString, e_07, "%0 [%1] - Texture could not be created.")
-CRANBERRY_CONST_VAR(QString, e_08, "%0 [%1] - Cannot render invalid object.")
-CRANBERRY_CONST_VAR(QString, e_09, "%0 [%1] - Frame buffer not complete.")
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Frame buffer could not be created.")
+CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Render buffer could not be created.")
+CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Vertex array could not be created.")
+CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Vertex buffer could not be created.")
+CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Index buffer could not be created.")
+CRANBERRY_CONST_VAR(QString, e_06, "%0 [%1] - Texture could not be created.")
+CRANBERRY_CONST_VAR(QString, e_07, "%0 [%1] - Frame buffer not complete.")
 CRANBERRY_CONST_ARR(uint, 6, c_ibo, (0, 1, 2, 2, 3, 0))
 
 
 SpriteBatch::SpriteBatch()
-    : gl(nullptr)
-    , m_renderTarget(nullptr)
-    , m_shader(nullptr)
-    , m_effect(EffectNone)
+    : m_effect(EffectNone)
     , m_name("<no name>")
     , m_opacity(1)
     , m_frameBuffer(0)
@@ -82,7 +77,7 @@ SpriteBatch::~SpriteBatch()
 
 bool SpriteBatch::isNull() const
 {
-    return m_renderTarget == nullptr ||
+    return IRenderable::isNull()     ||
            m_frameBuffer  == 0       ||
            m_renderBuffer == 0       ||
            m_vertexArray  == 0       ||
@@ -92,20 +87,12 @@ bool SpriteBatch::isNull() const
 }
 
 
-bool SpriteBatch::create(Window* renderTarget)
+bool SpriteBatch::create(Window* rt)
 {
-    if (renderTarget == nullptr)
-    {
-        if ((renderTarget = Window::activeWindow()) == nullptr)
-        {
-            return cranError(ERRARG(e_01));
-        }
-    }
+    if (!IRenderable::create(rt)) return false;
 
-    gl = renderTarget->context()->functions();
-    egl = renderTarget->context()->extraFunctions();
-    m_renderTarget = renderTarget;
-    m_defaultShader = OpenGLDefaultShaders::get("cb.glsl.texture");
+    egl = renderTarget()->context()->extraFunctions();
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return createBuffers() && writeBuffers();
 }
@@ -114,9 +101,9 @@ bool SpriteBatch::create(Window* renderTarget)
 void SpriteBatch::updateVertices()
 {
     m_vertices.at(0).xyz(0, 0, 0);
-    m_vertices.at(1).xyz(m_renderTarget->width(), 0, 0);
-    m_vertices.at(2).xyz(m_renderTarget->width(), m_renderTarget->height(), 0);
-    m_vertices.at(3).xyz(0, m_renderTarget->height(), 0);
+    m_vertices.at(1).xyz(renderTarget()->width(), 0, 0);
+    m_vertices.at(2).xyz(renderTarget()->width(), renderTarget()->height(), 0);
+    m_vertices.at(3).xyz(0, renderTarget()->height(), 0);
 }
 
 
@@ -126,37 +113,37 @@ bool SpriteBatch::createBuffers()
     glDebug(gl->glGenFramebuffers(1, &m_frameBuffer));
     if (m_frameBuffer == 0)
     {
-        return cranError(ERRARG(e_02));
+        return cranError(ERRARG(e_01));
     }
 
     glDebug(gl->glGenRenderbuffers(1, &m_renderBuffer));
     if (m_renderBuffer == 0)
     {
-        return cranError(ERRARG(e_03));
+        return cranError(ERRARG(e_02));
     }
 
     glDebug(egl->glGenVertexArrays(1, &m_vertexArray));
     if (m_vertexArray == 0)
     {
-        return cranError(ERRARG(e_04));
+        return cranError(ERRARG(e_03));
     }
 
     glDebug(gl->glGenBuffers(1, &m_vertexBuffer));
     if (m_vertexBuffer == 0)
     {
-        return cranError(ERRARG(e_05));
+        return cranError(ERRARG(e_04));
     }
 
     glDebug(gl->glGenBuffers(1, &m_indexBuffer));
     if (m_indexBuffer == 0)
     {
-        return cranError(ERRARG(e_06));
+        return cranError(ERRARG(e_05));
     }
 
     glDebug(gl->glGenTextures(1, &m_frameTexture));
     if (m_frameTexture == 0)
     {
-        return cranError(ERRARG(e_07));
+        return cranError(ERRARG(e_06));
     }
 
     return true;
@@ -179,8 +166,8 @@ bool SpriteBatch::writeBuffers()
                 GL_TEXTURE_2D,
                 GL_ZERO,
                 GL_RGBA8,
-                m_renderTarget->width(),
-                m_renderTarget->height(),
+                renderTarget()->width(),
+                renderTarget()->height(),
                 GL_ZERO,
                 GL_RGBA,
                 GL_UNSIGNED_BYTE,
@@ -202,8 +189,8 @@ bool SpriteBatch::writeBuffers()
     glDebug(gl->glRenderbufferStorage(
                 GL_RENDERBUFFER,
                 GL_DEPTH24_STENCIL8,
-                m_renderTarget->width(),
-                m_renderTarget->height()
+                renderTarget()->width(),
+                renderTarget()->height()
                 ));
 
     glDebug(gl->glFramebufferRenderbuffer(
@@ -218,7 +205,7 @@ bool SpriteBatch::writeBuffers()
     glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        return cranError(ERRARG(e_09));
+        return cranError(ERRARG(e_07));
     }
 
     // Allocates static data for the vertex buffer.
@@ -237,7 +224,7 @@ bool SpriteBatch::writeBuffers()
                 ));
 
     // Bind this render target's VAO back again.
-    glDebug(egl->glBindVertexArray(m_renderTarget->vao()));
+    glDebug(egl->glBindVertexArray(renderTarget()->vao()));
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, GL_ZERO));
     glDebug(egl->glBindRenderbuffer(GL_RENDERBUFFER, GL_ZERO));
 
@@ -299,14 +286,10 @@ bool SpriteBatch::removeObject(IRenderable* object)
 }
 
 
-void SpriteBatch::setShaderProgram(OpenGLShader* program)
-{
-    m_shader = program;
-}
-
-
 void SpriteBatch::update(const GameTime& time)
 {
+    updateTransform(time);
+
     for (IRenderable* obj : m_objects)
     {
         obj->update(time);
@@ -316,15 +299,7 @@ void SpriteBatch::update(const GameTime& time)
 
 void SpriteBatch::render()
 {
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_08));
-        return;
-    }
-    else if (QOpenGLContext::currentContext() != m_renderTarget->context())
-    {
-        m_renderTarget->makeCurrent();
-    }
+    if (!prepareRendering()) return;
 
     setupBatch();
     renderBatch();
@@ -351,8 +326,7 @@ void SpriteBatch::renderBatch()
 
 void SpriteBatch::setupFrame()
 {
-    OpenGLShader* shader = (m_shader != nullptr) ? m_shader : m_defaultShader;
-    QOpenGLShaderProgram* program = shader->program();
+    QOpenGLShaderProgram* program = shaderProgram()->program();
 
     // Bind default framebuffer.
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, 0));
@@ -420,30 +394,26 @@ void SpriteBatch::releaseFrame()
 {
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, 0));
     glDebug(egl->glUseProgram(0));
-    glDebug(egl->glBindVertexArray(m_renderTarget->vao()));
+    glDebug(egl->glBindVertexArray(renderTarget()->vao()));
 }
 
 
 QMatrix4x4 SpriteBatch::buildMatrix()
 {
-    float fw = static_cast<float>(m_renderTarget->width());
-    float fh = static_cast<float>(m_renderTarget->height());
+    float fw = static_cast<float>(renderTarget()->width());
+    float fh = static_cast<float>(renderTarget()->height());
 
-    QMatrix4x4 proj;
+    QMatrix4x4 proj, tran, rot, scale, orig, norig;
     proj.ortho(0.f, fw, 0.f, fh, -1.f, 1.f);
+    tran.translate(x(), y());
+    rot.rotate(angleX(), 1.f, 0.f, 0.f);
+    rot.rotate(angleY(), 0.f, 1.f, 0.f);
+    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
+    scale.scale(scaleX(), scaleY());
+    orig.translate(origin());
+    norig.translate(origin() * -1);
 
-    return proj;
-}
-
-
-float SpriteBatch::opacity() const
-{
-    return m_opacity;
-}
-
-void SpriteBatch::setOpacity(float opacity)
-{
-    m_opacity = opacity;
+    return proj * tran * orig * rot * norig * orig * scale * norig;
 }
 
 
@@ -453,35 +423,12 @@ void SpriteBatch::setEffect(Effect effect)
 }
 
 
-const QString& SpriteBatch::name() const
-{
-    return m_name;
-}
-
-
-void SpriteBatch::setName(const QString& name)
-{
-    m_name = name;
-}
-
-
 SpriteBatch::operator QString() const
 {
     QString s;
 
-    s.append("--------------------------------------------------------\n");
-    s.append("--- Cranberry object\n");
+    s.append(IRenderable::operator QString());
     s.append("-- SpriteBatch\n");
-
-    if (isNull())
-    {
-        s.append("Object is null.");
-        return s;
-    }
-
-    s.append(QString("Name: ") + m_name + "\n");
-    s.append(QString("Is valid: ") + ((isNull())? "false\n" : "true\n"));
-    s.append(QString("Render target: " + m_renderTarget->settings().title() + "\n"));
     s.append(QString("Objects bound: ") + QString::number(m_objects.size()) + "\n");
 
     for (int i = 0; i < m_objects.size(); i++)
