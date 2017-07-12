@@ -34,7 +34,7 @@
 
 GameWindow::GameWindow()
     : Window()
-    , m_background(nullptr)
+    , m_background({ 0, 0, 0, 0 })
     , m_linkText(nullptr)
 {
     WindowSettings settings;

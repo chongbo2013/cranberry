@@ -52,8 +52,8 @@ protected:
 
 private:
 
-    Background* m_background[4];
-    Text*       m_linkText;
+    QVector<Background*> m_background;
+    Text*                m_linkText;
 };
 
 

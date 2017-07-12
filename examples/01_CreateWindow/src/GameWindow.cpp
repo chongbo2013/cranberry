@@ -59,7 +59,7 @@ void GameWindow::onExit()
 {
     qDebug() << "GameWindow destroyed!";
     qDebug() << "Purposely throwing exception to test onCrash().";
-    throw 0; // Unhandled exception //!\\
+    throw 0; // Unhandled exception
 }
 
 
