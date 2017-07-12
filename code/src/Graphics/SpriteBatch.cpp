@@ -50,7 +50,7 @@ CRANBERRY_CONST_ARR(uint, 6, c_ibo, (0, 1, 2, 2, 3, 0))
 SpriteBatch::SpriteBatch()
     : m_effect(EffectNone)
     , m_name("<no name>")
-    , m_opacity(1)
+    , m_backColor(QColor())
     , m_frameBuffer(0)
     , m_renderBuffer(0)
     , m_vertexArray(0)
@@ -176,6 +176,8 @@ bool SpriteBatch::writeBuffers()
 
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     glDebug(gl->glFramebufferTexture2D(
                 GL_FRAMEBUFFER,
                 GL_COLOR_ATTACHMENT0,
@@ -310,8 +312,31 @@ void SpriteBatch::render()
 
 void SpriteBatch::setupBatch()
 {
+    // Change clear color for frame buffer.
+    if (m_backColor.isValid())
+    {
+        glDebug(gl->glClearColor(
+                    m_backColor.redF(),
+                    m_backColor.greenF(),
+                    m_backColor.blueF(),
+                    m_backColor.alphaF()
+                    ));
+    }
+
     glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer));
     glDebug(gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+    // Revert clear color back to default.
+    if (m_backColor.isValid())
+    {
+        const auto& cc = renderTarget()->settings().clearColor();
+        glDebug(gl->glClearColor(
+                    cc.redF(),
+                    cc.greenF(),
+                    cc.blueF(),
+                    cc.alphaF()
+                    ));
+    }
 }
 
 
@@ -340,7 +365,7 @@ void SpriteBatch::setupFrame()
     // Modify the states of the program.
     glDebug(program->setUniformValue("u_tex", GL_ZERO));
     glDebug(program->setUniformValue("u_mvp", matrix(this, false)));
-    glDebug(program->setUniformValue("u_opac", (float) m_opacity));
+    glDebug(program->setUniformValue("u_opac", opacity()));
     glDebug(program->setUniformValue("u_effect", (uint) m_effect));
     glDebug(program->setUniformValue("u_mode", GL_ZERO));
 
@@ -395,6 +420,24 @@ void SpriteBatch::releaseFrame()
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, 0));
     glDebug(egl->glUseProgram(0));
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
+}
+
+
+const QColor& SpriteBatch::backgroundColor() const
+{
+    return m_backColor;
+}
+
+
+void SpriteBatch::setBackgroundColor(const QColor& color)
+{
+    m_backColor = color;
+}
+
+
+Effect SpriteBatch::effect() const
+{
+    return m_effect;
 }
 
 

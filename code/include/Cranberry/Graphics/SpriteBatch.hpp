@@ -147,6 +147,32 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the background color of the batch.
+    ///
+    /// \returns the background color.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const QColor& backgroundColor() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the effect of the batch.
+    ///
+    /// \returns the effect.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    Effect effect() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the background color of this batch. Setting this to
+    /// QColor() [isValid() returns false] will result in the BG color
+    /// of the render target.
+    ///
+    /// \param color Background color.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBackgroundColor(const QColor& color);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Specifies the effect to render this object with.
     ///
     /// \param effect EffectNone does not modify the image.
@@ -184,7 +210,7 @@ private:
     priv::QuadVertices     m_vertices;
     QList<IRenderable*>    m_objects;
     QString                m_name;
-    qreal                  m_opacity;
+    QColor                 m_backColor;
     uint                   m_frameBuffer;
     uint                   m_renderBuffer;
     uint                   m_vertexArray;
