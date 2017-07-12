@@ -13,7 +13,7 @@
 QT             +=       core gui widgets
 CONFIG         +=       c++11 exceptions
 TEMPLATE        =       app
-TARGET          =       04_RenderPrimitives
+TARGET          =       05_PlayAnimations
 
 
 ################################################################################
