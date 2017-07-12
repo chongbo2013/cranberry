@@ -50,7 +50,7 @@ CRANBERRY_CONST_ARR(uint, 6, c_ibo, (0, 1, 2, 2, 3, 0))
 SpriteBatch::SpriteBatch()
     : m_effect(EffectNone)
     , m_name("<no name>")
-    , m_backColor(QColor())
+    , m_backColor(Qt::transparent)
     , m_frameBuffer(0)
     , m_renderBuffer(0)
     , m_vertexArray(0)
@@ -93,6 +93,8 @@ bool SpriteBatch::create(Window* rt)
 
     egl = renderTarget()->context()->extraFunctions();
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    setSize(renderTarget()->width(), renderTarget()->height());
+    setOrigin(QVector2D(width() / 2, height() / 2));
 
     return createBuffers() && writeBuffers();
 }
