@@ -31,7 +31,12 @@
 
 // Qt headers
 #include <QPainterPath>
+#include <QMatrix4x4>
 #include <QVector2D>
+
+
+// Forward declarations
+CRANBERRY_FORWARD_C(IRenderable)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -185,6 +190,21 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     float opacity() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the entire transformation matrix. Since ITransformable and
+    /// IRenderable are two independent classes, we need it here in order to
+    /// retrieve the render target's width and height.
+    ///
+    /// \note \p flipped is only false for frame buffers, because when they are
+    ///       rendered to, the objects are already flipped.
+    ///
+    /// \param obj Target to render to. Tip: Simply use 'this'.
+    /// \param flipped Flip the entire object?
+    /// \returns the transformation matrix.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QMatrix4x4 matrix(IRenderable* obj, bool flipped = true) const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the move direction of the object.

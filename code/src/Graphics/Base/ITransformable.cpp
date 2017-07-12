@@ -20,7 +20,9 @@
 
 
 // Cranberry headers
+#include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 // Qt headers
 #include <QTransform>
@@ -168,6 +170,33 @@ float ITransformable::height() const
 float ITransformable::opacity() const
 {
     return m_opacity;
+}
+
+
+QMatrix4x4 ITransformable::matrix(IRenderable* obj, bool flipped) const
+{
+    QMatrix4x4 proj, tran, rot, scale, orig, norig;
+    qreal fw = static_cast<qreal>(obj->renderTarget()->width());
+    qreal fh = static_cast<qreal>(obj->renderTarget()->height());
+
+    if (flipped)
+    {
+        proj.ortho(0.f, fw, fh, 0.f, -1, 1);
+    }
+    else
+    {
+        proj.ortho(0.f, fw, 0.f, fh, -1, 1);
+    }
+
+    tran.translate(x(), y());
+    rot.rotate(angleX(), 1.f, 0.f, 0.f);
+    rot.rotate(angleY(), 0.f, 1.f, 0.f);
+    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
+    scale.scale(scaleX(), scaleY());
+    orig.translate(origin());
+    norig.translate(origin() * -1);
+
+    return proj * tran * orig * rot * norig * orig * scale * norig;
 }
 
 
