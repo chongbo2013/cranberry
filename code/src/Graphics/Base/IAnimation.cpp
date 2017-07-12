@@ -149,11 +149,7 @@ void IAnimation::update(const GameTime& time)
 
 void IAnimation::render()
 {
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_01));
-        return;
-    }
+    if (!prepareRendering()) return;
 
     // Copies all transformations and renders the current texture.
     ITexture* texture = m_atlases[m_currentFrame->atlas]->texture();

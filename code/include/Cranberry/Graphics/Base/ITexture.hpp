@@ -219,7 +219,6 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     bool createBuffers();
     bool createTexture(const QImage& img);
-    auto buildMatrix() -> QMatrix4x4;
     void bindObjects();
     void releaseObjects();
     void writeVertices();

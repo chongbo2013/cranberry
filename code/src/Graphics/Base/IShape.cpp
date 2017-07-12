@@ -88,15 +88,7 @@ void IShape::update(const GameTime& time)
 
 void IShape::render()
 {
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_02));
-        return;
-    }
-    else if (QOpenGLContext::currentContext() != renderTarget()->context())
-    {
-        renderTarget()->makeCurrent();
-    }
+    if (!prepareRendering()) return;
 
     bindObjects();
     writeVertices();
@@ -250,26 +242,6 @@ QVector2D IShape::findSize(const QVector<QVector2D>& points)
 }
 
 
-QMatrix4x4 IShape::buildMatrix()
-{
-    float fw = static_cast<float>(renderTarget()->width());
-    float fh = static_cast<float>(renderTarget()->height());
-
-    // TODO: Not cheap - maybe optimize this?!
-    QMatrix4x4 proj, tran, rot, scale, orig, norig;
-    proj.ortho(0.f, fw, fh, 0.f, -1.f, 1.f);
-    tran.translate(x(), y());
-    rot.rotate(angleX(), 1.f, 0.f, 0.f);
-    rot.rotate(angleY(), 0.f, 1.f, 0.f);
-    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
-    scale.scale(scaleX(), scaleY());
-    orig.translate(origin());
-    norig.translate(origin() * -1);
-
-    return proj * tran * orig * rot * norig * orig * scale * norig;
-}
-
-
 void IShape::bindObjects()
 {
     glDebug(m_vertexBuffer->bind());
@@ -317,7 +289,7 @@ void IShape::modifyProgram()
 {
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
-    glDebug(program->setUniformValue("u_mvp", buildMatrix()));
+    glDebug(program->setUniformValue("u_mvp", matrix(this)));
     glDebug(program->setUniformValue("u_opac", opacity()));
     glDebug(program->enableAttributeArray(priv::Vertex::xyzAttrib()));
     glDebug(program->enableAttributeArray(priv::Vertex::rgbaAttrib()));

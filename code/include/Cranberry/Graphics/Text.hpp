@@ -207,7 +207,6 @@ public:
     /// Creates the OpenGL resources for this object.
     ///
     /// \param renderTarget Target to render text on.
-    /// \param (opt) size Initial size of the texture.
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////

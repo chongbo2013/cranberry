@@ -339,7 +339,7 @@ void SpriteBatch::setupFrame()
 
     // Modify the states of the program.
     glDebug(program->setUniformValue("u_tex", GL_ZERO));
-    glDebug(program->setUniformValue("u_mvp", buildMatrix()));
+    glDebug(program->setUniformValue("u_mvp", matrix(this, false)));
     glDebug(program->setUniformValue("u_opac", (float) m_opacity));
     glDebug(program->setUniformValue("u_effect", (uint) m_effect));
     glDebug(program->setUniformValue("u_mode", GL_ZERO));
@@ -395,25 +395,6 @@ void SpriteBatch::releaseFrame()
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, 0));
     glDebug(egl->glUseProgram(0));
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
-}
-
-
-QMatrix4x4 SpriteBatch::buildMatrix()
-{
-    float fw = static_cast<float>(renderTarget()->width());
-    float fh = static_cast<float>(renderTarget()->height());
-
-    QMatrix4x4 proj, tran, rot, scale, orig, norig;
-    proj.ortho(0.f, fw, 0.f, fh, -1.f, 1.f);
-    tran.translate(x(), y());
-    rot.rotate(angleX(), 1.f, 0.f, 0.f);
-    rot.rotate(angleY(), 0.f, 1.f, 0.f);
-    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
-    scale.scale(scaleX(), scaleY());
-    orig.translate(origin());
-    norig.translate(origin() * -1);
-
-    return proj * tran * orig * rot * norig * orig * scale * norig;
 }
 
 

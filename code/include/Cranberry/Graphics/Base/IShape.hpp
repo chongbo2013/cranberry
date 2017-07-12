@@ -173,7 +173,6 @@ private:
     bool createBuffer();
     auto findCenter(const QVector<QVector2D>&) -> QVector2D;
     auto findSize(const QVector<QVector2D>&) -> QVector2D;
-    auto buildMatrix() -> QMatrix4x4;
     void bindObjects();
     void releaseObjects();
     void writeVertices();

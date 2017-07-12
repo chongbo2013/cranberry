@@ -173,11 +173,7 @@ void Text::update(const GameTime& time)
 
 void Text::render()
 {
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_01));
-        return;
-    }
+    if (!IRenderable::prepareRendering()) return;
 
     if (m_textUpdate)
     {

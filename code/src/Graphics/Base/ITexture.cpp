@@ -184,15 +184,7 @@ void ITexture::update(const GameTime& time)
 
 void ITexture::render()
 {
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_04));
-        return;
-    }
-    else if (QOpenGLContext::currentContext() != renderTarget()->context())
-    {
-        renderTarget()->makeCurrent();
-    }
+    if (!prepareRendering()) return;
 
     bindObjects();
     writeVertices();
@@ -200,26 +192,6 @@ void ITexture::render()
     modifyAttribs();
     drawElements();
     releaseObjects();
-}
-
-
-QMatrix4x4 ITexture::buildMatrix()
-{
-    float fw = static_cast<float>(renderTarget()->width());
-    float fh = static_cast<float>(renderTarget()->height());
-
-    // TODO: Not cheap - maybe optimize this?!
-    QMatrix4x4 proj, tran, rot, scale, orig, norig;
-    proj.ortho(0.f, fw, fh, 0.f, -1.f, 1.f);
-    tran.translate(x(), y());
-    rot.rotate(angleX(), 1.f, 0.f, 0.f);
-    rot.rotate(angleY(), 0.f, 1.f, 0.f);
-    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
-    scale.scale(scaleX(), scaleY());
-    orig.translate(origin());
-    norig.translate(origin() * -1);
-
-    return proj * tran * orig * rot * norig * orig * scale * norig;
 }
 
 
@@ -265,7 +237,7 @@ void ITexture::modifyProgram()
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
     glDebug(program->setUniformValue("u_tex", GL_ZERO));
-    glDebug(program->setUniformValue("u_mvp", buildMatrix()));
+    glDebug(program->setUniformValue("u_mvp", matrix(this)));
     glDebug(program->setUniformValue("u_opac", opacity()));
     glDebug(program->setUniformValue("u_mode", (uint) m_blendMode));
     glDebug(program->setUniformValue("u_effect", (uint) m_effect));
