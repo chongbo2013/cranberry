@@ -59,15 +59,12 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Emitters/RenderableEmitter.hpp \
                     include/Cranberry/System/Emitters/TransformableEmitter.hpp \
                     include/Cranberry/System/Emitters/BackgroundEmitter.hpp \
+                    include/Cranberry/System/Emitters/AnimationEmitter.hpp \
+                    include/Cranberry/System/Receivers/SpriteReceiver.hpp \
                     include/Cranberry/OpenGL/OpenGLDebug.hpp \
                     include/Cranberry/OpenGL/OpenGLVertex.hpp \
                     include/Cranberry/OpenGL/OpenGLShader.hpp \
                     include/Cranberry/OpenGL/OpenGLDefaultShaders.hpp \
-                    include/Cranberry/Graphics/Base/IRenderable.hpp \
-                    include/Cranberry/Graphics/Base/ITransformable.hpp \
-                    include/Cranberry/Graphics/Base/ITexture.hpp \
-                    include/Cranberry/Graphics/Base/Enumerations.hpp \
-                    include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Input/KeyReleaseEvent.hpp \
                     include/Cranberry/Input/KeyboardState.hpp \
                     include/Cranberry/Input/MouseMoveEvent.hpp \
@@ -78,20 +75,25 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
+                    include/Cranberry/Graphics/Base/IRenderable.hpp \
+                    include/Cranberry/Graphics/Base/ITransformable.hpp \
+                    include/Cranberry/Graphics/Base/ITexture.hpp \
+                    include/Cranberry/Graphics/Base/Enumerations.hpp \
+                    include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Graphics/Base/TextureAtlas.hpp \
                     include/Cranberry/Graphics/Base/IAnimation.hpp \
-                    include/Cranberry/System/Emitters/AnimationEmitter.hpp \
                     include/Cranberry/Graphics/GifAnimation.hpp \
                     include/Cranberry/Graphics/CranAnimation.hpp \
                     include/Cranberry/Graphics/Base/IShape.hpp \
                     include/Cranberry/Graphics/Polygon.hpp \
                     include/Cranberry/Graphics/Ellipse.hpp \
-                    include/Cranberry/Game/Game.hpp \
                     include/Cranberry/Graphics/Text.hpp \
                     include/Cranberry/Graphics/SpriteBatch.hpp \
-    include/Cranberry/Graphics/Sprite.hpp \
-    include/Cranberry/Graphics/RawAnimation.hpp \
-    include/Cranberry/System/Receivers/SpriteReceiver.hpp
+                    include/Cranberry/Graphics/Sprite.hpp \
+                    include/Cranberry/Graphics/RawAnimation.hpp \
+                    include/Cranberry/Game/Game.hpp \
+                    include/Cranberry/Gui/Base/Widget.hpp \
+                    include/Cranberry/Gui/Label.hpp
 
 
 ################################################################################
@@ -101,14 +103,11 @@ HEADERS     +=      include/Cranberry/Config.hpp \
 SOURCES     +=      src/System/Debug.cpp \
                     src/System/GameTime.cpp \
                     src/System/Random.cpp \
+                    src/System/Receivers/SpriteReceiver.cpp \
                     src/OpenGL/OpenGLVertex.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
                     src/OpenGL/OpenGLDefaultShaders.cpp \
-                    src/Graphics/Base/IRenderable.cpp \
-                    src/Graphics/Base/ITransformable.cpp \
-                    src/Graphics/Background.cpp \
-                    src/Graphics/Base/ITexture.cpp \
                     src/Input/KeyReleaseEvent.cpp \
                     src/Input/KeyboardState.cpp \
                     src/Input/MouseMoveEvent.cpp \
@@ -118,6 +117,10 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
                     src/Window/Window.cpp \
+                    src/Graphics/Base/IRenderable.cpp \
+                    src/Graphics/Base/ITransformable.cpp \
+                    src/Graphics/Background.cpp \
+                    src/Graphics/Base/ITexture.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
                     src/Graphics/Base/IAnimation.cpp \
                     src/Graphics/GifAnimation.cpp \
@@ -125,12 +128,13 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/IShape.cpp \
                     src/Graphics/Polygon.cpp \
                     src/Graphics/Ellipse.cpp \
-                    src/Game/Game.cpp \
                     src/Graphics/Text.cpp \
                     src/Graphics/SpriteBatch.cpp \
-    src/Graphics/Sprite.cpp \
-    src/Graphics/RawAnimation.cpp \
-    src/System/Receivers/SpriteReceiver.cpp
+                    src/Graphics/Sprite.cpp \
+                    src/Graphics/RawAnimation.cpp \
+                    src/Game/Game.cpp \
+                    src/Gui/Base/Widget.cpp \
+                    src/Gui/Label.cpp
 
 ################################################################################
 ## OUTPUT
