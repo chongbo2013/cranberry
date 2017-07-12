@@ -349,12 +349,14 @@ void ITransformable::setScaleSpeed(float speedX, float speedY)
 void ITransformable::setX(float x)
 {
     m_x = x;
+    m_emitter.emitPositionChanged();
 }
 
 
 void ITransformable::setY(float y)
 {
     m_y = y;
+    m_emitter.emitPositionChanged();
 }
 
 
@@ -376,6 +378,7 @@ void ITransformable::setScale(float scaleX, float scaleY)
 {
     m_scaleX = scaleX;
     m_scaleY = scaleY;
+    m_emitter.emitSizeChanged();
 }
 
 
@@ -389,6 +392,7 @@ void ITransformable::setPosition(const QVector2D& pos)
 {
     m_x = pos.x();
     m_y = pos.y();
+    m_emitter.emitPositionChanged();
 }
 
 
@@ -659,6 +663,8 @@ void ITransformable::setSize(float width, float height)
 {
     m_width = width;
     m_height = height;
+
+    m_emitter.emitSizeChanged();
 }
 
 

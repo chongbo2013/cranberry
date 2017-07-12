@@ -56,6 +56,9 @@ public:
     inline void emitStoppedRotating() { emit stoppedRotating(); }
     inline void emitStoppedScaling() { emit stoppedScaling(); }
     inline void emitStoppedFading() { emit stoppedFading(); }
+    inline void emitPositionChanged() { emit positionChanged(); }
+    inline void emitSizeChanged() { emit sizeChanged(); }
+
 
 signals:
 
@@ -63,6 +66,8 @@ signals:
     void stoppedRotating();
     void stoppedScaling();
     void stoppedFading();
+    void positionChanged();
+    void sizeChanged();
 
 
 private:
