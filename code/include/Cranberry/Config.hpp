@@ -210,6 +210,25 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \defgroup System System
+/// All cranberry classes of module System.
+/// \defgroup OpenGL OpenGL
+/// All cranberry classes of module OpenGL.
+/// \defgroup Graphics Graphics
+/// All cranberry classes of module Graphics.
+/// \defgroup Input Input
+/// All cranberry classes of module Input.
+/// \defgroup Window Window
+/// All cranberry classes of module Window.
+/// \defgroup Game Game
+/// All cranberry classes of module Game.
+/// \defgroup Gui Gui
+/// All cranberry classes of module Gui.
+///
+////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
 /// \ingroup System
 ///
 /// The config header provides many macroes for simplifying code and increasing
