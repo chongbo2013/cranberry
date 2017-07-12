@@ -95,9 +95,9 @@ bool Game::addWindow(Window* window)
 {
     if (window != nullptr)
     {
-        if (std::find(m_windows.begin(), m_windows.end(), window) == m_windows.end())
+        if (!m_windows.contains(window))
         {
-            m_windows.push_back(window);
+            m_windows.append(window);
             window->show();
             return true;
         }
@@ -111,10 +111,9 @@ bool Game::removeWindow(Window* window)
 {
     if (window != nullptr)
     {
-        auto it = m_windows.end();
-        if ((it = std::find(m_windows.begin(), m_windows.end(), window)) != m_windows.end())
+        if (m_windows.contains(window))
         {
-            m_windows.erase(it);
+            m_windows.removeOne(window);
             window->hide();
             return true;
         }
