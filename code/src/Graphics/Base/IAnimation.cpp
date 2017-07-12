@@ -237,10 +237,12 @@ bool IAnimation::createInternal(
 
     qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
+    qint32 frameCount = frames.size();
+    QSize largestSize;
     Frame currentFrame;
 
     // Finds a nice place in the atlas for every frame.
-    for (int i = 0; i < frames.size(); i++)
+    for (int i = 0; i < frameCount; i++)
     {
         const QImage& img = frames.at(i);
         const qreal& dura = durations.at(i);
@@ -258,12 +260,18 @@ bool IAnimation::createInternal(
         currentFrame.frame = i;
 
         m_frames.push_back(currentFrame);
+
+        // Finds the largest image.
+        largestSize.rwidth() = qMax(img.width(), largestSize.width());
+        largestSize.rheight() = qMax(img.height(), largestSize.height());
     }
 
     // Adds the last atlas to the list.
     saveAtlas(currentAtlas);
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     m_currentFrame = &m_frames[0];
+
+    setSize(largestSize.width(), largestSize.height());
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;
 }
@@ -277,16 +285,23 @@ bool IAnimation::createInternal(
 {
     if (!IRenderable::create(rt)) return false;
 
+    QSize largestSize;
+
     // Creates texture atlases out of the sheets.
     for (const QImage& img : sheets)
     {
         saveAtlas(new TextureAtlas(img, renderTarget()));
+
+        // Finds the largest image.
+        largestSize.rwidth() = qMax(img.width(), largestSize.width());
+        largestSize.rheight() = qMax(img.height(), largestSize.height());
     }
 
     // Simply copies the frames since everything is prepared.
     m_frames = frames;
     m_currentFrame = &m_frames[0];
 
+    setSize(largestSize.width(), largestSize.height());
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;
