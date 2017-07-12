@@ -161,6 +161,7 @@ void IAnimation::render()
     texture->setPosition(pos());
     texture->setAngle(angle());
     texture->setOpacity(opacity());
+    texture->setOrigin(origin().toVector2D());
     texture->setScale(scaleX(), scaleY());
     texture->setSourceRectangle(m_currentFrame->rect);
     texture->render();

@@ -319,6 +319,7 @@ void Sprite::render()
     m_currentMove->anim->setPosition(pos());
     m_currentMove->anim->setAngle(angle());
     m_currentMove->anim->setOpacity(opacity());
+    m_currentMove->anim->setOrigin(origin().toVector2D());
     m_currentMove->anim->setScale(scaleX(), scaleY());
     m_currentMove->anim->render();
 }
