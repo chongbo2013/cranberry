@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <file>earth.gif</file>
+        <file>pika.json</file>
+        <file>frames/0.png</file>
+        <file>frames/1.png</file>
+        <file>frames/2.png</file>
+        <file>frames/3.png</file>
+        <file>frames/4.png</file>
+        <file>frames/5.png</file>
+        <file>frames/6.png</file>
+        <file>frames/7.png</file>
+        <file>frames/8.png</file>
+        <file>frames/9.png</file>
+        <file>frames/10.png</file>
+        <file>frames/11.png</file>
+        <file>frames/12.png</file>
+        <file>frames/13.png</file>
+        <file>frames/14.png</file>
+        <file>frames/15.png</file>
+        <file>frames/16.png</file>
+        <file>frames/17.png</file>
+        <file>frames/18.png</file>
+        <file>frames/19.png</file>
+        <file>frames/20.png</file>
+    </qresource>
+</RCC>
