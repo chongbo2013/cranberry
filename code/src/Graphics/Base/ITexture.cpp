@@ -41,7 +41,7 @@ CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Index buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Texture creation failed.")
 CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Cannot render invalid object.")
-CRANBERRY_CONST_ARR(uint, 6, c_ibo, (0, 1, 2, 2, 3, 0))
+CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 
 ITexture::ITexture()

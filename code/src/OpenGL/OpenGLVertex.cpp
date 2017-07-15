@@ -26,6 +26,18 @@
 CRANBERRY_USING_NAMESPACE
 
 
+priv::Vertex::Vertex()
+{
+    m_fields[0] = 0;
+    m_fields[1] = 0;
+    m_fields[2] = 0;
+    m_fields[3] = 0;
+    m_fields[4] = 0;
+    m_fields[5] = 0;
+    m_fields[6] = 1;
+}
+
+
 void priv::Vertex::xyz(float x, float y, float z)
 {
     m_fields[0] = x;
@@ -58,6 +70,20 @@ void priv::Vertex::rgba(const QColor& color)
 const float* priv::Vertex::data() const
 {
     return m_fields;
+}
+
+
+priv::TextureVertex::TextureVertex()
+{
+    m_fields[0] = 0;
+    m_fields[1] = 0;
+    m_fields[2] = 0;
+    m_fields[3] = 0;
+    m_fields[4] = 0;
+    m_fields[5] = 0;
+    m_fields[6] = 0;
+    m_fields[7] = 0;
+    m_fields[8] = 1;
 }
 
 
