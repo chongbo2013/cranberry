@@ -388,18 +388,30 @@ void ITransformable::setOpacity(float opacity)
 }
 
 
+void ITransformable::setPosition(float x, float y)
+{
+    m_x = x;
+    m_y = y;
+    m_emitter.emitPositionChanged();
+}
+
+
 void ITransformable::setPosition(const QVector2D& pos)
 {
-    m_x = pos.x();
-    m_y = pos.y();
-    m_emitter.emitPositionChanged();
+    setPosition(pos.x(), pos.y());
+}
+
+
+void ITransformable::setOrigin(float x, float y)
+{
+    m_originX = x;
+    m_originY = y;
 }
 
 
 void ITransformable::setOrigin(const QVector2D& origin)
 {
-    m_originX = origin.x();
-    m_originY = origin.y();
+    setOrigin(origin.x(), origin.y());
 }
 
 
@@ -665,6 +677,12 @@ void ITransformable::setSize(float width, float height)
     m_height = height;
 
     m_emitter.emitSizeChanged();
+}
+
+
+void ITransformable::setSize(const QSizeF& size)
+{
+    setSize(size.width(), size.height());
 }
 
 
