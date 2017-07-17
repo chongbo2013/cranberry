@@ -44,7 +44,7 @@ CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Vertex buffer could not be created
 CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Index buffer could not be created.")
 CRANBERRY_CONST_VAR(QString, e_06, "%0 [%1] - Texture could not be created.")
 CRANBERRY_CONST_VAR(QString, e_07, "%0 [%1] - Frame buffer not complete.")
-CRANBERRY_CONST_ARR(uint, 6, c_ibo, (0, 1, 2, 2, 3, 0))
+CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 
 SpriteBatch::SpriteBatch()

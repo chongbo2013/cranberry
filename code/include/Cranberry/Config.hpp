@@ -102,6 +102,14 @@
 #define CRANBERRY_CONST_ARR(t, n, c, ...) namespace { std::array<t, n> c = { __VA_ARGS__ }; }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// A macro for creating aliases.
+///
+/// \def CRANBERRY_ALIAS
+///
+////////////////////////////////////////////////////////////////////////////////
+#define CRANBERRY_ALIAS(x, y) typedef x y;
+
+////////////////////////////////////////////////////////////////////////////////
 /// These macroes are to be used inside classes in order to declare the
 /// constructor, destructor, copy constructor and/or move constructor as either
 /// default or deleted.
