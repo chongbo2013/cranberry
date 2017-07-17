@@ -1,4 +1,6 @@
-﻿////////////////////////////////////////////////////////////////////////////////
+﻿#version %0
+
+////////////////////////////////////////////////////////////////////////////////
 //
 // Cranberry - C++ game engine based on the Qt5 framework.
 // Copyright (C) 2017 Nicolas Kogler
@@ -18,8 +20,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
-#version %0
 
 // Input variables
 in vec2 o_uv;
@@ -107,14 +107,14 @@ vec4 applyScreen(vec4 pixel, vec4 blend)
 
 vec4 applyOverlay(vec4 pixel, vec4 blend)
 {
-    if (pixel.r < 0.5) pixel.r = 2 * pixel.r * blend.r;
-    else pixel.r = 1 - (2 * (1 - pixel.r) * (1 - blend.r));
+    if (pixel.r < 0.5) pixel.r = 2.0 * pixel.r * blend.r;
+    else pixel.r = 1.0 - (2.0 * (1.0 - pixel.r) * (1.0 - blend.r));
 
-    if (pixel.g < 0.5) pixel.g = 2 * pixel.g * blend.g;
-    else pixel.g = 1 - (2 * (1 - pixel.g) * (1 - blend.g));
+    if (pixel.g < 0.5) pixel.g = 2.0 * pixel.g * blend.g;
+    else pixel.g = 1.0 - (2.0 * (1.0 - pixel.g) * (1.0 - blend.g));
 
-    if (pixel.b < 0.5) pixel.b = 2 * pixel.b * blend.b;
-    else pixel.b = 1 - (2 * (1 - pixel.b) * (1 - pixel.b));
+    if (pixel.b < 0.5) pixel.b = 2.0 * pixel.b * blend.b;
+    else pixel.b = 1.0 - (2.0 * (1.0 - pixel.b) * (1.0 - pixel.b));
 
     return pixel;
 }
