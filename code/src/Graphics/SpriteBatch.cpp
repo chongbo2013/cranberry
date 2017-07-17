@@ -102,10 +102,21 @@ bool SpriteBatch::create(Window* rt)
 
 void SpriteBatch::updateVertices()
 {
-    m_vertices.at(0).xyz(0, 0, 0);
-    m_vertices.at(1).xyz(renderTarget()->width(), 0, 0);
-    m_vertices.at(2).xyz(renderTarget()->width(), renderTarget()->height(), 0);
-    m_vertices.at(3).xyz(0, renderTarget()->height(), 0);
+    // If null, takes the entire screen.
+    auto cp = m_geometry;
+    if (cp.isNull())
+    {
+        cp.setWidth(renderTarget()->width());
+        cp.setHeight(renderTarget()->height());
+    }
+
+    // Specifies the vertex locations.
+    m_vertices.at(0).xyz(0,          0,           0);
+    m_vertices.at(1).xyz(cp.width(), 0,           0);
+    m_vertices.at(2).xyz(cp.width(), cp.height(), 0);
+    m_vertices.at(3).xyz(0,          cp.height(), 0);
+
+    setSize(cp.width(), cp.height());
 }
 
 
@@ -431,9 +442,37 @@ const QColor& SpriteBatch::backgroundColor() const
 }
 
 
+const QRectF& SpriteBatch::geometry() const
+{
+    return m_geometry;
+}
+
+
 void SpriteBatch::setBackgroundColor(const QColor& color)
 {
     m_backColor = color;
+}
+
+
+void SpriteBatch::setGeometry(const QRectF& rc)
+{
+    if (rc == m_geometry) return;
+
+    // Updates the vertices.
+    m_geometry = rc;
+    setPosition(rc.x(), rc.y());
+    updateVertices();
+
+    // Writes the vertices.
+    glDebug(egl->glBindVertexArray(m_vertexArray));
+    glDebug(egl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer));
+    glDebug(egl->glBufferSubData(
+                GL_ARRAY_BUFFER,
+                GL_ZERO,
+                priv::TextureVertex::size() * 4,
+                m_vertices.data()
+                ));
+    glDebug(egl->glBindVertexArray(renderTarget()->vao()));
 }
 
 

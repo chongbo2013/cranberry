@@ -155,6 +155,14 @@ public:
     const QColor& backgroundColor() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the geometry of the batch.
+    ///
+    /// \returns the geometry.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const QRectF& geometry() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the effect of the batch.
     ///
     /// \returns the effect.
@@ -171,6 +179,15 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setBackgroundColor(const QColor& color);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the geometry of the batch. If a null rectangle is passed
+    /// [i.e. QRectF()], the batch spans over the entire screen.
+    ///
+    /// \param rc The geometry (position and size) of the batch.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setGeometry(const QRectF& rc);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the effect to render this object with.
@@ -202,6 +219,7 @@ private:
     void renderBatch();
     void renderFrame();
     void releaseFrame();
+
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
@@ -210,6 +228,7 @@ private:
     priv::QuadVertices     m_vertices;
     QList<IRenderable*>    m_objects;
     QString                m_name;
+    QRectF                 m_geometry;
     QColor                 m_backColor;
     uint                   m_frameBuffer;
     uint                   m_renderBuffer;
