@@ -94,7 +94,7 @@ bool SpriteBatch::create(Window* rt)
     egl = renderTarget()->context()->extraFunctions();
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     setSize(renderTarget()->width(), renderTarget()->height());
-    setOrigin(QVector2D(width() / 2, height() / 2));
+    setOrigin(width() / 2, height() / 2);
 
     return createBuffers() && writeBuffers();
 }
@@ -117,6 +117,7 @@ void SpriteBatch::updateVertices()
     m_vertices.at(3).xyz(0,          cp.height(), 0);
 
     setSize(cp.width(), cp.height());
+    setOrigin(width() / 2, height() / 2);
 }
 
 
