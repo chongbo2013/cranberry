@@ -33,33 +33,22 @@ CRANBERRY_USING_NAMESPACE
 
 
 Widget::Widget(Widget* parent)
-    : QOpenGLWidget(parent->m_widget)
-    , IRenderable()
+    : IRenderable()
     , ITransformable()
-    , m_widget(new QOpenGLWidget)
+    , m_widget(new QWidget((parent) ? parent->m_widget : nullptr))
     , m_batch(new SpriteBatch)
 {
     m_widget->setAttribute(Qt::WA_DontShowOnScreen);
 
-    QObject::connect(
-            transformableEmitter(),
-            &TransformableEmitter::positionChanged,
-            this,
-            &Widget::posChanged
-            );
-
-    QObject::connect(
-            transformableEmitter(),
-            &TransformableEmitter::sizeChanged,
-            this,
-            &Widget::sizeChanged
-            );
+    setParent(parent);
 }
 
 
 Widget::~Widget()
 {
     destroy();
+
+    delete m_widget;
 }
 
 
@@ -74,6 +63,7 @@ bool Widget::create(Window* renderTarget)
     if (!IRenderable::create(renderTarget)) return false;
 
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    m_widget->show();
 
     return m_batch->create(renderTarget);
 }
@@ -87,6 +77,11 @@ void Widget::destroy()
         m_batch = nullptr;
     }
 
+    if (m_parent != nullptr)
+    {
+        m_parent->m_children.removeOne(this);
+    }
+
     IRenderable::destroy();
 }
 
@@ -96,7 +91,6 @@ void Widget::update(const GameTime& time)
     updateTransform(time);
 
     m_batch->setShaderProgram(shaderProgram());
-    m_batch->setPosition(pos());
     m_batch->setAngle(angle());
     m_batch->setOpacity(opacity());
     m_batch->setOrigin(origin().toVector2D());
@@ -106,16 +100,76 @@ void Widget::update(const GameTime& time)
 
 void Widget::render()
 {
-    m_batch->setPosition(m_widget->x(), m_widget->y());
-    m_batch->setSize(m_widget->width(), m_widget->height());
+    const QRect& g = m_widget->geometry();
+
+    // Determines whether layout must be updated.
+    if (g.x() != x() || g.y() != y())
+    {
+        setPosition(g.x(), g.y());
+        m_batch->setPosition(g.x(), g.y());
+    }
+
+    if (g.width() != width() || g.height() != height())
+    {
+        onSizeChanged(g.size());
+        setSize(g.width(), g.height());
+        m_batch->setGeometry(rect());
+    }
+
+    // Renders the batch and all child widgets.
     m_batch->render();
 
-    // Renders all child widgets.
-    auto list = m_widget->findChildren<Widget*>(QString(), Qt::FindDirectChildrenOnly);
-    for (auto* w : list)
+    for (Widget* w : m_children)
     {
         w->render();
     }
+}
+
+
+QWidget* Widget::toQtWidget() const
+{
+    return m_widget;
+}
+
+
+QLayout* Widget::layout() const
+{
+    return m_widget->layout();
+}
+
+
+Widget* Widget::parent() const
+{
+    return m_parent;
+}
+
+
+const QColor& Widget::backgroundColor() const
+{
+    return m_batch->backgroundColor();
+}
+
+
+void Widget::setLayout(QLayout* layout)
+{
+    m_widget->setLayout(layout);
+}
+
+
+void Widget::setParent(Widget* parent)
+{
+    m_parent = parent;
+
+    if (parent != nullptr)
+    {
+        parent->m_children.append(this);
+    }
+}
+
+
+void Widget::setBackgroundColor(const QColor& color)
+{
+    m_batch->setBackgroundColor(color);
 }
 
 
@@ -134,19 +188,4 @@ bool Widget::insertObjectToBatch(int layer, IRenderable* obj)
 bool Widget::removeObjectFromBatch(IRenderable* obj)
 {
     return m_batch->removeObject(obj);
-}
-
-
-void Widget::posChanged()
-{
-    QPointF p = ITransformable::rect().topLeft();
-    m_widget->move(QPoint(p.x(), p.y()));
-}
-
-
-void Widget::sizeChanged()
-{
-    QSizeF s = ITransformable::rect().size();
-    m_widget->resize(QSize(s.width(), s.height()));
-    onSizeChanged(size());
 }

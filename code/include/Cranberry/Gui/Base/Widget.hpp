@@ -29,7 +29,8 @@
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
 
 // Qt headers
-#include <QOpenGLWidget>
+#include <QList>
+#include <QWidget>
 
 
 // Forward declarations
@@ -53,6 +54,7 @@ class CRANBERRY_GUI_EXPORT Widget
 {
 public:
 
+    CRANBERRY_ALIAS(QList<Widget*>, WidgetList)
     CRANBERRY_DISABLE_COPY(Widget)
     CRANBERRY_DISABLE_MOVE(Widget)
 
@@ -110,6 +112,63 @@ public:
     void render() override;
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the underlying Qt OpenGL widget.
+    ///
+    /// \returns the underlying widget.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QWidget* toQtWidget() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the layout of this widget.
+    ///
+    /// \returns this widget's layout.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QLayout* layout() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the parent of this widget.
+    ///
+    /// \returns the parent.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    Widget* parent() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the background color of this widget.
+    ///
+    /// \returns the back color.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const QColor& backgroundColor() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the layout to use with this widget.
+    ///
+    /// \param layout Layout to use.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setLayout(QLayout* layout);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the parent of this widget.
+    ///
+    /// \param parent Parent widget.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setParent(Widget* parent);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the background color of this widget.
+    ///
+    /// \param color New background color.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBackgroundColor(const QColor& color);
+
+
 protected:
 
     virtual void onSizeChanged(const QSize&) { }
@@ -118,22 +177,16 @@ protected:
     bool removeObjectFromBatch(IRenderable* obj);
 
 
-private slots:
-
-    void posChanged();
-    void sizeChanged();
-
-
 private:
 
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLWidget* m_widget;
+    Widget*        m_parent;
+    WidgetList     m_children;
+    QWidget*       m_widget;
     SpriteBatch*   m_batch;
-
-    Q_OBJECT
 };
 
 
