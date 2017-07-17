@@ -33,11 +33,14 @@ CRANBERRY_USING_NAMESPACE
 
 
 Widget::Widget(Widget* parent)
-    : QOpenGLWidget(parent)
+    : QOpenGLWidget(parent->m_widget)
     , IRenderable()
     , ITransformable()
+    , m_widget(new QOpenGLWidget)
     , m_batch(new SpriteBatch)
 {
+    m_widget->setAttribute(Qt::WA_DontShowOnScreen);
+
     QObject::connect(
             transformableEmitter(),
             &TransformableEmitter::positionChanged,
@@ -93,7 +96,7 @@ void Widget::update(const GameTime& time)
     updateTransform(time);
 
     m_batch->setShaderProgram(shaderProgram());
-    m_batch->setPosition(ITransformable::pos());
+    m_batch->setPosition(pos());
     m_batch->setAngle(angle());
     m_batch->setOpacity(opacity());
     m_batch->setOrigin(origin().toVector2D());
@@ -103,7 +106,16 @@ void Widget::update(const GameTime& time)
 
 void Widget::render()
 {
+    m_batch->setPosition(m_widget->x(), m_widget->y());
+    m_batch->setSize(m_widget->width(), m_widget->height());
     m_batch->render();
+
+    // Renders all child widgets.
+    auto list = m_widget->findChildren<Widget*>(QString(), Qt::FindDirectChildrenOnly);
+    for (auto* w : list)
+    {
+        w->render();
+    }
 }
 
 
@@ -128,19 +140,13 @@ bool Widget::removeObjectFromBatch(IRenderable* obj)
 void Widget::posChanged()
 {
     QPointF p = ITransformable::rect().topLeft();
-    move(QPoint(p.x(), p.y()));
+    m_widget->move(QPoint(p.x(), p.y()));
 }
 
 
 void Widget::sizeChanged()
 {
     QSizeF s = ITransformable::rect().size();
-    resize(QSize(s.width(), s.height()));
+    m_widget->resize(QSize(s.width(), s.height()));
     onSizeChanged(size());
-}
-
-
-void Widget::paintGL()
-{
-    render();
 }
