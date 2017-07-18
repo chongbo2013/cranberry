@@ -54,7 +54,6 @@ Window::Window(Window* parent)
     QSurfaceFormat fmt = format();
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
-    fmt.setSamples(8);
 
     // Determines between OpenGL and GLES API.
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL)

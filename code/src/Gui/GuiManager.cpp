@@ -62,6 +62,7 @@ GuiManager::GuiManager()
          m_qmlEngine->setIncubationController(m_renderWindow->incubationController());
 
     m_receiver.setGuiManager(this);
+    m_renderWindow->setClearBeforeRendering(false);
 
     // Signals & slots
     QObject::connect(
@@ -186,6 +187,10 @@ void GuiManager::render()
     }
     else
     {
+        m_fbo->bind();
+        gl->glClearColor(0, 0, 0, 0);
+        gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        m_fbo->release();
         m_renderControl->render();
     }
 
