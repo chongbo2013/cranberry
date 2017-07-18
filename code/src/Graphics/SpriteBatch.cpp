@@ -21,7 +21,6 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/SpriteBatch.hpp>
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
@@ -61,10 +60,6 @@ SpriteBatch::SpriteBatch()
     , m_indexBuffer(0)
     , m_frameTexture(0)
 {
-    m_vertices.at(0).uv(0, 1);
-    m_vertices.at(1).uv(1, 1);
-    m_vertices.at(2).uv(1, 0);
-    m_vertices.at(3).uv(0, 0);
     m_vertices.at(0).rgba(1, 1, 1, 1);
     m_vertices.at(1).rgba(1, 1, 1, 1);
     m_vertices.at(2).rgba(1, 1, 1, 1);
@@ -158,6 +153,7 @@ void SpriteBatch::render()
 
     setupFrame();
     renderFrame();
+    releaseFrame();
 }
 
 
@@ -295,17 +291,29 @@ void SpriteBatch::updateVertices()
         cp.setWidth(renderTarget()->width());
         cp.setHeight(renderTarget()->height());
     }
+
     if (m_fbo != nullptr)
     {
         cp.setWidth(m_fbo->width());
         cp.setHeight(m_fbo->height());
     }
 
+    float uvX = cp.x() / cp.width();
+    float uvY = cp.y() / cp.height();
+    float uvW = uvX + 1;
+    float uvH = uvY + 1;
+
     // Specifies the vertex locations.
     m_vertices.at(0).xyz(0,          0,           0);
     m_vertices.at(1).xyz(cp.width(), 0,           0);
     m_vertices.at(2).xyz(cp.width(), cp.height(), 0);
     m_vertices.at(3).xyz(0,          cp.height(), 0);
+
+    // Specifies the texture coordinates.
+    m_vertices.at(0).uv(uvX, uvH);
+    m_vertices.at(1).uv(uvW, uvH);
+    m_vertices.at(2).uv(uvW, uvY);
+    m_vertices.at(3).uv(uvX, uvY);
 
     setSize(cp.width(), cp.height());
     setOrigin(width() / 2, height() / 2);

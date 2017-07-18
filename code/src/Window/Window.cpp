@@ -118,6 +118,7 @@ void Window::restoreOpenGLSettings()
 {
     const QColor& cc = m_settings.clearColor();
 
+    glDebug(m_gl->glViewport(0, 0, width(), height()));
     glDebug(m_gl->glClearColor(cc.redF(), cc.greenF(), cc.blueF(), cc.alphaF()));
     glDebug(m_gl->glEnable(GL_BLEND));
     glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));

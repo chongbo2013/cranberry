@@ -183,9 +183,13 @@ void GuiManager::render()
         m_renderControl->render();
         m_isReady = true;
         m_requiresUpdate = false;
-
-        renderTarget()->restoreOpenGLSettings();
     }
+    else
+    {
+        m_renderControl->render();
+    }
+
+    renderTarget()->restoreOpenGLSettings();
 
     if (!IRenderable::prepareRendering()) return;
 
@@ -244,6 +248,7 @@ void GuiManager::loadComponents()
             m_renderWindow->setGeometry(0, 0, m_rootItem->width(), m_rootItem->height());
 
             createFbo();
+            makeCurrent();
 
             m_renderControl->initialize(renderTarget()->context());
             m_isInitialized = true;
@@ -282,8 +287,6 @@ void GuiManager::createFbo()
 
     // Create the underlying sprite batch.
     m_batch->create(m_fbo, renderTarget());
-
-    makeCurrent();
 }
 
 
