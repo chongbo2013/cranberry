@@ -257,6 +257,9 @@ void GuiManager::loadComponents()
 
             m_renderControl->initialize(renderTarget()->context());
             m_isInitialized = true;
+
+            setSize(m_rootItem->width(), m_rootItem->height());
+            setOrigin(width() / 2, height() / 2);
         }
     }
 }
