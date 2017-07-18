@@ -40,6 +40,7 @@ CRANBERRY_FORWARD_C(Window)
 CRANBERRY_FORWARD_C(OpenGLShader)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_Q(QOpenGLExtraFunctions)
+CRANBERRY_FORWARD_Q(QOpenGLFramebufferObject)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -88,11 +89,22 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the necessary OpenGL objects for the sprite batch.
     ///
-    /// \param renderTarget Target to render batch on (on entire surface).
+    /// \param renderTarget Target to render batch on.
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
     bool create(Window* renderTarget = nullptr) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates a new sprite batch based on an existing fbo. Takes ownership
+    /// of the Qt framebuffer object, you must not free it yourself.
+    ///
+    /// \param fbo Existing fbo with attached texture.
+    /// \param renderTarget Target to render batch on.
+    /// \returns true if created successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool create(QOpenGLFramebufferObject* fbo, Window* renderTarget = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Destroys all the OpenGL objects for the sprite batch.
@@ -211,9 +223,19 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
-    void updateVertices();
+    bool createInternal(Window*);
+    bool createData();
+    bool createFboRbo();
     bool createBuffers();
+    void recreateFboRbo();
+    void updateVertices();
+    bool writeData();
     bool writeBuffers();
+    bool writeFramebuffer();
+    bool writeTexture();
+    bool writeRenderbuffer();
+    void destroyFboRbo();
+    void destroyBuffers();
     void setupBatch();
     void setupFrame();
     void renderBatch();
@@ -223,19 +245,20 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLExtraFunctions* egl;
-    Effect                 m_effect;
-    priv::QuadVertices     m_vertices;
-    QList<IRenderable*>    m_objects;
-    QString                m_name;
-    QRectF                 m_geometry;
-    QColor                 m_backColor;
-    uint                   m_frameBuffer;
-    uint                   m_renderBuffer;
-    uint                   m_vertexArray;
-    uint                   m_vertexBuffer;
-    uint                   m_indexBuffer;
-    uint                   m_frameTexture;
+    QOpenGLExtraFunctions*    egl;
+    QOpenGLFramebufferObject* m_fbo;
+    Effect                    m_effect;
+    priv::QuadVertices        m_vertices;
+    QList<IRenderable*>       m_objects;
+    QString                   m_name;
+    QRectF                    m_geometry;
+    QColor                    m_backColor;
+    uint                      m_frameBuffer;
+    uint                      m_renderBuffer;
+    uint                      m_vertexArray;
+    uint                      m_vertexBuffer;
+    uint                      m_indexBuffer;
+    uint                      m_frameTexture;
 };
 
 

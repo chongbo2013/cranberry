@@ -32,6 +32,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFramebufferObject>
 
 
 CRANBERRY_USING_NAMESPACE
@@ -48,7 +49,9 @@ CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 
 SpriteBatch::SpriteBatch()
-    : m_effect(EffectNone)
+    : egl(nullptr)
+    , m_fbo(nullptr)
+    , m_effect(EffectNone)
     , m_name("<no name>")
     , m_backColor(Qt::transparent)
     , m_frameBuffer(0)
@@ -77,203 +80,34 @@ SpriteBatch::~SpriteBatch()
 
 bool SpriteBatch::isNull() const
 {
-    return IRenderable::isNull()     ||
-           m_frameBuffer  == 0       ||
-           m_renderBuffer == 0       ||
-           m_vertexArray  == 0       ||
-           m_vertexBuffer == 0       ||
-           m_indexBuffer  == 0       ||
+    return IRenderable::isNull() ||
+           m_frameBuffer  == 0   ||
+           m_renderBuffer == 0   ||
+           m_vertexArray  == 0   ||
+           m_vertexBuffer == 0   ||
+           m_indexBuffer  == 0   ||
            m_frameTexture == 0;
 }
 
 
 bool SpriteBatch::create(Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
-
-    egl = renderTarget()->context()->extraFunctions();
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
-    setSize(renderTarget()->width(), renderTarget()->height());
-    setOrigin(width() / 2, height() / 2);
-
-    return createBuffers() && writeBuffers();
+    return create(nullptr, rt);
 }
 
 
-void SpriteBatch::updateVertices()
+bool SpriteBatch::create(QOpenGLFramebufferObject* fbo, Window* rt)
 {
-    // If null, takes the entire screen.
-    auto cp = m_geometry;
-    if (cp.isNull())
-    {
-        cp.setWidth(renderTarget()->width());
-        cp.setHeight(renderTarget()->height());
-    }
+    m_fbo = fbo;
 
-    // Specifies the vertex locations.
-    m_vertices.at(0).xyz(0,          0,           0);
-    m_vertices.at(1).xyz(cp.width(), 0,           0);
-    m_vertices.at(2).xyz(cp.width(), cp.height(), 0);
-    m_vertices.at(3).xyz(0,          cp.height(), 0);
-
-    setSize(cp.width(), cp.height());
-    setOrigin(width() / 2, height() / 2);
-}
-
-
-bool SpriteBatch::createBuffers()
-{
-    // Generates all required OpenGL objects.
-    glDebug(gl->glGenFramebuffers(1, &m_frameBuffer));
-    if (m_frameBuffer == 0)
-    {
-        return cranError(ERRARG(e_01));
-    }
-
-    glDebug(gl->glGenRenderbuffers(1, &m_renderBuffer));
-    if (m_renderBuffer == 0)
-    {
-        return cranError(ERRARG(e_02));
-    }
-
-    glDebug(egl->glGenVertexArrays(1, &m_vertexArray));
-    if (m_vertexArray == 0)
-    {
-        return cranError(ERRARG(e_03));
-    }
-
-    glDebug(gl->glGenBuffers(1, &m_vertexBuffer));
-    if (m_vertexBuffer == 0)
-    {
-        return cranError(ERRARG(e_04));
-    }
-
-    glDebug(gl->glGenBuffers(1, &m_indexBuffer));
-    if (m_indexBuffer == 0)
-    {
-        return cranError(ERRARG(e_05));
-    }
-
-    glDebug(gl->glGenTextures(1, &m_frameTexture));
-    if (m_frameTexture == 0)
-    {
-        return cranError(ERRARG(e_06));
-    }
-
-    return true;
-}
-
-
-bool SpriteBatch::writeBuffers()
-{
-    // Binds the VAO and the VBO to it.
-    glDebug(egl->glBindVertexArray(m_vertexArray));
-    glDebug(egl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer));
-    glDebug(egl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer));
-    glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer));
-
-    updateVertices();
-
-    // Allocates a texture as big as the screen & enable smoothing.
-    glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_frameTexture));
-    glDebug(gl->glTexImage2D(
-                GL_TEXTURE_2D,
-                GL_ZERO,
-                GL_RGBA8,
-                renderTarget()->width(),
-                renderTarget()->height(),
-                GL_ZERO,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                NULL
-                ));
-
-    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    glDebug(gl->glFramebufferTexture2D(
-                GL_FRAMEBUFFER,
-                GL_COLOR_ATTACHMENT0,
-                GL_TEXTURE_2D,
-                m_frameTexture,
-                GL_ZERO
-                ));
-
-    // Attaches the render buffer to the frame buffer.
-    glDebug(gl->glBindRenderbuffer(GL_RENDERBUFFER, m_renderBuffer));
-    glDebug(gl->glRenderbufferStorage(
-                GL_RENDERBUFFER,
-                GL_DEPTH24_STENCIL8,
-                renderTarget()->width(),
-                renderTarget()->height()
-                ));
-
-    glDebug(gl->glFramebufferRenderbuffer(
-                GL_FRAMEBUFFER,
-                GL_DEPTH_STENCIL_ATTACHMENT,
-                GL_RENDERBUFFER,
-                m_renderBuffer
-                ));
-
-    // Check for frame buffer completeness.
-    uint status;
-    glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
-    if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        return cranError(ERRARG(e_07));
-    }
-
-    // Allocates static data for the vertex buffer.
-    glDebug(gl->glBufferData(
-                GL_ARRAY_BUFFER,
-                priv::TextureVertex::size() * 4,
-                m_vertices.data(),
-                GL_STATIC_DRAW
-                ));
-
-    glDebug(gl->glBufferData(
-                GL_ELEMENT_ARRAY_BUFFER,
-                sizeof(uint) * 6,
-                c_ibo.data(),
-                GL_STATIC_DRAW
-                ));
-
-    // Bind this render target's VAO back again.
-    glDebug(egl->glBindVertexArray(renderTarget()->vao()));
-    glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, GL_ZERO));
-    glDebug(egl->glBindRenderbuffer(GL_RENDERBUFFER, GL_ZERO));
-
-    return true;
+    return createInternal(rt) && createData() && writeData();
 }
 
 
 void SpriteBatch::destroy()
 {
-    if (m_frameBuffer != 0)
-    {
-        glDebug(gl->glDeleteFramebuffers(1, &m_frameBuffer));
-    }
-    if (m_renderBuffer != 0)
-    {
-        glDebug(gl->glDeleteRenderbuffers(1, &m_renderBuffer));
-    }
-    if (m_vertexArray != 0)
-    {
-        glDebug(egl->glDeleteVertexArrays(1, &m_vertexArray));
-    }
-    if (m_vertexBuffer != 0)
-    {
-        glDebug(gl->glDeleteBuffers(1, &m_vertexBuffer));
-    }
-    if (m_indexBuffer != 0)
-    {
-        glDebug(gl->glDeleteBuffers(1, &m_indexBuffer));
-    }
-    if (m_frameTexture != 0)
-    {
-        glDebug(gl->glDeleteTextures(1, &m_frameTexture));
-    }
+    destroyFboRbo();
+    destroyBuffers();
 }
 
 
@@ -321,6 +155,317 @@ void SpriteBatch::render()
     renderBatch();
     setupFrame();
     renderFrame();
+}
+
+
+const QColor& SpriteBatch::backgroundColor() const
+{
+    return m_backColor;
+}
+
+
+const QRectF& SpriteBatch::geometry() const
+{
+    return m_geometry;
+}
+
+
+void SpriteBatch::setBackgroundColor(const QColor& color)
+{
+    m_backColor = color;
+}
+
+
+void SpriteBatch::setGeometry(const QRectF& rc)
+{
+    if (rc == m_geometry) return;
+
+    m_geometry = rc;
+    setPosition(rc.x(), rc.y());
+    recreateFboRbo();
+}
+
+
+Effect SpriteBatch::effect() const
+{
+    return m_effect;
+}
+
+
+void SpriteBatch::setEffect(Effect effect)
+{
+    m_effect = effect;
+}
+
+
+
+bool SpriteBatch::createInternal(Window* rt)
+{
+    if (!IRenderable::create(rt)) return false;
+
+    egl = renderTarget()->context()->extraFunctions();
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    setSize(renderTarget()->width(), renderTarget()->height());
+    setOrigin(width() / 2, height() / 2);
+
+    return true;
+}
+
+
+bool SpriteBatch::createData()
+{
+    return createFboRbo() && createBuffers();
+}
+
+
+bool SpriteBatch::createFboRbo()
+{
+    if (m_fbo == nullptr)
+    {
+        glDebug(gl->glGenFramebuffers(1, &m_frameBuffer));
+        if (m_frameBuffer == 0)
+        {
+            return cranError(ERRARG(e_01));
+        }
+
+        glDebug(gl->glGenTextures(1, &m_frameTexture));
+        if (m_frameTexture == 0)
+        {
+            return cranError(ERRARG(e_06));
+        }
+    }
+    else
+    {
+        m_frameBuffer = m_fbo->handle();
+        m_frameTexture = m_fbo->texture();
+    }
+
+    glDebug(gl->glGenRenderbuffers(1, &m_renderBuffer));
+    if (m_renderBuffer == 0)
+    {
+        return cranError(ERRARG(e_02));
+    }
+
+    return true;
+}
+
+
+bool SpriteBatch::createBuffers()
+{
+    glDebug(egl->glGenVertexArrays(1, &m_vertexArray));
+    if (m_vertexArray == 0)
+    {
+        return cranError(ERRARG(e_03));
+    }
+
+    glDebug(gl->glGenBuffers(1, &m_vertexBuffer));
+    if (m_vertexBuffer == 0)
+    {
+        return cranError(ERRARG(e_04));
+    }
+
+    glDebug(gl->glGenBuffers(1, &m_indexBuffer));
+    if (m_indexBuffer == 0)
+    {
+        return cranError(ERRARG(e_05));
+    }
+
+    return true;
+}
+
+
+void SpriteBatch::recreateFboRbo()
+{
+    destroyFboRbo();
+    updateVertices();
+    createFboRbo();
+    writeTexture();
+    writeRenderbuffer();
+    writeFramebuffer();
+}
+
+
+void SpriteBatch::updateVertices()
+{
+    // If null, takes the entire screen.
+    auto cp = m_geometry;
+    if (cp.isNull())
+    {
+        cp.setWidth(renderTarget()->width());
+        cp.setHeight(renderTarget()->height());
+    }
+
+    // Specifies the vertex locations.
+    m_vertices.at(0).xyz(0,          0,           0);
+    m_vertices.at(1).xyz(cp.width(), 0,           0);
+    m_vertices.at(2).xyz(cp.width(), cp.height(), 0);
+    m_vertices.at(3).xyz(0,          cp.height(), 0);
+
+    setSize(cp.width(), cp.height());
+    setOrigin(width() / 2, height() / 2);
+}
+
+
+bool SpriteBatch::writeData()
+{
+    updateVertices();
+
+    return writeBuffers() &&
+           writeTexture() &&
+           writeRenderbuffer() &&
+           writeFramebuffer();
+}
+
+
+bool SpriteBatch::writeBuffers()
+{
+    // Binds the VAO and the VBO/IBO to it.
+    glDebug(egl->glBindVertexArray(m_vertexArray));
+    glDebug(egl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer));
+    glDebug(egl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer));
+
+    // Allocates static data for the vertex and index buffer.
+    glDebug(gl->glBufferData(
+                GL_ARRAY_BUFFER,
+                priv::TextureVertex::size() * 4,
+                m_vertices.data(),
+                GL_STATIC_DRAW
+                ));
+
+    glDebug(gl->glBufferData(
+                GL_ELEMENT_ARRAY_BUFFER,
+                sizeof(uint) * 6,
+                c_ibo.data(),
+                GL_STATIC_DRAW
+                ));
+
+    // Bind this render target's VAO back again.
+    glDebug(egl->glBindVertexArray(renderTarget()->vao()));
+    return true;
+}
+
+
+bool SpriteBatch::writeFramebuffer()
+{
+    // Assigns the underlying texture and the render buffer.
+    glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer));
+    glDebug(gl->glFramebufferTexture2D(
+                GL_FRAMEBUFFER,
+                GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_2D,
+                m_frameTexture,
+                GL_ZERO
+                ));
+    glDebug(gl->glFramebufferRenderbuffer(
+                GL_FRAMEBUFFER,
+                GL_DEPTH_STENCIL_ATTACHMENT,
+                GL_RENDERBUFFER,
+                m_renderBuffer
+                ));
+
+    // Check for frame buffer completeness.
+    uint status;
+    glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        cranError(ERRARG(e_07));
+    }
+
+    glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, GL_ZERO));
+    return status == GL_FRAMEBUFFER_COMPLETE;
+}
+
+
+
+bool SpriteBatch::writeTexture()
+{
+    // Allocates a texture as big as the screen & enable smoothing.
+    glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_frameTexture));
+    glDebug(gl->glTexImage2D(
+                GL_TEXTURE_2D,
+                GL_ZERO,
+                GL_RGBA8,
+                width(),
+                height(),
+                GL_ZERO,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                NULL
+                ));
+
+    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+
+    return true;
+}
+
+
+bool SpriteBatch::writeRenderbuffer()
+{
+    glDebug(gl->glBindRenderbuffer(GL_RENDERBUFFER, m_renderBuffer));
+    glDebug(gl->glRenderbufferStorage(
+                GL_RENDERBUFFER,
+                GL_DEPTH24_STENCIL8,
+                width(),
+                height()
+                ));
+
+    glDebug(egl->glBindRenderbuffer(GL_RENDERBUFFER, GL_ZERO));
+    return true;
+}
+
+
+void SpriteBatch::destroyFboRbo()
+{
+    // If using a fbo allocated by Qt, do not delete it manually.
+    if (m_fbo == nullptr)
+    {
+        if (m_frameBuffer != 0)
+        {
+            glDebug(gl->glDeleteFramebuffers(1, &m_frameBuffer));
+            m_frameBuffer = 0;
+        }
+        if (m_frameTexture != 0)
+        {
+            glDebug(gl->glDeleteTextures(1, &m_frameTexture));
+            m_frameTexture = 0;
+        }
+    }
+    else
+    {
+        delete m_fbo;
+        m_fbo = nullptr;
+    }
+
+    if (m_renderBuffer != 0)
+    {
+        glDebug(gl->glDeleteRenderbuffers(1, &m_renderBuffer));
+        m_renderBuffer = 0;
+    }
+}
+
+
+void SpriteBatch::destroyBuffers()
+{
+    if (m_vertexArray != 0)
+    {
+        glDebug(egl->glDeleteVertexArrays(1, &m_vertexArray));
+        m_vertexArray = 0;
+    }
+
+    if (m_vertexBuffer != 0)
+    {
+        glDebug(gl->glDeleteBuffers(1, &m_vertexBuffer));
+        m_vertexBuffer = 0;
+    }
+
+    if (m_indexBuffer != 0)
+    {
+        glDebug(gl->glDeleteBuffers(1, &m_indexBuffer));
+        m_indexBuffer = 0;
+    }
 }
 
 
@@ -434,58 +579,6 @@ void SpriteBatch::releaseFrame()
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, 0));
     glDebug(egl->glUseProgram(0));
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
-}
-
-
-const QColor& SpriteBatch::backgroundColor() const
-{
-    return m_backColor;
-}
-
-
-const QRectF& SpriteBatch::geometry() const
-{
-    return m_geometry;
-}
-
-
-void SpriteBatch::setBackgroundColor(const QColor& color)
-{
-    m_backColor = color;
-}
-
-
-void SpriteBatch::setGeometry(const QRectF& rc)
-{
-    if (rc == m_geometry) return;
-
-    // Updates the vertices.
-    m_geometry = rc;
-    setPosition(rc.x(), rc.y());
-    updateVertices();
-
-    // Writes the vertices.
-    glDebug(egl->glBindVertexArray(m_vertexArray));
-    glDebug(egl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer));
-    glDebug(egl->glBufferSubData(
-                GL_ARRAY_BUFFER,
-                GL_ZERO,
-                priv::TextureVertex::size() * 4,
-                m_vertices.data()
-                ));
-    glDebug(egl->glBindVertexArray(renderTarget()->vao()));
-}
-
-
-Effect SpriteBatch::effect() const
-{
-    return m_effect;
-}
-
-
-void SpriteBatch::setEffect(Effect effect)
-{
-    m_effect = effect;
 }
 
 
