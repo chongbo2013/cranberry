@@ -51,7 +51,6 @@ Window::Window(Window* parent)
     , m_btnCount(0)
 {
     QSurfaceFormat fmt = format();
-    fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
     fmt.setSamples(8);
@@ -60,6 +59,7 @@ Window::Window(Window* parent)
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL)
     {
         fmt.setVersion(3, 3);
+        fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
     }
     else
     {
@@ -79,8 +79,7 @@ Window::~Window()
 
 bool Window::isValid() const
 {
-    return context() != nullptr &&
-           m_gl != nullptr;
+    return context() != nullptr && m_gl != nullptr;
 }
 
 
