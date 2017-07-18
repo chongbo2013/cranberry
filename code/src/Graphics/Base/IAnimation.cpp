@@ -144,14 +144,8 @@ void IAnimation::update(const GameTime& time)
             m_currentFrame = &m_frames[frameIndex];
         }
     }
-}
 
-
-void IAnimation::render()
-{
-    if (!prepareRendering()) return;
-
-    // Copies all transformations and renders the current texture.
+    // Copies all transformations.
     ITexture* texture = m_atlases[m_currentFrame->atlas]->texture();
     texture->setShaderProgram(shaderProgram());
     texture->setPosition(pos());
@@ -160,7 +154,15 @@ void IAnimation::render()
     texture->setOrigin(origin().toVector2D());
     texture->setScale(scaleX(), scaleY());
     texture->setSourceRectangle(m_currentFrame->rect);
-    texture->render();
+}
+
+
+void IAnimation::render()
+{
+    if (!prepareRendering()) return;
+
+    // Renders the current texture.
+    m_atlases[m_currentFrame->atlas]->texture()->render();
 }
 
 

@@ -168,6 +168,13 @@ void Text::destroy()
 void Text::update(const GameTime& time)
 {
     updateTransform(time);
+
+    // Copies all transformations.
+    m_texture->setShaderProgram(shaderProgram());
+    m_texture->setPosition(pos());
+    m_texture->setAngle(angle());
+    m_texture->setOpacity(opacity());
+    m_texture->setScale(scaleX(), scaleY());
 }
 
 
@@ -181,12 +188,6 @@ void Text::render()
         m_textUpdate = false;
     }
 
-    // Copies all transformations.
-    m_texture->setShaderProgram(shaderProgram());
-    m_texture->setPosition(pos());
-    m_texture->setAngle(angle());
-    m_texture->setOpacity(opacity());
-    m_texture->setScale(scaleX(), scaleY());
     m_texture->render();
 }
 
