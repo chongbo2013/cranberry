@@ -28,13 +28,6 @@
 CRANBERRY_USING_NAMESPACE
 
 
-// Interval tolerances
-#define TLRN_MOVE   0.1
-#define TLRN_ROTATE 0.01
-#define TLRN_SCALE  0.01
-#define TLRN_FADE   0.001
-
-
 Widget::Widget(Widget* parent)
     : IRenderable()
     , ITransformable()
