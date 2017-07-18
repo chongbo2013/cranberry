@@ -24,12 +24,15 @@
 #include <Cranberry/Gui/Base/Widget.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 
-// Qt headers
-
-// Standard headers
-
 
 CRANBERRY_USING_NAMESPACE
+
+
+// Interval tolerances
+#define TLRN_MOVE   0.1
+#define TLRN_ROTATE 0.01
+#define TLRN_SCALE  0.01
+#define TLRN_FADE   0.001
 
 
 Widget::Widget(Widget* parent)
@@ -90,32 +93,31 @@ void Widget::update(const GameTime& time)
 {
     updateTransform(time);
 
+    const QRect& g = m_widget->geometry();
+
+    // Determines whether layout must be updated.
+    if (g.width() != m_oldGeo.width() || g.height() != m_oldGeo.height())
+    {
+        onSizeChanged(g.size());
+        setSize(g.width(), g.height());
+
+        m_oldGeo.setWidth(g.width());
+        m_oldGeo.setHeight(g.height());
+        m_batch->setGeometry(rect());
+    }
+
+    // Copies all properties to the batch.
+    m_batch->setPosition(getX(), getY());
+    m_batch->setAngle(getAngleX(), getAngleY(), getAngleZ());
+    m_batch->setScale(getScaleX(), getScaleY());
+    m_batch->setOpacity(getOpacity());
     m_batch->setShaderProgram(shaderProgram());
-    m_batch->setAngle(angle());
-    m_batch->setOpacity(opacity());
     m_batch->setOrigin(origin().toVector2D());
-    m_batch->setScale(scaleX(), scaleY());
 }
 
 
 void Widget::render()
 {
-    const QRect& g = m_widget->geometry();
-
-    // Determines whether layout must be updated.
-    if (g.x() != x() || g.y() != y())
-    {
-        setPosition(g.x(), g.y());
-        m_batch->setPosition(g.x(), g.y());
-    }
-
-    if (g.width() != width() || g.height() != height())
-    {
-        onSizeChanged(g.size());
-        setSize(g.width(), g.height());
-        m_batch->setGeometry(rect());
-    }
-
     // Renders the batch and all child widgets.
     m_batch->render();
 
@@ -188,4 +190,124 @@ bool Widget::insertObjectToBatch(int layer, IRenderable* obj)
 bool Widget::removeObjectFromBatch(IRenderable* obj)
 {
     return m_batch->removeObject(obj);
+}
+
+
+float Widget::getX()
+{
+    auto* current = this;
+    float px = 0;
+
+    while (current != nullptr)
+    {
+        px += (current->x() + current->m_widget->x());
+        current = current->m_parent;
+    }
+
+    return px;
+}
+
+
+float Widget::getY()
+{
+    auto* current = this;
+    float py = 0;
+
+    while (current != nullptr)
+    {
+        py += (current->y() + current->m_widget->y());
+        current = current->m_parent;
+    }
+
+    return py;
+}
+
+
+float Widget::getAngleX()
+{
+    auto* current = this;
+    float px = 0;
+
+    while (current != nullptr)
+    {
+        px += current->angleX();
+        current = current->m_parent;
+    }
+
+    return px;
+}
+
+
+float Widget::getAngleY()
+{
+    auto* current = this;
+    float py = 0;
+
+    while (current != nullptr)
+    {
+        py += current->angleY();
+        current = current->m_parent;
+    }
+
+    return py;
+}
+
+
+float Widget::getAngleZ()
+{
+    auto* current = this;
+    float pz = 0;
+
+    while (current != nullptr)
+    {
+        pz += current->angleZ();
+        current = current->m_parent;
+    }
+
+    return pz;
+}
+
+
+float Widget::getScaleX()
+{
+    auto* current = this;
+    float px = 1;
+
+    while (current != nullptr)
+    {
+        px *= current->scaleX();
+        current = current->m_parent;
+    }
+
+    return px;
+}
+
+
+float Widget::getScaleY()
+{
+    auto* current = this;
+    float py = 1;
+
+    while (current != nullptr)
+    {
+        py *= current->scaleY();
+        current = current->m_parent;
+    }
+
+    return py;
+}
+
+
+float Widget::getOpacity()
+{
+    auto* current = this;
+    float po = 1;
+
+    while (current != nullptr)
+    {
+        po *= current->opacity();
+        current = current->m_parent;
+    }
+
+    return po;
 }
