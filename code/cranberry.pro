@@ -11,7 +11,7 @@
 ## GENERAL SETTINGS
 ##
 ################################################################################
-QT             +=       widgets gamepad xml
+QT             +=       widgets gamepad qml quick
 CONFIG         +=       c++11 exceptions
 DEFINES        +=       CRANBERRY_BUILD
 DEFINES        +=       CRANBERRY_VERSION=\\\"1.0.0\\\"
@@ -61,6 +61,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Emitters/BackgroundEmitter.hpp \
                     include/Cranberry/System/Emitters/AnimationEmitter.hpp \
                     include/Cranberry/System/Receivers/SpriteReceiver.hpp \
+                    include/Cranberry/System/Receivers/GuiManagerReceiver.hpp \
                     include/Cranberry/OpenGL/OpenGLDebug.hpp \
                     include/Cranberry/OpenGL/OpenGLVertex.hpp \
                     include/Cranberry/OpenGL/OpenGLShader.hpp \
@@ -92,7 +93,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Sprite.hpp \
                     include/Cranberry/Graphics/RawAnimation.hpp \
                     include/Cranberry/Game/Game.hpp \
-    include/Cranberry/Gui/GuiManager.hpp
+                    include/Cranberry/Gui/GuiManager.hpp
 
 
 ################################################################################
@@ -103,6 +104,7 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/System/GameTime.cpp \
                     src/System/Random.cpp \
                     src/System/Receivers/SpriteReceiver.cpp \
+                    src/System/Receivers/GuiManagerReceiver.cpp \
                     src/OpenGL/OpenGLVertex.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
@@ -131,7 +133,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/SpriteBatch.cpp \
                     src/Graphics/Sprite.cpp \
                     src/Graphics/RawAnimation.cpp \
-                    src/Game/Game.cpp
+                    src/Game/Game.cpp \
+                    src/Gui/GuiManager.cpp
 
 ################################################################################
 ## OUTPUT
