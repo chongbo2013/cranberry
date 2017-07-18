@@ -346,6 +346,12 @@ void ITransformable::setScaleSpeed(float speedX, float speedY)
 }
 
 
+void ITransformable::setFadeSpeed(float speed)
+{
+    m_speedFade = speed;
+}
+
+
 void ITransformable::setX(float x)
 {
     m_x = x;
