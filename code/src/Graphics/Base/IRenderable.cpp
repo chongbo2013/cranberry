@@ -86,6 +86,15 @@ void IRenderable::destroy()
 }
 
 
+void IRenderable::makeCurrent()
+{
+    if (QOpenGLContext::currentContext() != m_renderTarget->context())
+    {
+        m_renderTarget->makeCurrent();
+    }
+}
+
+
 bool IRenderable::prepareRendering()
 {
     if (Q_UNLIKELY(isNull()))
@@ -93,11 +102,7 @@ bool IRenderable::prepareRendering()
         return cranError(ERRARG(e_03));
     }
 
-    if (QOpenGLContext::currentContext() != m_renderTarget->context())
-    {
-        m_renderTarget->makeCurrent();
-    }
-
+    makeCurrent();
     return true;
 }
 

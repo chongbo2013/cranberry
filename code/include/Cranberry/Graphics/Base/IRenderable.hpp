@@ -111,6 +111,14 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Provides a lightweight way to make the render target's context current.
+    /// Normally, you do not need to use this, only if Qt code interferes with
+    /// the context of the render target.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void makeCurrent();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Prepares the render process by making the target's context current or
     /// by determining whether the object is null.
     ///

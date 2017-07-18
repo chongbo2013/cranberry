@@ -20,7 +20,6 @@
 
 
 // Cranberry headers
-#include <Cranberry/System/Receivers/SpriteReceiver.hpp>
 #include <Cranberry/Graphics/Sprite.hpp>
 
 
