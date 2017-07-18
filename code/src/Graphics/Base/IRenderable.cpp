@@ -73,6 +73,7 @@ bool IRenderable::create(Window* renderTarget)
     gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
     m_emitter.emitCreated();
+    makeCurrent();
 
     return true;
 }

@@ -205,8 +205,6 @@ bool SpriteBatch::createInternal(Window* rt)
 
     egl = renderTarget()->context()->extraFunctions();
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
-    setSize(renderTarget()->width(), renderTarget()->height());
-    setOrigin(width() / 2, height() / 2);
 
     return true;
 }
@@ -294,6 +292,11 @@ void SpriteBatch::updateVertices()
         cp.setWidth(renderTarget()->width());
         cp.setHeight(renderTarget()->height());
     }
+    if (m_fbo != nullptr)
+    {
+        cp.setWidth(m_fbo->width());
+        cp.setHeight(m_fbo->height());
+    }
 
     // Specifies the vertex locations.
     m_vertices.at(0).xyz(0,          0,           0);
@@ -379,19 +382,23 @@ bool SpriteBatch::writeFramebuffer()
 
 bool SpriteBatch::writeTexture()
 {
-    // Allocates a texture as big as the screen & enable smoothing.
+    // Allocates a texture enable smoothing.
     glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_frameTexture));
-    glDebug(gl->glTexImage2D(
-                GL_TEXTURE_2D,
-                GL_ZERO,
-                GL_RGBA8,
-                width(),
-                height(),
-                GL_ZERO,
-                GL_RGBA,
-                GL_UNSIGNED_BYTE,
-                NULL
-                ));
+
+    if (m_fbo == nullptr)
+    {
+        glDebug(gl->glTexImage2D(
+                    GL_TEXTURE_2D,
+                    GL_ZERO,
+                    GL_RGBA8,
+                    width(),
+                    height(),
+                    GL_ZERO,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE,
+                    NULL
+                    ));
+    }
 
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
