@@ -27,6 +27,7 @@
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 
 // Qt headers
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QScreen>
@@ -110,6 +111,20 @@ QOpenGLFunctions* Window::functions() const
 uint Window::vao() const
 {
     return m_vao;
+}
+
+
+void Window::restoreOpenGLSettings()
+{
+    const QColor& cc = m_settings.clearColor();
+
+    glDebug(m_gl->glClearColor(cc.redF(), cc.greenF(), cc.blueF(), cc.alphaF()));
+    glDebug(m_gl->glEnable(GL_BLEND));
+    glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    glDebug(m_gl->glEnable(GL_MULTISAMPLE));
+    glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
+    glDebug(m_gl->glDisable(GL_DEPTH_TEST));
+    glDebug(context()->extraFunctions()->glBindVertexArray(m_vao));
 }
 
 
