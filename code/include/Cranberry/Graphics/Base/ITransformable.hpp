@@ -204,7 +204,7 @@ public:
     /// \returns the transformation matrix.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QMatrix4x4 matrix(IRenderable* obj, bool flipped = true) const;
+    QMatrix4x4 matrix(IRenderable* obj) const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the move direction of the object.

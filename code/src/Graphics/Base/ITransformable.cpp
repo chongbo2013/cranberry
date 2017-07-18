@@ -173,21 +173,13 @@ float ITransformable::opacity() const
 }
 
 
-QMatrix4x4 ITransformable::matrix(IRenderable* obj, bool flipped) const
+QMatrix4x4 ITransformable::matrix(IRenderable* obj) const
 {
     QMatrix4x4 proj, tran, rot, scale, orig, norig;
     qreal fw = static_cast<qreal>(obj->renderTarget()->width());
     qreal fh = static_cast<qreal>(obj->renderTarget()->height());
 
-    if (flipped)
-    {
-        proj.ortho(0.f, fw, fh, 0.f, -1, 1);
-    }
-    else
-    {
-        proj.ortho(0.f, fw, 0.f, fh, -1, 1);
-    }
-
+    proj.ortho(0.f, fw, fh, 0.f, -1, 1);
     tran.translate(x(), y());
     rot.rotate(angleX(), 1.f, 0.f, 0.f);
     rot.rotate(angleY(), 0.f, 1.f, 0.f);

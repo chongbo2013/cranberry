@@ -89,9 +89,10 @@ void IRenderable::destroy()
 
 void IRenderable::makeCurrent()
 {
-    if (QOpenGLContext::currentContext() != m_renderTarget->context())
+    auto* cc = QOpenGLContext::currentContext();
+    if (cc != renderTarget()->context() || cc->surface() != renderTarget())
     {
-        m_renderTarget->makeCurrent();
+        renderTarget()->makeCurrent();
     }
 }
 

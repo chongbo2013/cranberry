@@ -61,10 +61,10 @@ SpriteBatch::SpriteBatch()
     , m_indexBuffer(0)
     , m_frameTexture(0)
 {
-    m_vertices.at(0).uv(0, 0);
-    m_vertices.at(1).uv(1, 0);
-    m_vertices.at(2).uv(1, 1);
-    m_vertices.at(3).uv(0, 1);
+    m_vertices.at(0).uv(0, 1);
+    m_vertices.at(1).uv(1, 1);
+    m_vertices.at(2).uv(1, 0);
+    m_vertices.at(3).uv(0, 0);
     m_vertices.at(0).rgba(1, 1, 1, 1);
     m_vertices.at(1).rgba(1, 1, 1, 1);
     m_vertices.at(2).rgba(1, 1, 1, 1);
@@ -150,9 +150,12 @@ void SpriteBatch::update(const GameTime& time)
 void SpriteBatch::render()
 {
     if (!prepareRendering()) return;
+    if (m_fbo == nullptr)
+    {
+        setupBatch();
+        renderBatch();
+    }
 
-    setupBatch();
-    renderBatch();
     setupFrame();
     renderFrame();
 }
@@ -530,7 +533,7 @@ void SpriteBatch::setupFrame()
 
     // Modify the states of the program.
     glDebug(program->setUniformValue("u_tex", GL_ZERO));
-    glDebug(program->setUniformValue("u_mvp", matrix(this, false)));
+    glDebug(program->setUniformValue("u_mvp", matrix(this)));
     glDebug(program->setUniformValue("u_opac", opacity()));
     glDebug(program->setUniformValue("u_effect", (uint) m_effect));
     glDebug(program->setUniformValue("u_mode", GL_ZERO));
