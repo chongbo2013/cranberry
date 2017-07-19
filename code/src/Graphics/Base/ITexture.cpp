@@ -130,7 +130,7 @@ bool ITexture::createBuffers()
 bool ITexture::createTexture(const QImage& img)
 {
     m_texture = new QOpenGLTexture(img);
-    if (!m_texture->isCreated())
+    if (!m_texture->isCreated() || img.isNull())
     {
         return cranError(ERRARG(e_03));
     }

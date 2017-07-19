@@ -20,6 +20,7 @@
 
 
 // Cranberry headers
+#include <Cranberry/Game/Game.hpp>
 #include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
@@ -101,7 +102,13 @@ bool IRenderable::prepareRendering()
 {
     if (Q_UNLIKELY(isNull()))
     {
-        return cranError(ERRARG(e_03));
+        cranError(ERRARG(e_03));
+
+#ifndef QT_DEBUG
+        Game::instance()->exit(CRANBERRY_EXIT_FATAL);
+#endif
+
+        return false;
     }
 
     makeCurrent();

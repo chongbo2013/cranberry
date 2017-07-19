@@ -42,14 +42,6 @@ CRANBERRY_GLOBAL_VAR_A(Game*, g_instance, nullptr)
 
 void cranberryGlobalSignalHandler(int)
 {
-    // Shows a messagebox with the error.
-    QMessageBox box;
-    box.setWindowTitle("Cranberry");
-    box.setIcon(QMessageBox::Critical);
-    box.setStandardButtons(QMessageBox::Close);
-    box.setText("A fatal error occured, trying to save game data.");
-    box.exec();
-
     // Terminates the game.
     Game::instance()->exit(CRANBERRY_EXIT_UNHANDLED);
 }
@@ -139,6 +131,14 @@ void Game::exit(int exitCode)
     // Informs all windows about the potential crash.
     if (exitCode != 0)
     {
+        // Shows a messagebox to indicate that game data is being saved.
+        QMessageBox box;
+        box.setWindowTitle("Cranberry");
+        box.setIcon(QMessageBox::Critical);
+        box.setStandardButtons(QMessageBox::Close);
+        box.setText("A fatal error occured, trying to save game data.");
+        box.exec();
+
         for (Window* window : m_windows)
         {
             window->onCrash();

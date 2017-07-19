@@ -123,7 +123,7 @@ void OpenGLDefaultShaders::cranberryInitDefaultShaders()
 
 void OpenGLDefaultShaders::cranberryUpdateDefaultShaders()
 {
-    float t = static_cast<float>(clock());
+    float t = static_cast<float>(clock() % 10000);
     for (OpenGLShader* s : g_updateList)
     {
         glDebug(s->program()->bind());
