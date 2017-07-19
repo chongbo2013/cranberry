@@ -54,11 +54,13 @@ SpriteBatch::SpriteBatch()
     , m_name("<no name>")
     , m_backColor(Qt::transparent)
     , m_frameBuffer(0)
+    , m_msFrameBuffer(0)
     , m_renderBuffer(0)
     , m_vertexArray(0)
     , m_vertexBuffer(0)
     , m_indexBuffer(0)
     , m_frameTexture(0)
+    , m_msFrameTexture(0)
 {
     m_vertices.at(0).rgba(1, 1, 1, 1);
     m_vertices.at(1).rgba(1, 1, 1, 1);
@@ -77,11 +79,13 @@ bool SpriteBatch::isNull() const
 {
     return IRenderable::isNull() ||
            m_frameBuffer  == 0   ||
+           m_msFrameBuffer == 0  ||
            m_renderBuffer == 0   ||
            m_vertexArray  == 0   ||
            m_vertexBuffer == 0   ||
            m_indexBuffer  == 0   ||
-           m_frameTexture == 0;
+           m_frameTexture == 0   ||
+           m_msFrameTexture == 0;
 }
 
 
@@ -243,6 +247,18 @@ bool SpriteBatch::createFboRbo()
         return cranError(ERRARG(e_02));
     }
 
+    glDebug(gl->glGenFramebuffers(1, &m_msFrameBuffer));
+    if (m_msFrameBuffer == 0)
+    {
+        return cranError(ERRARG(e_01));
+    }
+
+    glDebug(gl->glGenTextures(1, &m_msFrameTexture));
+    if (m_msFrameTexture == 0)
+    {
+        return cranError(ERRARG(e_06));
+    }
+
     return true;
 }
 
@@ -361,7 +377,7 @@ bool SpriteBatch::writeBuffers()
 
 bool SpriteBatch::writeFramebuffer()
 {
-    // Assigns the underlying texture and the render buffer.
+    // Assigns the underlying texture.
     glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer));
     glDebug(gl->glFramebufferTexture2D(
                 GL_FRAMEBUFFER,
@@ -370,6 +386,23 @@ bool SpriteBatch::writeFramebuffer()
                 m_frameTexture,
                 GL_ZERO
                 ));
+
+    // Check for frame buffer completeness.
+    uint status;
+    glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        cranError(ERRARG(e_07));
+    }
+
+    // Assigns the underlying multisampled texture and the multisampled rbo.
+    glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_msFrameBuffer));
+    glDebug(gl->glFramebufferTexture2D(
+                GL_FRAMEBUFFER,
+                GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_2D_MULTISAMPLE,
+                m_msFrameTexture,
+                GL_ZERO));
     glDebug(gl->glFramebufferRenderbuffer(
                 GL_FRAMEBUFFER,
                 GL_DEPTH_STENCIL_ATTACHMENT,
@@ -378,7 +411,6 @@ bool SpriteBatch::writeFramebuffer()
                 ));
 
     // Check for frame buffer completeness.
-    uint status;
     glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
@@ -393,7 +425,7 @@ bool SpriteBatch::writeFramebuffer()
 
 bool SpriteBatch::writeTexture()
 {
-    // Allocates a texture enable smoothing.
+    // Allocates a texture, enable smoothing.
     glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_frameTexture));
 
     if (m_fbo == nullptr)
@@ -415,6 +447,20 @@ bool SpriteBatch::writeTexture()
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    glDebug(gl->glBindTexture(GL_TEXTURE_2D, GL_ZERO));
+
+    // Allocates a multisampled texture.
+    glDebug(egl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_msFrameTexture));
+    glDebug(egl->glTexStorage2DMultisample(
+                GL_TEXTURE_2D_MULTISAMPLE,
+                4,
+                GL_RGBA,
+                width(),
+                height(),
+                GL_TRUE
+                ));
+
+    glDebug(egl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GL_ZERO));
 
     return true;
 }
@@ -422,9 +468,10 @@ bool SpriteBatch::writeTexture()
 
 bool SpriteBatch::writeRenderbuffer()
 {
-    glDebug(gl->glBindRenderbuffer(GL_RENDERBUFFER, m_renderBuffer));
-    glDebug(gl->glRenderbufferStorage(
+    glDebug(egl->glBindRenderbuffer(GL_RENDERBUFFER, m_renderBuffer));
+    glDebug(egl->glRenderbufferStorageMultisample(
                 GL_RENDERBUFFER,
+                4,
                 GL_DEPTH24_STENCIL8,
                 width(),
                 height()
@@ -500,7 +547,7 @@ void SpriteBatch::setupBatch()
                     ));
     }
 
-    glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_frameBuffer));
+    glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_msFrameBuffer));
     glDebug(gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
     // Revert clear color back to default.
@@ -529,6 +576,16 @@ void SpriteBatch::renderBatch()
 void SpriteBatch::setupFrame()
 {
     QOpenGLShaderProgram* program = shaderProgram()->program();
+
+    // Blit MSAA fbo to normal fbo.
+    glDebug(egl->glBindFramebuffer(GL_READ_FRAMEBUFFER, m_msFrameBuffer));
+    glDebug(egl->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_frameBuffer));
+    glDebug(egl->glBlitFramebuffer(
+                0, 0, width(), height(),
+                0, 0, width(), height(),
+                GL_COLOR_BUFFER_BIT,
+                GL_NEAREST
+                ));
 
     // Bind default framebuffer.
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, 0));

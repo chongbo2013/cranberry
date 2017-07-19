@@ -125,6 +125,7 @@ void Window::restoreOpenGLSettings()
     glDebug(m_gl->glEnable(GL_MULTISAMPLE));
     glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
     glDebug(m_gl->glDisable(GL_DEPTH_TEST));
+    glDebug(m_gl->glDepthMask(GL_FALSE));
     glDebug(context()->extraFunctions()->glBindVertexArray(m_vao));
 }
 
@@ -153,12 +154,7 @@ void Window::initializeGL()
     m_gl = context()->functions();
     m_gl->initializeOpenGLFunctions();
 
-    const QColor& cc = m_settings.clearColor();
-    glDebug(m_gl->glClearColor(cc.redF(), cc.greenF(), cc.blueF(), cc.alphaF()));
-    glDebug(m_gl->glEnable(GL_BLEND));
-    glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    glDebug(m_gl->glEnable(GL_MULTISAMPLE));
-    glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
+    restoreOpenGLSettings();
 
     // Create a single VAO which will be bound all the time.
     auto* vao = new QOpenGLVertexArrayObject(this);

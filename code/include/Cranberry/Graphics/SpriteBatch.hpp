@@ -254,11 +254,13 @@ private:
     QRectF                    m_geometry;
     QColor                    m_backColor;
     uint                      m_frameBuffer;
+    uint                      m_msFrameBuffer;
     uint                      m_renderBuffer;
     uint                      m_vertexArray;
     uint                      m_vertexBuffer;
     uint                      m_indexBuffer;
     uint                      m_frameTexture;
+    uint                      m_msFrameTexture;
 };
 
 
