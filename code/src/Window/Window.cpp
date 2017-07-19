@@ -195,7 +195,6 @@ void Window::parseSettings()
     // Fix: Must recreate window after format change.
     destroy();
     setFormat(sf);
-    create();
 
     setTitle(m_settings.title());
     setPosition(m_settings.position());
@@ -210,6 +209,8 @@ void Window::parseSettings()
     {
         setWindowState(Qt::WindowFullScreen);
     }
+
+    create();
 }
 
 
