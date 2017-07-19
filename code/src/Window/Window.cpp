@@ -29,6 +29,7 @@
 // Qt headers
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QScreen>
 #include <QtEvents>
@@ -38,10 +39,9 @@ CRANBERRY_USING_NAMESPACE
 
 
 CRANBERRY_GLOBAL_VAR(Window*, g_window)
-CRANBERRY_CONST_VAR(QString, c_path, ":/cb/glsl/%0_%1.glsl")
-CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT|
-                                       GL_STENCIL_BUFFER_BIT|
-                                       GL_DEPTH_BUFFER_BIT)
+CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT   |
+                                       GL_STENCIL_BUFFER_BIT |
+                                       GL_DEPTH_BUFFER_BIT   )
 
 
 Window::Window(Window* parent)
@@ -50,6 +50,7 @@ Window::Window(Window* parent)
     , m_keyCount(0)
     , m_padCount(0)
     , m_btnCount(0)
+    , m_isMainWindow(false)
 {
     QSurfaceFormat fmt = format();
     fmt.setDepthBufferSize(24);
@@ -171,7 +172,13 @@ void Window::initializeGL()
         m_vao = vao->objectId();
     }
 
-    loadDefaultShaders();
+    // Load shaders only once - for the main window.
+    if (m_isMainWindow)
+    {
+        OpenGLDefaultShaders::cranberryLoadDefaultShaders();
+        OpenGLDefaultShaders::cranberryInitDefaultShaders();
+    }
+
     onInit();
 }
 
@@ -206,33 +213,15 @@ void Window::parseSettings()
 }
 
 
-void Window::loadDefaultShaders()
-{
-    OpenGLDefaultShaders::add("cb.glsl.texture", loadShader("texture"));
-    OpenGLDefaultShaders::add("cb.glsl.shape", loadShader("shape"));
-}
-
-
 void Window::destroyGL()
 {
-    // Unloads all the default shader programs.
-    OpenGLDefaultShaders::remove("cb.glsl.texture");
-    OpenGLDefaultShaders::remove("cb.glsl.shape");
+    // Unloads all the default shader programs only once - for the main window.
+    if (m_isMainWindow)
+    {
+        OpenGLDefaultShaders::cranberryFreeDefaultShaders();
+    }
 
     onExit();
-}
-
-
-OpenGLShader* Window::loadShader(const char* name)
-{
-    QString vpath = c_path.arg(name, "vert");
-    QString fpath = c_path.arg(name, "frag");
-    OpenGLShader* s = new OpenGLShader;
-
-    s->setVertexShaderFromFile(vpath);
-    s->setFragmentShaderFromFile(fpath);
-
-    return s;
 }
 
 
@@ -247,9 +236,13 @@ void Window::paintGL()
 
     // Updating & rendering.
     m_time.update();
+
 #ifdef QT_DEBUG
     calculateFramerate();
 #endif
+
+    // Update shaders that require time for noise.
+    OpenGLDefaultShaders::cranberryUpdateDefaultShaders();
 
     onUpdate(m_time);
     glDebug(m_gl->glClear(c_clearMask));

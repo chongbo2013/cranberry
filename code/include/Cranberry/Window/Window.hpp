@@ -199,10 +199,9 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader* loadShader(const char* name);
     void parseSettings();
-    void loadDefaultShaders();
     void destroyGL();
+
 #ifdef QT_DEBUG
     void calculateFramerate();
 #endif
@@ -221,6 +220,7 @@ private:
     qint32            m_padCount;
     qint32            m_btnCount;
     uint              m_vao;
+    bool              m_isMainWindow;
 
     friend class Game;
 };

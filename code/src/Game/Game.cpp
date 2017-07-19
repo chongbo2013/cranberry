@@ -127,6 +127,7 @@ bool Game::removeWindow(Window* window)
 int Game::run(Window* mainWindow)
 {
     addWindow(mainWindow);
+    mainWindow->m_isMainWindow = true;
     m_isRunning = true;
 
     return g_application->exec();
