@@ -4,5 +4,7 @@
         <file>glsl/shape_vert.glsl</file>
         <file>glsl/texture_frag.glsl</file>
         <file>glsl/texture_vert.glsl</file>
+        <file>glsl/film_vert.glsl</file>
+        <file>glsl/film_frag.glsl</file>
     </qresource>
 </RCC>
