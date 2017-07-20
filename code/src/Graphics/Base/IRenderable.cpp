@@ -45,6 +45,7 @@ IRenderable::IRenderable()
     , m_defaultProgram(nullptr)
     , m_customProgram(nullptr)
     , m_name("<no name>")
+    , m_osRenderer(0)
 {
 }
 
@@ -149,6 +150,18 @@ void IRenderable::setShaderProgram(OpenGLShader* program)
 void IRenderable::setDefaultShaderProgram(OpenGLShader* program)
 {
     m_defaultProgram = program;
+}
+
+
+uint IRenderable::offscreenRenderer() const
+{
+    return m_osRenderer;
+}
+
+
+void IRenderable::setOffscreenRenderer(uint fbo)
+{
+    m_osRenderer = fbo;
 }
 
 

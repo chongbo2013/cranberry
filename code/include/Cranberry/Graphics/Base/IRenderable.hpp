@@ -146,6 +146,14 @@ public:
     OpenGLShader* shaderProgram() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the object's offscreen renderer.
+    ///
+    /// \returns the handle of the OS renderer.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    uint offscreenRenderer() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the name of this object.
     ///
     /// \returns the name.
@@ -162,6 +170,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setShaderProgram(OpenGLShader* program);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the object's offscreen renderer.
+    ///
+    /// \param fbo Handle of the OS renderer.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setOffscreenRenderer(uint fbo);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Setting a name is not required, but recommended, since it can be easily
@@ -217,6 +233,9 @@ private:
     OpenGLShader*     m_customProgram;  ///< Custom shader program
     QString           m_name;           ///< Name of the object
     RenderableEmitter m_emitter;        ///< Emits signals for this class
+    uint              m_osRenderer;     ///< Offscreen renderer, if any
+
+    friend class SpriteBatch;
 };
 
 

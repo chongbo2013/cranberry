@@ -149,7 +149,7 @@ void SpriteBatch::update(const GameTime& time)
 void SpriteBatch::render()
 {
     if (!prepareRendering()) return;
-    if (m_fbo == nullptr)
+    if (!m_objects.isEmpty())
     {
         setupBatch();
         renderBatch();
@@ -221,24 +221,16 @@ bool SpriteBatch::createData()
 
 bool SpriteBatch::createFboRbo()
 {
-    if (m_fbo == nullptr)
+    glDebug(gl->glGenFramebuffers(1, &m_frameBuffer));
+    if (m_frameBuffer == 0)
     {
-        glDebug(gl->glGenFramebuffers(1, &m_frameBuffer));
-        if (m_frameBuffer == 0)
-        {
-            return cranError(ERRARG(e_01));
-        }
-
-        glDebug(gl->glGenTextures(1, &m_frameTexture));
-        if (m_frameTexture == 0)
-        {
-            return cranError(ERRARG(e_06));
-        }
+        return cranError(ERRARG(e_01));
     }
-    else
+
+    glDebug(gl->glGenTextures(1, &m_frameTexture));
+    if (m_frameTexture == 0)
     {
-        m_frameBuffer = m_fbo->handle();
-        m_frameTexture = m_fbo->texture();
+        return cranError(ERRARG(e_06));
     }
 
     glDebug(gl->glGenRenderbuffers(1, &m_renderBuffer));
@@ -247,16 +239,24 @@ bool SpriteBatch::createFboRbo()
         return cranError(ERRARG(e_02));
     }
 
-    glDebug(gl->glGenFramebuffers(1, &m_msFrameBuffer));
-    if (m_msFrameBuffer == 0)
+    if (m_fbo == nullptr)
     {
-        return cranError(ERRARG(e_01));
-    }
+        glDebug(gl->glGenFramebuffers(1, &m_msFrameBuffer));
+        if (m_msFrameBuffer == 0)
+        {
+            return cranError(ERRARG(e_01));
+        }
 
-    glDebug(gl->glGenTextures(1, &m_msFrameTexture));
-    if (m_msFrameTexture == 0)
+        glDebug(gl->glGenTextures(1, &m_msFrameTexture));
+        if (m_msFrameTexture == 0)
+        {
+            return cranError(ERRARG(e_06));
+        }
+    }
+    else
     {
-        return cranError(ERRARG(e_06));
+        m_msFrameBuffer = m_fbo->handle();
+        m_msFrameTexture = m_fbo->texture();
     }
 
     return true;
@@ -392,29 +392,32 @@ bool SpriteBatch::writeFramebuffer()
     glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-        cranError(ERRARG(e_07));
+        return cranError(ERRARG(e_07));
     }
 
     // Assigns the underlying multisampled texture and the multisampled rbo.
-    glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_msFrameBuffer));
-    glDebug(gl->glFramebufferTexture2D(
-                GL_FRAMEBUFFER,
-                GL_COLOR_ATTACHMENT0,
-                GL_TEXTURE_2D_MULTISAMPLE,
-                m_msFrameTexture,
-                GL_ZERO));
-    glDebug(gl->glFramebufferRenderbuffer(
-                GL_FRAMEBUFFER,
-                GL_DEPTH_STENCIL_ATTACHMENT,
-                GL_RENDERBUFFER,
-                m_renderBuffer
-                ));
-
-    // Check for frame buffer completeness.
-    glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
-    if (status != GL_FRAMEBUFFER_COMPLETE)
+    if (m_fbo == nullptr)
     {
-        cranError(ERRARG(e_07));
+        glDebug(gl->glBindFramebuffer(GL_FRAMEBUFFER, m_msFrameBuffer));
+        glDebug(gl->glFramebufferTexture2D(
+                    GL_FRAMEBUFFER,
+                    GL_COLOR_ATTACHMENT0,
+                    GL_TEXTURE_2D_MULTISAMPLE,
+                    m_msFrameTexture,
+                    GL_ZERO));
+        glDebug(gl->glFramebufferRenderbuffer(
+                    GL_FRAMEBUFFER,
+                    GL_DEPTH_STENCIL_ATTACHMENT,
+                    GL_RENDERBUFFER,
+                    m_renderBuffer
+                    ));
+
+        // Check for frame buffer completeness.
+        glDebug(status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER));
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            cranError(ERRARG(e_07));
+        }
     }
 
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, GL_ZERO));
@@ -427,21 +430,17 @@ bool SpriteBatch::writeTexture()
 {
     // Allocates a texture, enable smoothing.
     glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_frameTexture));
-
-    if (m_fbo == nullptr)
-    {
-        glDebug(gl->glTexImage2D(
-                    GL_TEXTURE_2D,
-                    GL_ZERO,
-                    GL_RGBA8,
-                    width(),
-                    height(),
-                    GL_ZERO,
-                    GL_RGBA,
-                    GL_UNSIGNED_BYTE,
-                    NULL
-                    ));
-    }
+    glDebug(gl->glTexImage2D(
+                GL_TEXTURE_2D,
+                GL_ZERO,
+                GL_RGBA8,
+                width(),
+                height(),
+                GL_ZERO,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                NULL
+                ));
 
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     glDebug(gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
@@ -450,17 +449,20 @@ bool SpriteBatch::writeTexture()
     glDebug(gl->glBindTexture(GL_TEXTURE_2D, GL_ZERO));
 
     // Allocates a multisampled texture.
-    glDebug(egl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_msFrameTexture));
-    glDebug(egl->glTexStorage2DMultisample(
-                GL_TEXTURE_2D_MULTISAMPLE,
-                4,
-                GL_RGBA,
-                width(),
-                height(),
-                GL_TRUE
-                ));
+    if (m_fbo == nullptr)
+    {
+        glDebug(egl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_msFrameTexture));
+        glDebug(egl->glTexStorage2DMultisample(
+                    GL_TEXTURE_2D_MULTISAMPLE,
+                    4,
+                    GL_RGBA,
+                    width(),
+                    height(),
+                    GL_TRUE
+                    ));
 
-    glDebug(egl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GL_ZERO));
+        glDebug(egl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GL_ZERO));
+    }
 
     return true;
 }
@@ -487,21 +489,33 @@ void SpriteBatch::destroyFboRbo()
     // If using a fbo allocated by Qt, do not delete it manually.
     if (m_fbo == nullptr)
     {
-        if (m_frameBuffer != 0)
+        if (m_msFrameBuffer != 0)
         {
-            glDebug(gl->glDeleteFramebuffers(1, &m_frameBuffer));
-            m_frameBuffer = 0;
+            glDebug(gl->glDeleteFramebuffers(1, &m_msFrameBuffer));
+            m_msFrameBuffer = 0;
         }
-        if (m_frameTexture != 0)
+        if (m_msFrameTexture != 0)
         {
-            glDebug(gl->glDeleteTextures(1, &m_frameTexture));
-            m_frameTexture = 0;
+            glDebug(gl->glDeleteTextures(1, &m_msFrameTexture));
+            m_msFrameTexture = 0;
         }
     }
     else
     {
         delete m_fbo;
         m_fbo = nullptr;
+    }
+
+    if (m_frameBuffer != 0)
+    {
+        glDebug(gl->glDeleteFramebuffers(1, &m_frameBuffer));
+        m_frameBuffer = 0;
+    }
+
+    if (m_frameTexture != 0)
+    {
+        glDebug(gl->glDeleteTextures(1, &m_frameTexture));
+        m_frameTexture = 0;
     }
 
     if (m_renderBuffer != 0)
@@ -568,7 +582,9 @@ void SpriteBatch::renderBatch()
 {
     for (IRenderable* obj : m_objects)
     {
+        obj->setOffscreenRenderer(m_msFrameBuffer);
         obj->render();
+        obj->setOffscreenRenderer(0);
     }
 }
 
@@ -588,7 +604,7 @@ void SpriteBatch::setupFrame()
                 ));
 
     // Bind default framebuffer.
-    glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, offscreenRenderer()));
     glDebug(egl->glBindVertexArray(m_vertexArray));
     glDebug(egl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer));
     glDebug(egl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer));
@@ -651,9 +667,11 @@ void SpriteBatch::renderFrame()
 
 void SpriteBatch::releaseFrame()
 {
+    // Bind previous OpenGL objects.
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, 0));
     glDebug(egl->glUseProgram(0));
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
+    glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, offscreenRenderer()));
 }
 
 

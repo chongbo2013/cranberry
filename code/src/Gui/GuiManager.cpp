@@ -198,6 +198,8 @@ void GuiManager::render()
 
     if (!IRenderable::prepareRendering()) return;
 
+    // Need to pass OS renderer through.
+    m_batch->setOffscreenRenderer(offscreenRenderer());
     m_batch->render();
 }
 
