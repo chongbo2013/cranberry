@@ -154,8 +154,6 @@ void Window::initializeGL()
     m_gl = context()->functions();
     m_gl->initializeOpenGLFunctions();
 
-    restoreOpenGLSettings();
-
     // Create a single VAO which will be bound all the time.
     auto* vao = new QOpenGLVertexArrayObject(this);
     if (!vao->create())
@@ -168,11 +166,14 @@ void Window::initializeGL()
         m_vao = vao->objectId();
     }
 
+    restoreOpenGLSettings();
+
     // Load shaders only once - for the main window.
     if (m_isMainWindow)
     {
         OpenGLDefaultShaders::cranberryLoadDefaultShaders();
         OpenGLDefaultShaders::cranberryInitDefaultShaders();
+        OpenGLDefaultShaders::cranberryResizeDefaultShaders(this);
     }
 
     onInit();
@@ -328,6 +329,8 @@ void Window::touchEvent(QTouchEvent* event)
 void Window::resizeEvent(QResizeEvent* event)
 {
     onWindowResized(event->oldSize());
+
+    OpenGLDefaultShaders::cranberryResizeDefaultShaders(this);
 }
 
 

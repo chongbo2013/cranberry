@@ -39,13 +39,19 @@ CRANBERRY_USING_NAMESPACE
 CRANBERRY_CONST_VAR(QString, c_path, ":/cb/glsl/%0_%1.glsl")
 CRANBERRY_GLOBAL_VAR(ShaderMap, g_programs)
 CRANBERRY_GLOBAL_VAR(ShaderUpdateList, g_updateList)
+CRANBERRY_GLOBAL_VAR(ShaderUpdateList, g_resizeList)
 CRANBERRY_GLOBAL_VAR(QMutex, g_mutex)
 
 
-bool OpenGLDefaultShaders::add(const QString& name, OpenGLShader* program, bool update)
+bool OpenGLDefaultShaders::add(
+        const QString& name,
+        OpenGLShader* program,
+        bool update,
+        bool resize)
 {
     if (g_programs.contains(name)) return false;
     if (update) g_updateList.append(program);
+    if (resize) g_resizeList.append(program);
 
     g_programs.insert(name, program);
 
@@ -95,14 +101,21 @@ void OpenGLDefaultShaders::cranberryLoadDefaultShaders()
 
     // Updatable shaders
     add("cb.glsl.film", cranberryGetShader("film"), true);
+
+    // Resizable shaders
+    add("cb.glsl.blur", cranberryGetShader("blur"), false, true);
 }
 
 
 void OpenGLDefaultShaders::cranberryFreeDefaultShaders()
 {
+    g_updateList.clear();
+    g_resizeList.clear();
+
     remove("cb.glsl.texture");
     remove("cb.glsl.shape");
     remove("cb.glsl.film");
+    remove("cb.glsl.blur");
 }
 
 
@@ -116,7 +129,14 @@ void OpenGLDefaultShaders::cranberryInitDefaultShaders()
         p->setUniformValue("u_noise", 0.5f);
         p->setUniformValue("u_lines", 0.05f);
         p->setUniformValue("u_count", 4096.0f);
-        p->release();
+    }
+
+    // Blur
+    p = get("cb.glsl.blur")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_blurH", 1.0f);
+        p->setUniformValue("u_blurV", 0.0f);
     }
 }
 
@@ -128,5 +148,18 @@ void OpenGLDefaultShaders::cranberryUpdateDefaultShaders()
     {
         glDebug(s->program()->bind());
         glDebug(s->program()->setUniformValue("u_time", t));
+    }
+}
+
+
+void OpenGLDefaultShaders::cranberryResizeDefaultShaders(Window* rt)
+{
+    float w = static_cast<float>(rt->width());
+    float h = static_cast<float>(rt->height());
+    for (OpenGLShader* s : g_resizeList)
+    {
+        glDebug(s->program()->bind());
+        glDebug(s->program()->setUniformValue("u_width", w));
+        glDebug(s->program()->setUniformValue("u_height", h));
     }
 }
