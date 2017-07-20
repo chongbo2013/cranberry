@@ -8,5 +8,11 @@
         <file>glsl/film_frag.glsl</file>
         <file>glsl/blur_vert.glsl</file>
         <file>glsl/blur_frag.glsl</file>
+        <file>glsl/pixel_vert.glsl</file>
+        <file>glsl/pixel_frag.glsl</file>
+        <file>glsl/hatch_vert.glsl</file>
+        <file>glsl/hatch_frag.glsl</file>
+        <file>glsl/lens_vert.glsl</file>
+        <file>glsl/lens_frag.glsl</file>
     </qresource>
 </RCC>
