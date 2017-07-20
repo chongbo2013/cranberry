@@ -98,12 +98,15 @@ void OpenGLDefaultShaders::cranberryLoadDefaultShaders()
     // Normal shaders
     add("cb.glsl.texture", cranberryGetShader("texture"));
     add("cb.glsl.shape", cranberryGetShader("shape"));
+    add("cb.glsl.hatch", cranberryGetShader("hatch"));
+    add("cb.glsl.lens", cranberryGetShader("lens"));
 
     // Updatable shaders
     add("cb.glsl.film", cranberryGetShader("film"), true);
 
     // Resizable shaders
     add("cb.glsl.blur", cranberryGetShader("blur"), false, true);
+    add("cb.glsl.pixel", cranberryGetShader("pixel"), false, true);
 }
 
 
@@ -116,6 +119,9 @@ void OpenGLDefaultShaders::cranberryFreeDefaultShaders()
     remove("cb.glsl.shape");
     remove("cb.glsl.film");
     remove("cb.glsl.blur");
+    remove("cb.glsl.pixel");
+    remove("cb.glsl.hatch");
+    remove("cb.glsl.lens");
 }
 
 
@@ -137,6 +143,33 @@ void OpenGLDefaultShaders::cranberryInitDefaultShaders()
         p->bind();
         p->setUniformValue("u_blurH", 1.0f);
         p->setUniformValue("u_blurV", 0.0f);
+    }
+
+    // Pixel
+    p = get("cb.glsl.pixel")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_pixelW", 8.0f);
+        p->setUniformValue("u_pixelH", 8.0f);
+    }
+
+    // Hatch
+    p = get("cb.glsl.hatch")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_offset", 5.0f);
+        p->setUniformValue("u_threshold_1", 1.0f);
+        p->setUniformValue("u_threshold_2", 0.7f);
+        p->setUniformValue("u_threshold_3", 0.5f);
+        p->setUniformValue("u_threshold_4", 0.3f);
+    }
+
+    // Lens
+    p = get("cb.glsl.lens")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_radiusX", 0.45f);
+        p->setUniformValue("u_radiusY", 0.38f);
     }
 }
 

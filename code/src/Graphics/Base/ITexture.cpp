@@ -135,6 +135,9 @@ bool ITexture::createTexture(const QImage& img)
         return cranError(ERRARG(e_03));
     }
 
+    m_texture->setMinificationFilter(QOpenGLTexture::Linear);
+    m_texture->setMagnificationFilter(QOpenGLTexture::Linear);
+
     return true;
 }
 
