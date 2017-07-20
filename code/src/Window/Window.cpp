@@ -27,6 +27,9 @@
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 
 // Qt headers
+#include <QApplication>
+#include <QQuickItem>
+#include <QQuickWindow>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
@@ -180,6 +183,27 @@ void Window::initializeGL()
 }
 
 
+void Window::registerQmlWindow(QQuickWindow* qw)
+{
+    m_guiWindows.append(qw);
+}
+
+
+void Window::unregisterQmlWindow(QQuickWindow* qw)
+{
+    m_guiWindows.removeOne(qw);
+}
+
+
+void Window::dispatchEvents(QEvent* event)
+{
+    for (QQuickWindow* w : m_guiWindows)
+    {
+        QCoreApplication::sendEvent(w, event);
+    }
+}
+
+
 void Window::parseSettings()
 {
     QSurfaceFormat sf = format();
@@ -254,6 +278,7 @@ void Window::mouseMoveEvent(QMouseEvent* event)
     MouseMoveEvent e(m_lastCursorPos, pos);
 
     onMouseMoved(e);
+    dispatchEvents(event);
     m_lastCursorPos = pos;
 }
 
@@ -264,6 +289,7 @@ void Window::mousePressEvent(QMouseEvent* event)
     m_btnCount++;
 
     onMouseButtonDown(m_mouseState);
+    dispatchEvents(event);
 }
 
 
@@ -273,12 +299,14 @@ void Window::mouseReleaseEvent(QMouseEvent* event)
     m_btnCount--;
 
     onMouseButtonReleased(MouseReleaseEvent(event->pos(), event->button()));
+    dispatchEvents(event);
 }
 
 
 void Window::mouseDoubleClickEvent(QMouseEvent* event)
 {
     onMouseDoubleClicked(MouseReleaseEvent(event->pos(), event->button()));
+    dispatchEvents(event);
 }
 
 
@@ -299,6 +327,7 @@ void Window::keyPressEvent(QKeyEvent* event)
     m_keyCount++;
 
     onKeyDown(m_keyState);
+    dispatchEvents(event);
 }
 
 
@@ -310,6 +339,7 @@ void Window::keyReleaseEvent(QKeyEvent* event)
     if (!event->isAutoRepeat())
     {
         onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+        dispatchEvents(event);
     }
 }
 
@@ -317,12 +347,14 @@ void Window::keyReleaseEvent(QKeyEvent* event)
 void Window::wheelEvent(QWheelEvent* event)
 {
     onScrolled(*event);
+    dispatchEvents(event);
 }
 
 
 void Window::touchEvent(QTouchEvent* event)
 {
     onTouched(*event);
+    dispatchEvents(event);
 }
 
 
@@ -334,10 +366,11 @@ void Window::resizeEvent(QResizeEvent* event)
 }
 
 
-void Window::focusInEvent(QFocusEvent*)
+void Window::focusInEvent(QFocusEvent* event)
 {
     g_window = this;
     onWindowActivated();
+    dispatchEvents(event);
 
     // Activates rendering.
     connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
@@ -346,10 +379,11 @@ void Window::focusInEvent(QFocusEvent*)
 }
 
 
-void Window::focusOutEvent(QFocusEvent*)
+void Window::focusOutEvent(QFocusEvent* event)
 {
     if (g_window == this) g_window = nullptr;
     onWindowDeactivated();
+    dispatchEvents(event);
     disconnect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
 }
 

@@ -143,6 +143,7 @@ private:
     QQmlComponent*            m_qmlComponent;
     QQuickItem*               m_rootItem;
     QOpenGLFramebufferObject* m_fbo;
+    QVector2D                 m_lastPos;
     bool                      m_requiresUpdate;
     bool                      m_isInitialized;
     bool                      m_isReady;

@@ -64,7 +64,7 @@ GuiManager::GuiManager()
     m_receiver.setGuiManager(this);
     m_renderWindow->setClearBeforeRendering(false);
 
-    // Signals & slots
+    // Signals & slotse
     QObject::connect(
             m_renderControl,
             &QQuickRenderControl::renderRequested,
@@ -131,6 +131,7 @@ bool GuiManager::create(const QString& qml, Window* rt)
         loadComponents();
     }
 
+    renderTarget()->registerQmlWindow(m_rootItem->window());
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     requestUpdate();
 
@@ -141,6 +142,7 @@ bool GuiManager::create(const QString& qml, Window* rt)
 void GuiManager::destroy()
 {
     makeCurrent();
+    renderTarget()->unregisterQmlWindow(m_renderWindow);
 
     if (m_qmlComponent != nullptr)
     {
@@ -163,6 +165,15 @@ void GuiManager::destroy()
 void GuiManager::update(const GameTime& time)
 {
     updateTransform(time);
+
+    // Moves the entire window if position changed. Why? In order to be able to
+    // click buttons etc. even when the entire Gui is moved.
+    int x1 = m_lastPos.x(), y1 = m_lastPos.y(), x2 = pos().x(), y2 = pos().y();
+    if (x1 != x2 || y1 != y2)
+    {
+        m_renderWindow->setPosition(x2, y2);
+        m_lastPos = pos();
+    }
 
     // Copies all transformations.
     m_batch->setShaderProgram(shaderProgram());
@@ -302,7 +313,7 @@ void GuiManager::createFbo()
 
 void GuiManager::resizeFbo()
 {
-    if (m_rootItem)
+    /*if (m_rootItem)
     {
         renderTarget()->makeCurrent();
         m_batch->destroy();
@@ -311,7 +322,7 @@ void GuiManager::resizeFbo()
         delete m_fbo;
 
         createFbo();
-    }
+    }*/
 }
 
 
