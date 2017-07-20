@@ -100,6 +100,10 @@ void OpenGLDefaultShaders::cranberryLoadDefaultShaders()
     add("cb.glsl.shape", cranberryGetShader("shape"));
     add("cb.glsl.hatch", cranberryGetShader("hatch"));
     add("cb.glsl.lens", cranberryGetShader("lens"));
+    add("cb.glsl.kaleido", cranberryGetShader("kaleido"));
+    add("cb.glsl.spiral", cranberryGetShader("spiral"));
+    add("cb.glsl.fisheye", cranberryGetShader("fisheye"));
+    add("cb.glsl.radialblur", cranberryGetShader("radialblur"));
 
     // Updatable shaders
     add("cb.glsl.film", cranberryGetShader("film"), true);
@@ -122,6 +126,10 @@ void OpenGLDefaultShaders::cranberryFreeDefaultShaders()
     remove("cb.glsl.pixel");
     remove("cb.glsl.hatch");
     remove("cb.glsl.lens");
+    remove("cb.glsl.kaleido");
+    remove("cb.glsl.spiral");
+    remove("cb.glsl.fisheye");
+    remove("cb.glsl.radialblur");
 }
 
 
@@ -168,8 +176,44 @@ void OpenGLDefaultShaders::cranberryInitDefaultShaders()
     p = get("cb.glsl.lens")->program();
     {
         p->bind();
-        p->setUniformValue("u_radiusX", 0.45f);
-        p->setUniformValue("u_radiusY", 0.38f);
+        p->setUniformValue("u_radiusX", 0.50f);
+        p->setUniformValue("u_radiusY", 0.30f);
+        p->setUniformValue("u_color", QVector4D(0.f, 0.f, 0.f, 1.f));
+    }
+
+    // Kaleido
+    p = get("cb.glsl.kaleido")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_sides", 6.0f);
+        p->setUniformValue("u_angle", 0.0f);
+    }
+
+    // Spiral
+    p = get("cb.glsl.spiral")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_angle", 0.8f);
+
+        // radius and origin heavily depend on the texture being used on,
+        // therefore update those values yourself in update().
+    }
+
+    // Fisheye
+    p = get("cb.glsl.fisheye")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_radius", 3.0f);
+        p->setUniformValue("u_bend", 10.0f);
+    }
+
+    // Radial blur
+    p = get("cb.glsl.radialblur")->program();
+    {
+        p->bind();
+        p->setUniformValue("u_blur", 0.1f);
+        p->setUniformValue("u_bright", 1.0f);
+        p->setUniformValue("u_offset", 30);
     }
 }
 
