@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GAME_HPP
-#define CRANBERRY_GAME_HPP
+#ifndef CRANBERRY_GAME_GAME_HPP
+#define CRANBERRY_GAME_GAME_HPP
 
 
 // Cranberry headers
@@ -29,7 +29,6 @@
 
 // Qt headers
 #include <QVector>
-
 
 // Forward declarations
 CRANBERRY_FORWARD_C(Window)
@@ -124,15 +123,13 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
-#ifdef QT_DEBUG
-    void cranberryLogo();
-#endif
+    void printCranberryLogo();
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
     QVector<Window*> m_windows;
-    bool m_isRunning;
+    bool             m_isRunning;
 };
 
 
@@ -144,9 +141,9 @@ private:
 ///
 /// \code
 /// Game game(argc, argv);
-/// MyWindow* main = new MyWindow;
+/// MyWindow mainWindow;
 ///
-/// return game.run(main);
+/// return game.run(&mainWindow);
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

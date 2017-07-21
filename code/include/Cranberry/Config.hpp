@@ -28,9 +28,7 @@
 #include <QtGlobal>
 
 // Standard headers
-#if _MSC_VER
-    #include <string>
-#endif
+#include <string>
 
 
 ////////////////////////////////////////////////////////////////////////////////
