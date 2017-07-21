@@ -65,13 +65,13 @@ GuiManager::GuiManager()
     m_renderWindow->setClearBeforeRendering(false);
     m_renderWindow->create();
 
-    // Signals & slotse
-    QObject::connect(
+    // Signals & slots
+    /*QObject::connect(
             m_renderControl,
             &QQuickRenderControl::renderRequested,
             &m_receiver,
             &GuiManagerReceiver::requestUpdate
-            );
+            );*/
 
     QObject::connect(
             m_renderControl,
@@ -191,6 +191,11 @@ void GuiManager::render()
     {
         makeCurrent();
 
+        m_fbo->bind();
+        gl->glClearColor(0, 0, 0, 0);
+        gl->glClear(GL_COLOR_BUFFER_BIT);
+        m_fbo->release();
+
         m_renderControl->polishItems();
         m_renderControl->sync();
         m_renderControl->render();
@@ -201,8 +206,9 @@ void GuiManager::render()
     {
         m_fbo->bind();
         gl->glClearColor(0, 0, 0, 0);
-        gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        gl->glClear(GL_COLOR_BUFFER_BIT);
         m_fbo->release();
+
         m_renderControl->render();
     }
 
