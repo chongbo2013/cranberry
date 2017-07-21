@@ -329,19 +329,3 @@ void ShapeBase::drawElements()
 
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
 }
-
-
-ShapeBase::operator QString() const
-{
-    QString s;
-    uint m = (m_filled) ? renderModeFilled() : renderModeWired();
-
-    s.append(RenderBase::operator QString());
-    s.append(TransformBase::operator QString());
-    s.append("-- Shape\n");
-    s.append(QString("Vertex count: ") + QString::number(vertexCount()) + "\n");
-    s.append(QString("Is filled: ") + ((m_filled) ? "true\n" : "false\n"));
-    s.append(QString("Render mode: ") + QString::number(m) + "\n\n");
-
-    return s;
-}

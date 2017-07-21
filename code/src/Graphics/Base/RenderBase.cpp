@@ -174,25 +174,6 @@ RenderableEmitter* RenderBase::renderableEmitter()
 }
 
 
-RenderBase::operator QString() const
-{
-    QString s;
-
-    s.append("--------------------------------------------------------\n");
-    s.append("--- Cranberry object\n");
-    s.append("-- Renderable\n");
-    s.append(QString("Name: ") + m_name + "\n");
-    s.append(QString("Is valid: ") + ((isNull())? "false\n" : "true\n"));
-
-    if (!isNull())
-    {
-        s.append(QString("Render target: " + m_renderTarget->settings().title() + "\n\n"));
-    }
-
-    return s;
-}
-
-
 QString cran::cranResourcePath(const QString& src)
 {
     if (src.startsWith(":/"))

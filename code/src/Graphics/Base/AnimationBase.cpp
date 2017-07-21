@@ -309,24 +309,3 @@ TextureBase* AnimationBase::getCurrentTexture()
               ->atlasId()
            ]  ->texture();
 }
-
-
-AnimationBase::operator QString() const
-{
-    QRectF r = m_currentFrame->rectangle();
-    QString sx = " x=" + QString::number(r.x());
-    QString sy = " y=" + QString::number(r.y());
-    QString sw = " w=" + QString::number(r.width());
-    QString sh = " h=" + QString::number(r.height());
-    QString s;
-
-    s.append(RenderBase::operator QString());
-    s.append(TransformBase::operator QString());
-    s.append("-- Animation\n");
-    s.append(QString("Is animating: ") + ((m_isAnimating) ? "true\n" : "false\n"));
-    s.append(QString("Frame amount: ") + QString::number(m_frames.size()) + "\n");
-    s.append(QString("Current frame: ") + QString::number(m_currentFrame->frameId()) + "\n");
-    s.append(QString("Current rect:") + sx + sy + sw + sh + "\n\n");
-
-    return s;
-}

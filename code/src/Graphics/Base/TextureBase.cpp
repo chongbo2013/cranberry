@@ -400,16 +400,3 @@ int TextureBase::maxSize()
 
     return texSize;
 }
-
-
-TextureBase::operator QString() const
-{
-    QString s;
-
-    s.append(RenderBase::operator QString());
-    s.append(TransformBase::operator QString());
-    s.append("-- Texture\n");
-    s.append("OpenGL texture ID: " + QString::number(m_texture->textureId()) + "\n\n");
-
-    return s;
-}

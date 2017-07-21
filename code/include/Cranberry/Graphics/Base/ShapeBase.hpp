@@ -134,15 +134,6 @@ public:
     void setColor(const QVector<QColor>& colors);
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the string representation of this object.
-    ///
-    /// \returns the string representation.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    operator QString() const;
-
-
 protected:
 
     virtual uint renderModeWired() const = 0;
