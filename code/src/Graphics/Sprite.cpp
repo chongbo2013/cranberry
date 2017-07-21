@@ -65,7 +65,7 @@ Sprite::Movement::~Movement()
 
 Sprite::Sprite()
     : RenderBase()
-    , ITransformable()
+    , TransformBase()
     , m_currentMove(nullptr)
     , m_isRunning(false)
     , m_isBlocking(false)

@@ -76,7 +76,6 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
-                    include/Cranberry/Graphics/Base/ITransformable.hpp \
                     include/Cranberry/Graphics/Base/Enumerations.hpp \
                     include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Graphics/Base/TextureAtlas.hpp \
@@ -94,7 +93,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
     include/Cranberry/Graphics/Base/AnimationBase.hpp \
     include/Cranberry/Graphics/Base/RenderBase.hpp \
     include/Cranberry/Graphics/Base/ShapeBase.hpp \
-    include/Cranberry/Graphics/Base/TextureBase.hpp
+    include/Cranberry/Graphics/Base/TextureBase.hpp \
+    include/Cranberry/Graphics/Base/TransformBase.hpp
 
 
 ################################################################################
@@ -119,7 +119,6 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
                     src/Window/Window.cpp \
-                    src/Graphics/Base/ITransformable.cpp \
                     src/Graphics/Background.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
                     src/Graphics/GifAnimation.cpp \
@@ -136,7 +135,8 @@ SOURCES     +=      src/System/Debug.cpp \
     src/Graphics/Base/AnimationBase.cpp \
     src/Graphics/Base/RenderBase.cpp \
     src/Graphics/Base/ShapeBase.cpp \
-    src/Graphics/Base/TextureBase.cpp
+    src/Graphics/Base/TextureBase.cpp \
+    src/Graphics/Base/TransformBase.cpp
 
 ################################################################################
 ## OUTPUT

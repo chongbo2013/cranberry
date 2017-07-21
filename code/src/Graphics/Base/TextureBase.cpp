@@ -47,7 +47,7 @@ CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 TextureBase::TextureBase()
     : RenderBase()
-    , ITransformable()
+    , TransformBase()
     , m_blendMode(BlendNone)
     , m_effect(EffectNone)
     , m_texture(nullptr)
@@ -392,7 +392,7 @@ TextureBase::operator QString() const
     QString s;
 
     s.append(RenderBase::operator QString());
-    s.append(ITransformable::operator QString());
+    s.append(TransformBase::operator QString());
     s.append("-- Texture\n");
     s.append("OpenGL texture ID: " + QString::number(m_texture->textureId()) + "\n\n");
 

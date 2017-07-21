@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_ITRANSFORMABLE_HPP
-#define CRANBERRY_ITRANSFORMABLE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_TRANSFORMBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_TRANSFORMBASE_HPP
 
 
 // Cranberry headers
@@ -44,25 +44,25 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 /// Provides functions for rotating, scaling, moving and fading objects.
 ///
-/// \class ITransformable
+/// \class TransformBase
 /// \author Nicolas Kogler
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT ITransformable
+class CRANBERRY_GRAPHICS_EXPORT TransformBase
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(ITransformable)
-    CRANBERRY_DISABLE_COPY(ITransformable)
-    CRANBERRY_DISABLE_MOVE(ITransformable)
+    CRANBERRY_DEFAULT_DTOR(TransformBase)
+    CRANBERRY_DISABLE_COPY(TransformBase)
+    CRANBERRY_DISABLE_MOVE(TransformBase)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the ITransformable class and resets the
+    /// Initializes a new instance of the TransformBase class and resets the
     /// members to their logical default values.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    ITransformable();
+    TransformBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -682,7 +682,7 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class ITransformable
+/// \class TransformBase
 /// \ingroup Graphics
 ///
 /// This class is capable of applying all kinds of transformations on an object.

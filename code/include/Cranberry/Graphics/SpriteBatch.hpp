@@ -27,7 +27,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 #include <Cranberry/System/GameTime.hpp>
 
@@ -56,7 +56,7 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT SpriteBatch
     : public RenderBase
-    , public ITransformable
+    , public TransformBase
 {
 public:
 

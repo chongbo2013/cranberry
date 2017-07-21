@@ -36,7 +36,7 @@ CRANBERRY_USING_NAMESPACE
 
 AnimationBase::AnimationBase()
     : RenderBase()
-    , ITransformable()
+    , TransformBase()
     , m_mode(AnimateOnce)
     , m_currentFrame(nullptr)
     , m_elapsedTime(0.0)
@@ -314,7 +314,7 @@ AnimationBase::operator QString() const
     QString s;
 
     s.append(RenderBase::operator QString());
-    s.append(ITransformable::operator QString());
+    s.append(TransformBase::operator QString());
     s.append("-- Animation\n");
     s.append(QString("Is animating: ") + ((m_isAnimating) ? "true\n" : "false\n"));
     s.append(QString("Frame amount: ") + QString::number(m_frames.size()) + "\n");

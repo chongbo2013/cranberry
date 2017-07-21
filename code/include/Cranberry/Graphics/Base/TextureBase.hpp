@@ -27,15 +27,16 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
 // Qt headers
 #include <QMatrix4x4>
 
-// Forward declarations
+// Forward declarations and aliases
 CRANBERRY_FORWARD_Q(QOpenGLBuffer)
 CRANBERRY_FORWARD_Q(QOpenGLTexture)
+CRANBERRY_ALIAS_ARR(uint, 6, IndexBuf)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -51,7 +52,7 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT TextureBase
     : public RenderBase
-    , public ITransformable
+    , public TransformBase
 {
 public:
 
@@ -236,9 +237,6 @@ private:
     QOpenGLBuffer*     m_indexBuffer;
     bool               m_update;
 };
-
-
-typedef std::array<uint, 6> IndexBuf;
 
 
 ////////////////////////////////////////////////////////////////////////////////

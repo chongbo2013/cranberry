@@ -44,7 +44,7 @@ CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 
 Text::Text()
     : RenderBase()
-    , ITransformable()
+    , TransformBase()
     , m_textPen(new QPen(Qt::white))
     , m_outlineBrush(new QBrush(Qt::black))
     , m_texture(new TextureBase)
@@ -369,7 +369,7 @@ Text::operator QString() const
     QString da = " a=" + QString::number(m_outlineBrush->color().alpha());
 
     s.append(RenderBase::operator QString());
-    s.append(ITransformable::operator QString());
+    s.append(TransformBase::operator QString());
     s.append("-- Text\n");
     s.append(QString("Text: ") + m_text + "\n");
     s.append(QString("Color:") + cr + cg + cb + ca + "\n");

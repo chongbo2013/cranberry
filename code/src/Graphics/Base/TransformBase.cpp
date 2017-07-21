@@ -21,7 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -32,7 +32,7 @@
 CRANBERRY_USING_NAMESPACE
 
 
-ITransformable::ITransformable()
+TransformBase::TransformBase()
     : m_moveDir(MoveNone)
     , m_rotateDirX(RotateCW)
     , m_rotateDirY(RotateCW)
@@ -82,98 +82,98 @@ ITransformable::ITransformable()
 }
 
 
-bool ITransformable::isMoving() const
+bool TransformBase::isMoving() const
 {
     return m_isMovingX || m_isMovingY;
 }
 
 
-bool ITransformable::isRotating() const
+bool TransformBase::isRotating() const
 {
     return m_isRotatingX || m_isRotatingY || m_isRotatingZ;
 }
 
 
-bool ITransformable::isScaling() const
+bool TransformBase::isScaling() const
 {
     return m_isScalingX || m_isScalingY;
 }
 
 
-bool ITransformable::isFading() const
+bool TransformBase::isFading() const
 {
     return m_isFading;
 }
 
 
-float ITransformable::x() const
+float TransformBase::x() const
 {
     return m_x;
 }
 
 
-float ITransformable::y() const
+float TransformBase::y() const
 {
     return m_y;
 }
 
 
-float ITransformable::angle() const
+float TransformBase::angle() const
 {
     return m_angleZ;
 }
 
 
-float ITransformable::angleX() const
+float TransformBase::angleX() const
 {
     return m_angleX;
 }
 
 
-float ITransformable::angleY() const
+float TransformBase::angleY() const
 {
     return m_angleY;
 }
 
 
-float ITransformable::angleZ() const
+float TransformBase::angleZ() const
 {
     return m_angleZ;
 }
 
 
 
-float ITransformable::scaleX() const
+float TransformBase::scaleX() const
 {
     return m_scaleX;
 }
 
 
-float ITransformable::scaleY() const
+float TransformBase::scaleY() const
 {
     return m_scaleY;
 }
 
 
-float ITransformable::width() const
+float TransformBase::width() const
 {
     return m_width;
 }
 
 
-float ITransformable::height() const
+float TransformBase::height() const
 {
     return m_height;
 }
 
 
-float ITransformable::opacity() const
+float TransformBase::opacity() const
 {
     return m_opacity;
 }
 
 
-QMatrix4x4 ITransformable::matrix(RenderBase* obj) const
+QMatrix4x4 TransformBase::matrix(RenderBase* obj) const
 {
     QMatrix4x4 proj, tran, rot, scale, orig, norig;
     qreal fw = static_cast<qreal>(obj->renderTarget()->width());
@@ -192,67 +192,67 @@ QMatrix4x4 ITransformable::matrix(RenderBase* obj) const
 }
 
 
-MoveDirections ITransformable::moveDirection() const
+MoveDirections TransformBase::moveDirection() const
 {
     return m_moveDir;
 }
 
 
-RotateDirection ITransformable::rotateDirectionX() const
+RotateDirection TransformBase::rotateDirectionX() const
 {
     return m_rotateDirX;
 }
 
 
-RotateDirection ITransformable::rotateDirectionY() const
+RotateDirection TransformBase::rotateDirectionY() const
 {
     return m_rotateDirY;
 }
 
 
-RotateDirection ITransformable::rotateDirectionZ() const
+RotateDirection TransformBase::rotateDirectionZ() const
 {
     return m_rotateDirZ;
 }
 
 
-RotateMode ITransformable::rotateMode() const
+RotateMode TransformBase::rotateMode() const
 {
     return m_rotateMode;
 }
 
 
-ScaleDirection ITransformable::scaleDirectionX() const
+ScaleDirection TransformBase::scaleDirectionX() const
 {
     return m_scaleDirX;
 }
 
 
-ScaleDirection ITransformable::scaleDirectionY() const
+ScaleDirection TransformBase::scaleDirectionY() const
 {
     return m_scaleDirY;
 }
 
 
-FadeDirection ITransformable::fadeDirection() const
+FadeDirection TransformBase::fadeDirection() const
 {
     return m_fadeDir;
 }
 
 
-QVector2D ITransformable::pos() const
+QVector2D TransformBase::pos() const
 {
     return QVector2D(m_x, m_y);
 }
 
 
-QVector3D ITransformable::origin() const
+QVector3D TransformBase::origin() const
 {
     return QVector3D(m_originX, m_originY, 0);
 }
 
 
-QVector3D ITransformable::rotateAxes() const
+QVector3D TransformBase::rotateAxes() const
 {
     QVector3D axes;
 
@@ -264,7 +264,7 @@ QVector3D ITransformable::rotateAxes() const
 }
 
 
-QPainterPath ITransformable::bounds() const
+QPainterPath TransformBase::bounds() const
 {
     QPainterPath path;
     QTransform transform;
@@ -283,7 +283,7 @@ QPainterPath ITransformable::bounds() const
 }
 
 
-QRectF ITransformable::rect() const
+QRectF TransformBase::rect() const
 {
     QPainterPath path;
     QTransform transform;
@@ -298,20 +298,20 @@ QRectF ITransformable::rect() const
 }
 
 
-TransformableEmitter* ITransformable::transformableEmitter()
+TransformableEmitter* TransformBase::transformableEmitter()
 {
     return &m_emitter;
 }
 
 
-void ITransformable::setMoveSpeed(float speedX, float speedY)
+void TransformBase::setMoveSpeed(float speedX, float speedY)
 {
     m_speedMoveX = speedX;
     m_speedMoveY = speedY;
 }
 
 
-void ITransformable::setRotateSpeed(float speedX, float speedY, float speedZ)
+void TransformBase::setRotateSpeed(float speedX, float speedY, float speedZ)
 {
     m_speedRotateX = speedX;
     m_speedRotateY = speedY;
@@ -319,52 +319,52 @@ void ITransformable::setRotateSpeed(float speedX, float speedY, float speedZ)
 }
 
 
-void ITransformable::setRotateAxes(RotateAxes axes)
+void TransformBase::setRotateAxes(RotateAxes axes)
 {
     m_rotateAxes = axes;
 }
 
 
-void ITransformable::setRotateMode(RotateMode mode)
+void TransformBase::setRotateMode(RotateMode mode)
 {
     m_rotateMode = mode;
 }
 
 
-void ITransformable::setScaleSpeed(float speedX, float speedY)
+void TransformBase::setScaleSpeed(float speedX, float speedY)
 {
     m_speedScaleX = speedX;
     m_speedScaleY = speedY;
 }
 
 
-void ITransformable::setFadeSpeed(float speed)
+void TransformBase::setFadeSpeed(float speed)
 {
     m_speedFade = speed;
 }
 
 
-void ITransformable::setX(float x)
+void TransformBase::setX(float x)
 {
     m_x = x;
     m_emitter.emitPositionChanged();
 }
 
 
-void ITransformable::setY(float y)
+void TransformBase::setY(float y)
 {
     m_y = y;
     m_emitter.emitPositionChanged();
 }
 
 
-void ITransformable::setAngle(float degrees)
+void TransformBase::setAngle(float degrees)
 {
     setAngle(0, 0, degrees);
 }
 
 
-void ITransformable::setAngle(float x, float y, float z)
+void TransformBase::setAngle(float x, float y, float z)
 {
     m_angleX = x;
     m_angleY = y;
@@ -372,7 +372,7 @@ void ITransformable::setAngle(float x, float y, float z)
 }
 
 
-void ITransformable::setScale(float scaleX, float scaleY)
+void TransformBase::setScale(float scaleX, float scaleY)
 {
     m_scaleX = scaleX;
     m_scaleY = scaleY;
@@ -380,13 +380,13 @@ void ITransformable::setScale(float scaleX, float scaleY)
 }
 
 
-void ITransformable::setOpacity(float opacity)
+void TransformBase::setOpacity(float opacity)
 {
     m_opacity = opacity;
 }
 
 
-void ITransformable::setPosition(float x, float y)
+void TransformBase::setPosition(float x, float y)
 {
     m_x = x;
     m_y = y;
@@ -394,26 +394,26 @@ void ITransformable::setPosition(float x, float y)
 }
 
 
-void ITransformable::setPosition(const QVector2D& pos)
+void TransformBase::setPosition(const QVector2D& pos)
 {
     setPosition(pos.x(), pos.y());
 }
 
 
-void ITransformable::setOrigin(float x, float y)
+void TransformBase::setOrigin(float x, float y)
 {
     m_originX = x;
     m_originY = y;
 }
 
 
-void ITransformable::setOrigin(const QVector2D& origin)
+void TransformBase::setOrigin(const QVector2D& origin)
 {
     setOrigin(origin.x(), origin.y());
 }
 
 
-void ITransformable::startMovingBy(float advanceX, float advanceY)
+void TransformBase::startMovingBy(float advanceX, float advanceY)
 {
     m_isMovingX = false;
     m_isMovingY = false;
@@ -452,7 +452,7 @@ void ITransformable::startMovingBy(float advanceX, float advanceY)
 }
 
 
-void ITransformable::startMovingTo(float targetX, float targetY)
+void TransformBase::startMovingTo(float targetX, float targetY)
 {
     m_isMovingX = false;
     m_isMovingY = false;
@@ -491,7 +491,7 @@ void ITransformable::startMovingTo(float targetX, float targetY)
 }
 
 
-void ITransformable::startRotating(bool cwX, bool cwY, bool cwZ)
+void TransformBase::startRotating(bool cwX, bool cwY, bool cwZ)
 {
     if (m_rotateMode != RotateForever) return;
 
@@ -505,13 +505,13 @@ void ITransformable::startRotating(bool cwX, bool cwY, bool cwZ)
 }
 
 
-void ITransformable::startRotatingBy(float advance)
+void TransformBase::startRotatingBy(float advance)
 {
     startRotatingBy(0, 0, advance);
 }
 
 
-void ITransformable::startRotatingBy(float advanceX, float advanceY, float advanceZ)
+void TransformBase::startRotatingBy(float advanceX, float advanceY, float advanceZ)
 {
     m_isRotatingX = false;
     m_isRotatingY = false;
@@ -571,13 +571,13 @@ void ITransformable::startRotatingBy(float advanceX, float advanceY, float advan
 }
 
 
-void ITransformable::startRotatingTo(float target)
+void TransformBase::startRotatingTo(float target)
 {
     startRotatingTo(0, 0, target);
 }
 
 
-void ITransformable::startRotatingTo(float targetX, float targetY, float targetZ)
+void TransformBase::startRotatingTo(float targetX, float targetY, float targetZ)
 {
     m_targetRotateX = targetX;
     m_targetRotateY = targetY;
@@ -597,7 +597,7 @@ void ITransformable::startRotatingTo(float targetX, float targetY, float targetZ
 }
 
 
-void ITransformable::startScalingTo(float scaleX, float scaleY)
+void TransformBase::startScalingTo(float scaleX, float scaleY)
 {
     // Do not accept negative values.
     m_targetScaleX = qAbs(scaleX);
@@ -614,7 +614,7 @@ void ITransformable::startScalingTo(float scaleX, float scaleY)
 }
 
 
-void ITransformable::startFadingTo(float target)
+void TransformBase::startFadingTo(float target)
 {
     // Do not accept negative values.
     target = (float)(uchar) qAbs(target);
@@ -628,7 +628,7 @@ void ITransformable::startFadingTo(float target)
 }
 
 
-void ITransformable::stopMoving()
+void TransformBase::stopMoving()
 {
     m_isMovingX = false;
     m_isMovingY = false;
@@ -636,7 +636,7 @@ void ITransformable::stopMoving()
 }
 
 
-void ITransformable::stopRotating()
+void TransformBase::stopRotating()
 {
     m_isRotatingX = false;
     m_isRotatingY = false;
@@ -645,7 +645,7 @@ void ITransformable::stopRotating()
 }
 
 
-void ITransformable::stopScaling()
+void TransformBase::stopScaling()
 {
     m_isScalingX = false;
     m_isScalingY = false;
@@ -653,14 +653,14 @@ void ITransformable::stopScaling()
 }
 
 
-void ITransformable::stopFading()
+void TransformBase::stopFading()
 {
     m_isFading = false;
     m_emitter.emitStoppedFading();
 }
 
 
-void ITransformable::updateTransform(const GameTime& time)
+void TransformBase::updateTransform(const GameTime& time)
 {
     updateMove(time.deltaTime());
     updateRotate(time.deltaTime());
@@ -669,7 +669,7 @@ void ITransformable::updateTransform(const GameTime& time)
 }
 
 
-void ITransformable::setSize(float width, float height)
+void TransformBase::setSize(float width, float height)
 {
     m_width = width;
     m_height = height;
@@ -678,13 +678,13 @@ void ITransformable::setSize(float width, float height)
 }
 
 
-void ITransformable::setSize(const QSizeF& size)
+void TransformBase::setSize(const QSizeF& size)
 {
     setSize(size.width(), size.height());
 }
 
 
-QPointF ITransformable::visiblePos(float x, float y)
+QPointF TransformBase::visiblePos(float x, float y)
 {
     QPainterPath path;
     QTransform transform;
@@ -699,7 +699,7 @@ QPointF ITransformable::visiblePos(float x, float y)
 }
 
 
-void ITransformable::updateMove(double delta)
+void TransformBase::updateMove(double delta)
 {
     if (m_isMovingX)
     {
@@ -751,7 +751,7 @@ void ITransformable::updateMove(double delta)
 }
 
 
-void ITransformable::updateRotate(double delta)
+void TransformBase::updateRotate(double delta)
 {
     if (m_isRotatingX)
     {
@@ -821,7 +821,7 @@ void ITransformable::updateRotate(double delta)
 }
 
 
-void ITransformable::updateScale(double delta)
+void TransformBase::updateScale(double delta)
 {
     if (m_isScalingX)
     {
@@ -873,7 +873,7 @@ void ITransformable::updateScale(double delta)
 }
 
 
-void ITransformable::updateFade(double delta)
+void TransformBase::updateFade(double delta)
 {
     if (m_isFading)
     {
@@ -899,19 +899,19 @@ void ITransformable::updateFade(double delta)
 }
 
 
-void ITransformable::checkMove()
+void TransformBase::checkMove()
 {
     if (!m_isMovingX && !m_isMovingY) stopMoving();
 }
 
 
-void ITransformable::checkScale()
+void TransformBase::checkScale()
 {
     if (!m_isScalingX && !m_isScalingY) stopScaling();
 }
 
 
-ITransformable::operator QString() const
+TransformBase::operator QString() const
 {
     QString s;
     QRectF br = rect();

@@ -331,7 +331,7 @@ ShapeBase::operator QString() const
     uint m = (m_filled) ? renderModeFilled() : renderModeWired();
 
     s.append(RenderBase::operator QString());
-    s.append(ITransformable::operator QString());
+    s.append(TransformBase::operator QString());
     s.append("-- Shape\n");
     s.append(QString("Vertex count: ") + QString::number(vertexCount()) + "\n");
     s.append(QString("Is filled: ") + ((m_filled) ? "true\n" : "false\n"));
