@@ -481,6 +481,16 @@ public:
     void setSize(const QSizeF& size);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Copies all transformations from one base to another.
+    ///
+    /// \param src Source transformation base.
+    /// \param dst Destination transformation base.
+    /// \param copySize Should size and origin also be copied?
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void copyTransform(TransformBase* src, TransformBase* dst, bool copySize = false);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Moves the object by \p advanceX in the X-direction and by \p advanceY
     /// in the Y-direction.
     ///

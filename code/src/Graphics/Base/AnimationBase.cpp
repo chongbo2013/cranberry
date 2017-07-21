@@ -25,7 +25,7 @@
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
 
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - The given render target is invalid.")
 CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
@@ -147,14 +147,12 @@ void AnimationBase::update(const GameTime& time)
     }
 
     // Copies all transformations.
-    TextureBase* texture = m_atlases[m_currentFrame->atlasId()]->texture();
-    texture->setShaderProgram(shaderProgram());
-    texture->setPosition(pos());
-    texture->setAngle(angle());
-    texture->setOpacity(opacity());
-    texture->setOrigin(origin().toVector2D());
-    texture->setScale(scaleX(), scaleY());
-    texture->setSourceRectangle(m_currentFrame->rectangle());
+    TextureBase* texture = getCurrentTexture();
+    {
+        texture->setShaderProgram(shaderProgram());
+        texture->setSourceRectangle(m_currentFrame->rectangle());
+        copyTransform(this, texture);
+    }
 }
 
 
@@ -163,7 +161,7 @@ void AnimationBase::render()
     if (!prepareRendering()) return;
 
     // Renders the current texture.
-    m_atlases[m_currentFrame->atlasId()]->texture()->render();
+    getCurrentTexture()->render();
 }
 
 
@@ -224,7 +222,7 @@ AnimationEmitter* AnimationBase::animationEmitter()
 bool AnimationBase::createInternal(
     const QVector<QImage>& frames,
     const QVector<qreal>& durations,
-    Window* rt
+          Window* rt
     )
 {
     if (!RenderBase::create(rt)) return false;
@@ -275,7 +273,7 @@ bool AnimationBase::createInternal(
 bool AnimationBase::createInternal(
     const QVector<QImage>& sheets,
     const QVector<AnimationFrame>& frames,
-    Window* rt
+          Window* rt
     )
 {
     if (!RenderBase::create(rt)) return false;
@@ -300,6 +298,16 @@ bool AnimationBase::createInternal(
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;
+}
+
+
+TextureBase* AnimationBase::getCurrentTexture()
+{
+    return m_atlases
+           [
+               m_currentFrame
+              ->atlasId()
+           ]  ->texture();
 }
 
 

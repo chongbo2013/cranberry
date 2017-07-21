@@ -127,6 +127,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     void makeCurrent();
     void loadComponents();
+    void clearFbo();
     void createFbo();
     void resizeFbo();
     void requestUpdate();

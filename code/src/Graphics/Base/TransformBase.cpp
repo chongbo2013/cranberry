@@ -684,6 +684,27 @@ void TransformBase::setSize(const QSizeF& size)
 }
 
 
+void TransformBase::copyTransform(TransformBase* src, TransformBase* dst, bool s)
+{
+    dst->m_x       = src->m_x;
+    dst->m_y       = src->m_y;
+    dst->m_angleX  = src->m_angleX;
+    dst->m_angleY  = src->m_angleY;
+    dst->m_angleZ  = src->m_angleZ;
+    dst->m_scaleX  = src->m_scaleX;
+    dst->m_scaleY  = src->m_scaleY;
+    dst->m_opacity = src->m_opacity;
+
+    if (s)
+    {
+        dst->m_width   = src->m_width;
+        dst->m_height  = src->m_height;
+        dst->m_originX = src->m_originX;
+        dst->m_originY = src->m_originY;
+    }
+}
+
+
 QPointF TransformBase::visiblePos(float x, float y)
 {
     QPainterPath path;

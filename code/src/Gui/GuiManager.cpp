@@ -22,6 +22,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/SpriteBatch.hpp>
 #include <Cranberry/Gui/GuiManager.hpp>
+#include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
@@ -38,11 +39,11 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLExtraFunctions>
 
+// Constants
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Qml root item is invalid.")
+
 
 CRANBERRY_USING_NAMESPACE
-
-
-CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Qml root item is invalid.")
 
 
 GuiManager::GuiManager()
@@ -66,19 +67,19 @@ GuiManager::GuiManager()
     m_renderWindow->create();
 
     // Signals & slots
-    /*QObject::connect(
-            m_renderControl,
-            &QQuickRenderControl::renderRequested,
-            &m_receiver,
-            &GuiManagerReceiver::requestUpdate
-            );*/
+    QObject::connect(
+        m_renderControl,
+        &QQuickRenderControl::renderRequested,
+        &m_receiver,
+        &GuiManagerReceiver::requestUpdate
+        );
 
     QObject::connect(
-            m_renderControl,
-            &QQuickRenderControl::sceneChanged,
-            &m_receiver,
-            &GuiManagerReceiver::requestUpdate
-            );
+        m_renderControl,
+        &QQuickRenderControl::sceneChanged,
+        &m_receiver,
+        &GuiManagerReceiver::requestUpdate
+        );
 }
 
 
@@ -96,7 +97,7 @@ GuiManager::~GuiManager()
 
 bool GuiManager::isNull() const
 {
-    return RenderBase::isNull()     ||
+    return RenderBase::isNull()      ||
            m_batch->isNull()         ||
            m_qmlComponent == nullptr ||
            m_qmlComponent->isNull()  ||
@@ -121,11 +122,11 @@ bool GuiManager::create(const QString& qml, Window* rt)
     if (m_qmlComponent->isLoading())
     {
         QObject::connect(
-                m_qmlComponent,
-                &QQmlComponent::statusChanged,
-                &m_receiver,
-                &GuiManagerReceiver::loadComponents
-                );
+            m_qmlComponent,
+            &QQmlComponent::statusChanged,
+            &m_receiver,
+            &GuiManagerReceiver::loadComponents
+            );
     }
     else
     {
@@ -145,17 +146,11 @@ void GuiManager::destroy()
     makeCurrent();
     renderTarget()->unregisterQmlWindow(this);
 
-    if (m_qmlComponent != nullptr)
-    {
-        delete m_qmlComponent;
-        m_qmlComponent = nullptr;
-    }
+    delete m_qmlComponent;
+    delete m_rootItem;
 
-    if (m_rootItem != nullptr)
-    {
-        delete m_rootItem;
-        m_rootItem = nullptr;
-    }
+    m_qmlComponent = nullptr;
+    m_rootItem = nullptr;
 
     // Make batch reusable.
     renderTarget()->makeCurrent();
@@ -178,47 +173,36 @@ void GuiManager::update(const GameTime& time)
 
     // Copies all transformations.
     m_batch->setShaderProgram(shaderProgram());
-    m_batch->setPosition(pos());
-    m_batch->setAngle(angle());
-    m_batch->setOpacity(opacity());
-    m_batch->setScale(scaleX(), scaleY());
+    m_batch->copyTransform(this, m_batch);
 }
 
 
 void GuiManager::render()
 {
+    makeCurrent();
+    clearFbo();
+
     if (m_requiresUpdate)
     {
-        makeCurrent();
-
-        m_fbo->bind();
-        gl->glClearColor(0, 0, 0, 0);
-        gl->glClear(GL_COLOR_BUFFER_BIT);
-        m_fbo->release();
-
         m_renderControl->polishItems();
         m_renderControl->sync();
         m_renderControl->render();
+
         m_isReady = true;
         m_requiresUpdate = false;
     }
     else
     {
-        m_fbo->bind();
-        gl->glClearColor(0, 0, 0, 0);
-        gl->glClear(GL_COLOR_BUFFER_BIT);
-        m_fbo->release();
-
         m_renderControl->render();
     }
 
-    renderTarget()->restoreOpenGLSettings();
-
-    if (!RenderBase::prepareRendering()) return;
-
-    // Need to pass OS renderer through.
-    m_batch->setOffscreenRenderer(offscreenRenderer());
-    m_batch->render();
+    if (RenderBase::prepareRendering())
+    {
+        // Needs to pass OS renderer through.
+        renderTarget()->restoreOpenGLSettings();
+        m_batch->setOffscreenRenderer(offscreenRenderer());
+        m_batch->render();
+    }
 }
 
 
@@ -232,6 +216,8 @@ void GuiManager::makeCurrent()
 {
     auto* ct = renderTarget()->context();
     auto* cc = QOpenGLContext::currentContext();
+
+    // Also proceeds if surfaces are different.
     if (cc != ct || cc->surface() != ct->surface())
     {
         ct->makeCurrent(m_offscreenSurface);
@@ -242,11 +228,11 @@ void GuiManager::makeCurrent()
 void GuiManager::loadComponents()
 {
     QObject::disconnect(
-            m_qmlComponent,
-            &QQmlComponent::statusChanged,
-            &m_receiver,
-            &GuiManagerReceiver::loadComponents
-            );
+        m_qmlComponent,
+        &QQmlComponent::statusChanged,
+        &m_receiver,
+        &GuiManagerReceiver::loadComponents
+        );
 
     if (m_qmlComponent->isError())
     {
@@ -285,6 +271,18 @@ void GuiManager::loadComponents()
 }
 
 
+void GuiManager::clearFbo()
+{
+    if (m_fbo != nullptr)
+    {
+        glDebug(m_fbo->bind());
+        glDebug(gl->glClearColor(0, 0, 0, 0));
+        glDebug(gl->glClear(GL_COLOR_BUFFER_BIT));
+        glDebug(m_fbo->release());
+    }
+}
+
+
 void GuiManager::createFbo()
 {
     makeCurrent();
@@ -300,18 +298,18 @@ void GuiManager::createFbo()
 
     // React to view changes.
     QObject::connect(
-            m_renderWindow,
-            &QQuickWindow::widthChanged,
-            &m_receiver,
-            &GuiManagerReceiver::resizeFbo
-            );
+        m_renderWindow,
+        &QQuickWindow::widthChanged,
+        &m_receiver,
+        &GuiManagerReceiver::resizeFbo
+        );
 
     QObject::connect(
-            m_renderWindow,
-            &QQuickWindow::heightChanged,
-            &m_receiver,
-            &GuiManagerReceiver::resizeFbo
-            );
+        m_renderWindow,
+        &QQuickWindow::heightChanged,
+        &m_receiver,
+        &GuiManagerReceiver::resizeFbo
+        );
 
     // Create the underlying sprite batch.
     m_batch->create(m_fbo, renderTarget());
