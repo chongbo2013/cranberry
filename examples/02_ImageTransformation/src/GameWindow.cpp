@@ -55,7 +55,7 @@ GameWindow::~GameWindow()
 void GameWindow::onInit()
 {
     // m_texture
-    m_texture = new ITexture;
+    m_texture = new TextureBase;
     m_texture->create(QImage(":/femalecodertocat.png"), this);
     m_texture->setName("m_texture");
     m_texture->setMoveSpeed(100.f, 100.f);

@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 
 // Qt headers
 #include <QRectF>
@@ -118,7 +118,7 @@ public:
     /// \returns the big texture.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    ITexture* texture() const;
+    TextureBase* texture() const;
 
 
 private:
@@ -142,7 +142,7 @@ private:
     qint64         m_usedSpace;
     qreal          m_occupancy;
     quint32        m_texId;
-    ITexture*      m_texture;
+    TextureBase*      m_texture;
 };
 
 

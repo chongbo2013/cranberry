@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 
 // Qt headers
 #include <QFont>
@@ -263,7 +263,7 @@ private:
     QPen*         m_textPen;
     QBrush*       m_outlineBrush;
     QTextOption   m_options;
-    ITexture*     m_texture;
+    TextureBase*     m_texture;
     int           m_outlineWidth;
     int           m_columnLimit;
     int           m_rowLimit;

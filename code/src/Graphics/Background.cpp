@@ -31,7 +31,7 @@ CRANBERRY_USING_NAMESPACE
 
 
 Background::Background()
-    : ITexture()
+    : TextureBase()
     , m_speedScrollX(100.f)
     , m_speedScrollY(100.f)
     , m_scrollX(0.f)
@@ -123,7 +123,7 @@ void Background::stopScrolling()
 
 void Background::update(const GameTime& time)
 {
-    ITexture::update(time);
+    TextureBase::update(time);
 
     // Updates the scroll value.
     if (m_isScrolling)
@@ -197,7 +197,7 @@ void Background::update(const GameTime& time)
 
 void Background::initializeData()
 {
-    ITexture::initializeData();
+    TextureBase::initializeData();
     prepareTexture();
 }
 
@@ -255,7 +255,7 @@ Background::operator QString() const
     QString sx = " x=" + QString::number(m_scrollX);
     QString sy = " y=" + QString::number(m_scrollY);
 
-    s.append(ITexture::operator QString());
+    s.append(TextureBase::operator QString());
     s.append("-- Background\n");
     s.append(QString("View:") + vx + vy + vw + vh + "\n");
     s.append(QString("Scroll position:") + sx + sy + "\n\n");

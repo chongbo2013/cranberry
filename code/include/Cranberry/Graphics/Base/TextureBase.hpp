@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_ITEXTURE_HPP
-#define CRANBERRY_ITEXTURE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_TEXTUREBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_TEXTUREBASE_HPP
 
 
 // Cranberry headers
@@ -32,7 +32,6 @@
 
 // Qt headers
 #include <QMatrix4x4>
-
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLBuffer)
@@ -45,33 +44,22 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 /// Defines the base class for all texture-based graphics objects.
 ///
-/// \class ITexture
+/// \class TextureBase
 /// \author Nicolas Kogler
 /// \date June 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT ITexture
+class CRANBERRY_GRAPHICS_EXPORT TextureBase
     : public RenderBase
     , public ITransformable
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(ITexture)
-    CRANBERRY_DISABLE_MOVE(ITexture)
+    CRANBERRY_DISABLE_COPY(TextureBase)
+    CRANBERRY_DISABLE_MOVE(TextureBase)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the ITexture class and sets all members
-    /// to their logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    ITexture();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destroys this texture. Last resort for releasing all OpenGL resources
-    /// before the context will eventually be destroyed.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual ~ITexture();
+    TextureBase();
+    virtual ~TextureBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -140,6 +128,17 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setSourceRectangle(const QRectF& rc);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the region of the object to be rendered.
+    ///
+    /// \param x X-position in pixels.
+    /// \param y Y-position in pixels.
+    /// \param width Region width.
+    /// \param height Region height.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setSourceRectangle(qreal x, qreal y, qreal width, qreal height);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the blend color that will be applied on this object. Depends
@@ -229,13 +228,13 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    priv::QuadVertices  m_vertices;
-    BlendModes          m_blendMode;
-    Effect              m_effect;
-    QOpenGLTexture*     m_texture;
-    QOpenGLBuffer*      m_vertexBuffer;
-    QOpenGLBuffer*      m_indexBuffer;
-    bool                m_update;
+    priv::QuadVertices m_vertices;
+    BlendModes         m_blendMode;
+    Effect             m_effect;
+    QOpenGLTexture*    m_texture;
+    QOpenGLBuffer*     m_vertexBuffer;
+    QOpenGLBuffer*     m_indexBuffer;
+    bool               m_update;
 };
 
 
@@ -243,13 +242,13 @@ typedef std::array<uint, 6> IndexBuf;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class ITexture
+/// \class TextureBase
 /// \ingroup Graphics
 ///
 /// The base class for all texture-based objects.
 ///
 /// \code
-/// class Sprite : public ITexture
+/// class Sprite : public TextureBase
 /// {
 /// public:
 ///

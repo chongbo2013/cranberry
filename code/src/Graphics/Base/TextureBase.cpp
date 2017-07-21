@@ -20,7 +20,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
@@ -37,6 +37,7 @@
 CRANBERRY_USING_NAMESPACE
 
 
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Index buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Texture creation failed.")
@@ -44,7 +45,7 @@ CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 
-ITexture::ITexture()
+TextureBase::TextureBase()
     : RenderBase()
     , ITransformable()
     , m_blendMode(BlendNone)
@@ -57,15 +58,15 @@ ITexture::ITexture()
 }
 
 
-ITexture::~ITexture()
+TextureBase::~TextureBase()
 {
     destroy();
 }
 
 
-bool ITexture::isNull() const
+bool TextureBase::isNull() const
 {
-    return RenderBase::isNull()       ||
+    return RenderBase::isNull()        ||
            m_texture == nullptr        ||
            m_vertexBuffer == nullptr   ||
            m_indexBuffer == nullptr    ||
@@ -75,7 +76,7 @@ bool ITexture::isNull() const
 }
 
 
-bool ITexture::create(const QImage& img, Window* renderTarget)
+bool TextureBase::create(const QImage& img, Window* renderTarget)
 {
     if (!RenderBase::create(renderTarget)) return false;
     if (!createBuffers()) return false;
@@ -87,7 +88,7 @@ bool ITexture::create(const QImage& img, Window* renderTarget)
 }
 
 
-bool ITexture::create(QOpenGLTexture* img, Window* renderTarget)
+bool TextureBase::create(QOpenGLTexture* img, Window* renderTarget)
 {
     if (!RenderBase::create(renderTarget)) return false;
     if (!createBuffers()) return false;
@@ -99,7 +100,7 @@ bool ITexture::create(QOpenGLTexture* img, Window* renderTarget)
 }
 
 
-bool ITexture::createBuffers()
+bool TextureBase::createBuffers()
 {
     // Attempts to create the buffer holding the vertex data.
     m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -127,7 +128,7 @@ bool ITexture::createBuffers()
 }
 
 
-bool ITexture::createTexture(const QImage& img)
+bool TextureBase::createTexture(const QImage& img)
 {
     m_texture = new QOpenGLTexture(img);
     if (!m_texture->isCreated() || img.isNull())
@@ -142,50 +143,37 @@ bool ITexture::createTexture(const QImage& img)
 }
 
 
-void ITexture::initializeData()
+void TextureBase::initializeData()
 {
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
-    setSize((float) m_texture->width(), (float) m_texture->height());
-    setSourceRectangle({ 0.f, 0.f, width(), height() });
-    setOrigin({ width() / 2.f, height() / 2.f });
+    setSize(m_texture->width(), m_texture->height());
+    setSourceRectangle(0.0f, 0.0f, width(), height());
+    setOrigin(width() / 2.0f, height() / 2.0f);
     setBlendColor(QColor(Qt::white));
 }
 
 
-void ITexture::destroy()
+void TextureBase::destroy()
 {
     RenderBase::destroy();
 
-    if (m_vertexBuffer != nullptr)
-    {
-        m_vertexBuffer->destroy();
-        delete m_vertexBuffer;
-        m_vertexBuffer = nullptr;
-    }
+    delete m_vertexBuffer;
+    delete m_indexBuffer;
+    delete m_texture;
 
-    if (m_indexBuffer != nullptr)
-    {
-        m_indexBuffer->destroy();
-        delete m_indexBuffer;
-        m_indexBuffer = nullptr;
-    }
-
-    if (m_texture != nullptr)
-    {
-        m_texture->destroy();
-        delete m_texture;
-        m_texture = nullptr;
-    }
+    m_vertexBuffer = nullptr;
+    m_indexBuffer = nullptr;
+    m_texture = nullptr;
 }
 
 
-void ITexture::update(const GameTime& time)
+void TextureBase::update(const GameTime& time)
 {
     updateTransform(time);
 }
 
 
-void ITexture::render()
+void TextureBase::render()
 {
     if (!prepareRendering()) return;
 
@@ -198,7 +186,7 @@ void ITexture::render()
 }
 
 
-void ITexture::bindObjects()
+void TextureBase::bindObjects()
 {
     // Binds the texture to unit 0.
     // TODO: Actually support blending between two textures!
@@ -211,7 +199,7 @@ void ITexture::bindObjects()
 }
 
 
-void ITexture::releaseObjects()
+void TextureBase::releaseObjects()
 {
     glDebug(m_texture->release());
     glDebug(m_vertexBuffer->release());
@@ -220,7 +208,7 @@ void ITexture::releaseObjects()
 }
 
 
-void ITexture::writeVertices()
+void TextureBase::writeVertices()
 {
     // Only update data if update occured.
     if (m_update)
@@ -235,7 +223,7 @@ void ITexture::writeVertices()
 }
 
 
-void ITexture::modifyProgram()
+void TextureBase::modifyProgram()
 {
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
@@ -251,7 +239,7 @@ void ITexture::modifyProgram()
 }
 
 
-void ITexture::modifyAttribs()
+void TextureBase::modifyAttribs()
 {
     glDebug(gl->glVertexAttribPointer(
                 priv::TextureVertex::xyzAttrib(),
@@ -282,7 +270,7 @@ void ITexture::modifyAttribs()
 }
 
 
-void ITexture::drawElements()
+void TextureBase::drawElements()
 {
     // Renders the elements specified by the index buffer.
     glDebug(gl->glDrawElements(
@@ -294,14 +282,20 @@ void ITexture::drawElements()
 }
 
 
-void ITexture::setSourceRectangle(const QRectF& rc)
+void TextureBase::setSourceRectangle(const QRectF& rc)
+{
+    setSourceRectangle(rc.x(), rc.y(), rc.width(), rc.height());
+}
+
+
+void TextureBase::setSourceRectangle(qreal x, qreal y, qreal w, qreal h)
 {
     float texW = width();
     float texH = height();
-    float dstW = rc.width();
-    float dstH = rc.height();
-    float uvcX = rc.x() / texW;
-    float uvcY = rc.y() / texH;
+    float dstW = w;
+    float dstH = h;
+    float uvcX = x / texW;
+    float uvcY = y / texH;
     float uvcW = uvcX + (dstW / texW);
     float uvcH = uvcY + (dstH / texH);
 
@@ -319,18 +313,18 @@ void ITexture::setSourceRectangle(const QRectF& rc)
 }
 
 
-void ITexture::setBlendColor(const QColor& color)
+void TextureBase::setBlendColor(const QColor& color)
 {
     setBlendColor(color, color, color, color);
 }
 
 
-void ITexture::setBlendColor(
-        const QColor& tl,
-        const QColor& tr,
-        const QColor& br,
-        const QColor& bl
-        )
+void TextureBase::setBlendColor(
+    const QColor& tl,
+    const QColor& tr,
+    const QColor& br,
+    const QColor& bl
+    )
 {
     m_vertices.at(0).rgba(tl);
     m_vertices.at(1).rgba(tr);
@@ -341,45 +335,48 @@ void ITexture::setBlendColor(
 }
 
 
-void ITexture::setBlendMode(BlendModes modes)
+void TextureBase::setBlendMode(BlendModes modes)
 {
     m_blendMode = modes;
 }
 
 
-void ITexture::setEffect(Effect effect)
+void TextureBase::setEffect(Effect effect)
 {
     m_effect = effect;
 }
 
 
-priv::QuadVertices& ITexture::vertices()
+priv::QuadVertices& TextureBase::vertices()
 {
     return m_vertices;
 }
 
 
-QOpenGLTexture* ITexture::texture() const
+QOpenGLTexture* TextureBase::texture() const
 {
     return m_texture;
 }
 
 
-QOpenGLBuffer* ITexture::buffer() const
+QOpenGLBuffer* TextureBase::buffer() const
 {
     return m_vertexBuffer;
 }
 
 
-void ITexture::requestUpdate()
+void TextureBase::requestUpdate()
 {
     m_update = true;
 }
 
 
-int ITexture::maxSize()
+int TextureBase::maxSize()
 {
-    if (QOpenGLContext::currentContext() == nullptr) return 0;
+    if (QOpenGLContext::currentContext() == nullptr)
+    {
+        return 0;
+    }
 
     GLint texSize;
     QOpenGLContext::currentContext()
@@ -390,7 +387,7 @@ int ITexture::maxSize()
 }
 
 
-ITexture::operator QString() const
+TextureBase::operator QString() const
 {
     QString s;
 

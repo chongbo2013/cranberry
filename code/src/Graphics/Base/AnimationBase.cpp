@@ -148,7 +148,7 @@ void AnimationBase::update(const GameTime& time)
     }
 
     // Copies all transformations.
-    ITexture* texture = m_atlases[m_currentFrame->atlasId()]->texture();
+    TextureBase* texture = m_atlases[m_currentFrame->atlasId()]->texture();
     texture->setShaderProgram(shaderProgram());
     texture->setPosition(pos());
     texture->setAngle(angle());
@@ -230,7 +230,7 @@ bool AnimationBase::createInternal(
 {
     if (!RenderBase::create(rt)) return false;
 
-    qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
+    qint32 maxSize = qMin(c_maxSize, TextureBase::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
     QSize largestSize;
 

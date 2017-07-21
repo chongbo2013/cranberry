@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/System/Emitters/BackgroundEmitter.hpp>
 
 // Forward declarations
@@ -43,7 +43,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 24, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Background : public ITexture
+class CRANBERRY_GRAPHICS_EXPORT Background : public TextureBase
 {
 public:
 
