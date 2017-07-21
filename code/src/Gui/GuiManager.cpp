@@ -63,6 +63,7 @@ GuiManager::GuiManager()
 
     m_receiver.setGuiManager(this);
     m_renderWindow->setClearBeforeRendering(false);
+    m_renderWindow->create();
 
     // Signals & slotse
     QObject::connect(
@@ -131,7 +132,7 @@ bool GuiManager::create(const QString& qml, Window* rt)
         loadComponents();
     }
 
-    renderTarget()->registerQmlWindow(m_rootItem->window());
+    renderTarget()->registerQmlWindow(this);
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     requestUpdate();
 
@@ -142,7 +143,7 @@ bool GuiManager::create(const QString& qml, Window* rt)
 void GuiManager::destroy()
 {
     makeCurrent();
-    renderTarget()->unregisterQmlWindow(m_renderWindow);
+    renderTarget()->unregisterQmlWindow(this);
 
     if (m_qmlComponent != nullptr)
     {

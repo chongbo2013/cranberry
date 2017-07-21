@@ -20,11 +20,12 @@
 
 
 // Cranberry headers
-#include <Cranberry/System/Debug.hpp>
-#include <Cranberry/Window/Window.hpp>
+#include <Cranberry/Gui/GuiManager.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
+#include <Cranberry/System/Debug.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 // Qt headers
 #include <QApplication>
@@ -54,6 +55,7 @@ Window::Window(Window* parent)
     , m_padCount(0)
     , m_btnCount(0)
     , m_isMainWindow(false)
+    , m_fakeFocusOut(false)
 {
     QSurfaceFormat fmt = format();
     fmt.setDepthBufferSize(24);
@@ -183,13 +185,13 @@ void Window::initializeGL()
 }
 
 
-void Window::registerQmlWindow(QQuickWindow* qw)
+void Window::registerQmlWindow(GuiManager* qw)
 {
     m_guiWindows.append(qw);
 }
 
 
-void Window::unregisterQmlWindow(QQuickWindow* qw)
+void Window::unregisterQmlWindow(GuiManager* qw)
 {
     m_guiWindows.removeOne(qw);
 }
@@ -197,9 +199,42 @@ void Window::unregisterQmlWindow(QQuickWindow* qw)
 
 void Window::dispatchEvents(QEvent* event)
 {
-    for (QQuickWindow* w : m_guiWindows)
+    auto localMousePos   = mapFromGlobal(QCursor::pos());
+    bool canReceiveFocus = event->type() == QEvent::MouseButtonPress   ||
+                           event->type() == QEvent::MouseButtonRelease ||
+                           event->type() == QEvent::MouseButtonDblClick;
+
+    for (GuiManager* w : m_guiWindows)
     {
-        QCoreApplication::sendEvent(w, event);
+        if (canReceiveFocus)
+        {
+            // Is current manager in range of the mouse cursor?
+            if (w->rect().contains(localMousePos.x(), localMousePos.y()))
+            {
+                m_activeGui = w;
+                m_fakeFocusOut = true;
+
+                if (!m_activeGui->window()->isActive())
+                {
+                    m_activeGui->window()->requestActivate();
+                }
+            }
+            else
+            {
+                if (m_activeGui == w)
+                {
+                    m_activeGui = nullptr;
+                    m_fakeFocusOut = false;
+                    requestActivate();
+                }
+            }
+        }
+
+        // Only receive events if in focus.
+        if (m_activeGui == w)
+        {
+            QCoreApplication::sendEvent(w->window(), event);
+        }
     }
 }
 
@@ -366,11 +401,10 @@ void Window::resizeEvent(QResizeEvent* event)
 }
 
 
-void Window::focusInEvent(QFocusEvent* event)
+void Window::focusInEvent(QFocusEvent*)
 {
     g_window = this;
     onWindowActivated();
-    dispatchEvents(event);
 
     // Activates rendering.
     connect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
@@ -379,12 +413,20 @@ void Window::focusInEvent(QFocusEvent* event)
 }
 
 
-void Window::focusOutEvent(QFocusEvent* event)
+void Window::focusOutEvent(QFocusEvent*)
 {
-    if (g_window == this) g_window = nullptr;
-    onWindowDeactivated();
-    dispatchEvents(event);
-    disconnect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+    if (!m_fakeFocusOut)
+    {
+        if (g_window == this)
+        {
+            g_window = nullptr;
+        }
+
+        onWindowDeactivated();
+        disconnect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+    }
+
+    m_fakeFocusOut = false;
 }
 
 

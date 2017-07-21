@@ -39,10 +39,10 @@
 #include <QOpenGLWindow>
 
 // Forward declarations
-CRANBERRY_FORWARD_Q(QQuickWindow)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
+CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
-CRANBERRY_ALIAS(QList<QQuickWindow*>, GuiWindows)
+CRANBERRY_ALIAS(QList<cran::GuiManager*>, GuiWindows)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -201,8 +201,8 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
-    void registerQmlWindow(QQuickWindow*);   // needed to simulate events
-    void unregisterQmlWindow(QQuickWindow*); // needed to simulate events
+    void registerQmlWindow(GuiManager*);   // needed to simulate events
+    void unregisterQmlWindow(GuiManager*); // needed to simulate events
     void dispatchEvents(QEvent*);
     void parseSettings();
     void destroyGL();
@@ -216,6 +216,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLFunctions* m_gl;
     GuiWindows        m_guiWindows;
+    GuiManager*       m_activeGui;
     WindowSettings    m_settings;
     GameTime          m_time;
     KeyboardState     m_keyState;
@@ -227,6 +228,7 @@ private:
     qint32            m_btnCount;
     uint              m_vao;
     bool              m_isMainWindow;
+    bool              m_fakeFocusOut;
 
     friend class Game;
     friend class GuiManager;

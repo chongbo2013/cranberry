@@ -120,6 +120,9 @@ public:
     void setEffect(Effect effect);
 
 
+    inline QQuickWindow* window() { return m_renderWindow; }
+
+
 private:
 
     ////////////////////////////////////////////////////////////////////////////
