@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GLVERTEX_HPP
-#define CRANBERRY_GLVERTEX_HPP
+#ifndef CRANBERRY_OPENGL_OPENGLVERTEX_HPP
+#define CRANBERRY_OPENGL_OPENGLVERTEX_HPP
 
 
 // Cranberry headers
@@ -44,7 +44,7 @@ CRANBERRY_BEGIN_PRIV_NAMESPACE
 /// Defines a single vertex having a XYZ position and a RGBA color. Future- and
 /// compiler-proof since it does not rely on the order or alignment of members.
 ///
-/// \class GLVertex
+/// \class Vertex
 /// \author Nicolas Kogler
 /// \date May 25, 2017
 ///

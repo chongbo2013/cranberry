@@ -485,7 +485,7 @@ public:
     ///
     /// \param src Source transformation base.
     /// \param dst Destination transformation base.
-    /// \param copySize Should size and origin also be copied?
+    /// \param copySize Should size also be copied?
     ///
     ////////////////////////////////////////////////////////////////////////////
     void copyTransform(TransformBase* src, TransformBase* dst, bool copySize = false);

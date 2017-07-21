@@ -32,13 +32,12 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 
+// Constants
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
+CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Color count does not match vertex count.")
+
 
 CRANBERRY_USING_NAMESPACE
-
-
-CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
-CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Cannot render invalid object.")
-CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Color count does not match vertex count.")
 
 
 ShapeBase::ShapeBase()
@@ -58,7 +57,7 @@ ShapeBase::~ShapeBase()
 
 bool ShapeBase::isNull() const
 {
-    return RenderBase::isNull()     ||
+    return RenderBase::isNull()      ||
            m_vertexBuffer == nullptr ||
           !m_vertexBuffer->isCreated();
 }
@@ -66,13 +65,9 @@ bool ShapeBase::isNull() const
 
 void ShapeBase::destroy()
 {
-    if (m_vertexBuffer != nullptr)
-    {
-        m_vertexBuffer->destroy();
-        delete m_vertexBuffer;
-        m_vertexBuffer = nullptr;
-    }
+    delete m_vertexBuffer;
 
+    m_vertexBuffer = nullptr;
     m_colorBuffer.clear();
     m_update = false;
 
@@ -88,7 +83,10 @@ void ShapeBase::update(const GameTime& time)
 
 void ShapeBase::render()
 {
-    if (!prepareRendering()) return;
+    if (!prepareRendering())
+    {
+        return;
+    }
 
     bindObjects();
     writeVertices();
@@ -130,7 +128,7 @@ void ShapeBase::setColor(const QVector<QColor>& colors)
 {
     if (colors.size() != (int) m_vertices.size())
     {
-        cranError(ERRARG(e_03));
+        cranError(ERRARG(e_02));
         return;
     }
 
@@ -142,8 +140,14 @@ void ShapeBase::setColor(const QVector<QColor>& colors)
 
 bool ShapeBase::createInternal(const QVector<QVector2D>& points, Window* rt)
 {
-    if (!RenderBase::create(rt)) return false;
-    if (!createBuffer()) return false;
+    if (!RenderBase::create(rt))
+    {
+        return false;
+    }
+    else if (!createBuffer())
+    {
+        return false;
+    }
 
     // Allocates as much data as we need to store all points.
     m_vertexBuffer->allocate(priv::Vertex::size() * points.size());
@@ -171,12 +175,11 @@ bool ShapeBase::createBuffer()
 {
     // Attempts to create the buffer holding the vertex data.
     m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
     if (!m_vertexBuffer->create() || !m_vertexBuffer->bind())
     {
         return cranError(ERRARG(e_01));
     }
-
-    m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     return true;
 }
@@ -224,16 +227,16 @@ QVector2D ShapeBase::findCenter(const QVector<QVector2D>& points)
 QVector2D ShapeBase::findSize(const QVector<QVector2D>& points)
 {
     auto extremeX = std::minmax_element(
-                points.begin(), points.end(),
-                [] (const QVector2D& l, const QVector2D& r) {
-                    return l.x() < r.x();
-                });
+            points.begin(), points.end(),
+            [] (const QVector2D& l, const QVector2D& r) {
+                return l.x() < r.x();
+            });
 
     auto extremeY = std::minmax_element(
-                points.begin(), points.end(),
-                [] (const QVector2D& l, const QVector2D& r) {
-                    return l.y() < r.y();
-                });
+            points.begin(), points.end(),
+            [] (const QVector2D& l, const QVector2D& r) {
+                return l.y() < r.y();
+            });
 
     QVector2D upperLeft(extremeX.first->x(), extremeY.first->y());
     QVector2D lowerRight(extremeX.second->x(), extremeY.second->y());
@@ -275,9 +278,9 @@ void ShapeBase::writeVertices()
 
         // Uploads the vertex data.
         glDebug(m_vertexBuffer->write(
-                    0, m_vertices.data(),
-                    priv::Vertex::size() * vertexCount())
-                    );
+                0, m_vertices.data(),
+                priv::Vertex::size() * vertexCount())
+                );
 
         m_update = false;
         m_colorUpdate = false;
@@ -320,7 +323,10 @@ void ShapeBase::modifyAttribs()
 
 void ShapeBase::drawElements()
 {
-    uint mode = (m_filled) ? renderModeFilled() : renderModeWired();
+    uint mode = (m_filled)
+              ? renderModeFilled()
+              : renderModeWired();
+
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
 }
 

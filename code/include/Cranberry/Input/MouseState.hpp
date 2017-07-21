@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_MOUSESTATE_HPP
-#define CRANBERRY_MOUSESTATE_HPP
+#ifndef CRANBERRY_INPUT_MOUSESTATE_HPP
+#define CRANBERRY_INPUT_MOUSESTATE_HPP
 
 
 // Cranberry headers

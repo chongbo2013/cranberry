@@ -31,15 +31,15 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - File %2 does not exist.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Invalid version: %2.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Frame %2 could not be read.")
 CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Invalid spritesheet.")
 CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Frame %2: Invalid rectangle.")
+
+
+CRANBERRY_USING_NAMESPACE
 
 
 bool CranAnimation::create(const QString& path, Window* renderTarget)

@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GLDEBUG_HPP
-#define CRANBERRY_GLDEBUG_HPP
+#ifndef CRANBERRY_OPENGL_OPENGLDEBUG_HPP
+#define CRANBERRY_OPENGL_OPENGLDEBUG_HPP
 
 
 // Cranberry headers

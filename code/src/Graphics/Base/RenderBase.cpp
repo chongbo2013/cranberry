@@ -30,14 +30,13 @@
 #include <QApplication>
 #include <QOpenGLFunctions>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
 // Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - The given render target is invalid.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - There is no default shader program.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Cannot render invalid object.")
+
+
+CRANBERRY_USING_NAMESPACE
 
 
 RenderBase::RenderBase()

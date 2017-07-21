@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_WINDOW_HPP
-#define CRANBERRY_WINDOW_HPP
+#ifndef CRANBERRY_WINDOW_WINDOW_HPP
+#define CRANBERRY_WINDOW_WINDOW_HPP
 
 
 // Cranberry headers

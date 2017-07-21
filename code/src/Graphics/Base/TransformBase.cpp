@@ -694,13 +694,13 @@ void TransformBase::copyTransform(TransformBase* src, TransformBase* dst, bool s
     dst->m_scaleX  = src->m_scaleX;
     dst->m_scaleY  = src->m_scaleY;
     dst->m_opacity = src->m_opacity;
+    dst->m_originX = src->m_originX;
+    dst->m_originY = src->m_originY;
 
     if (s)
     {
         dst->m_width   = src->m_width;
         dst->m_height  = src->m_height;
-        dst->m_originX = src->m_originX;
-        dst->m_originY = src->m_originY;
     }
 }
 

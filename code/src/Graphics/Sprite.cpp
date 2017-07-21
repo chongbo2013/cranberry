@@ -32,16 +32,16 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - File %2 does not exist.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Invalid version: %2.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Sheet could not be loaded.")
 CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Invalid movement.")
 CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Invalid frame.")
 CRANBERRY_CONST_VAR(QString, e_06, "%0 [%1] - Movement %2 does not exist.")
+
+
+CRANBERRY_USING_NAMESPACE
 
 
 QRectF getJsonRect(QJsonObject& obj)
@@ -73,11 +73,11 @@ Sprite::Sprite()
 
     // Movement should stop as soon as tile-based stuff is finished.
     QObject::connect(
-            transformableEmitter(),
-            SIGNAL(stoppedMoving()),
-            &m_receiver,
-            SLOT(stoppedRunning())
-            );
+        transformableEmitter(),
+        SIGNAL(stoppedMoving()),
+        &m_receiver,
+        SLOT(stoppedRunning())
+        );
 }
 
 
@@ -228,8 +228,11 @@ void Sprite::destroy()
 
 void Sprite::runMovement(const QString& n)
 {
-    if (m_isBlocking) return;
-    if (m_isRunning && m_currentMove)
+    if (m_isBlocking)
+    {
+        return;
+    }
+    else if (m_isRunning && m_currentMove)
     {
         startMovingBy(m_currentMove->advanceX, m_currentMove->advanceY);
         resumeMovement();
@@ -264,7 +267,10 @@ void Sprite::runMovement(const QString& n)
 
 void Sprite::runIdle(const QString& n)
 {
-    if (m_isBlocking) return;
+    if (m_isBlocking)
+    {
+        return;
+    }
 
     // Tries to find the movement.
     auto* m = m_movements.value(n, nullptr);
@@ -283,7 +289,10 @@ void Sprite::runIdle(const QString& n)
 
 void Sprite::resumeMovement()
 {
-    if (m_isBlocking || !m_currentMove) return;
+    if (m_isBlocking || !m_currentMove)
+    {
+        return;
+    }
 
     m_currentMove->anim->resumeAnimation();
     m_isRunning = true;
@@ -292,7 +301,10 @@ void Sprite::resumeMovement()
 
 void Sprite::stopMovement()
 {
-    if (!m_currentMove) return;
+    if (!m_currentMove)
+    {
+        return;
+    }
 
     m_currentMove->anim->stopAnimation();
     m_currentMove->anim->stopMoving();
@@ -305,7 +317,10 @@ void Sprite::stopMovement()
 
 void Sprite::update(const GameTime& time)
 {
-    if (!m_currentMove) return;
+    if (!m_currentMove)
+    {
+        return;
+    }
 
     m_currentMove->anim->update(time);
     updateTransform(time);
@@ -314,14 +329,13 @@ void Sprite::update(const GameTime& time)
 
 void Sprite::render()
 {
-    if (!m_currentMove) return;
+    if (!RenderBase::prepareRendering())
+    {
+        return;
+    }
 
     m_currentMove->anim->setShaderProgram(shaderProgram());
-    m_currentMove->anim->setPosition(pos());
-    m_currentMove->anim->setAngle(angle());
-    m_currentMove->anim->setOpacity(opacity());
-    m_currentMove->anim->setOrigin(origin().toVector2D());
-    m_currentMove->anim->setScale(scaleX(), scaleY());
+    m_currentMove->anim->copyTransform(this, m_currentMove->anim);
     m_currentMove->anim->render();
 }
 
@@ -333,11 +347,11 @@ void Sprite::setBlendColor(const QColor& color)
 
 
 void Sprite::setBlendColor(
-        const QColor &tl,
-        const QColor &tr,
-        const QColor &br,
-        const QColor &bl
-        )
+    const QColor &tl,
+    const QColor &tr,
+    const QColor &br,
+    const QColor &bl
+    )
 {
     for (auto* const m : m_movements.values())
     {

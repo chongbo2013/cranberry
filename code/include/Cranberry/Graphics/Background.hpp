@@ -28,8 +28,6 @@
 #include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/System/Emitters/BackgroundEmitter.hpp>
 
-// Forward declarations
-
 
 CRANBERRY_BEGIN_NAMESPACE
 
@@ -50,11 +48,6 @@ public:
     CRANBERRY_DISABLE_COPY(Background)
     CRANBERRY_DISABLE_MOVE(Background)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the Background class and sets all members
-    /// to their logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
     Background();
 
 
@@ -151,7 +144,7 @@ public:
 
 protected:
 
-    void initializeData() override;
+    bool initializeData() override;
     void prepareTexture();
     void updateUVs();
 

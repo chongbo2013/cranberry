@@ -206,7 +206,7 @@ protected:
     priv::QuadVertices& vertices();
     QOpenGLBuffer* buffer() const;
     void requestUpdate();
-    virtual void initializeData();
+    virtual bool initializeData();
 
 
 private:

@@ -33,16 +33,15 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
 // Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Index buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Texture creation failed.")
 CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
+
+
+CRANBERRY_USING_NAMESPACE
 
 
 TextureBase::TextureBase()
@@ -77,25 +76,37 @@ bool TextureBase::isNull() const
 
 bool TextureBase::create(const QImage& img, Window* renderTarget)
 {
-    if (!RenderBase::create(renderTarget)) return false;
-    if (!createBuffers()) return false;
-    if (!createTexture(img)) return false;
+    if (!RenderBase::create(renderTarget))
+    {
+        return false;
+    }
+    else if (!createBuffers())
+    {
+        return false;
+    }
+    else if (!createTexture(img))
+    {
+        return false;
+    }
 
-    initializeData();
-
-    return true;
+    return initializeData();
 }
 
 
 bool TextureBase::create(QOpenGLTexture* img, Window* renderTarget)
 {
-    if (!RenderBase::create(renderTarget)) return false;
-    if (!createBuffers()) return false;
+    if (!RenderBase::create(renderTarget))
+    {
+        return false;
+    }
+    else if (!createBuffers())
+    {
+        return false;
+    }
 
     m_texture = img;
-    initializeData();
 
-    return true;
+    return initializeData();
 }
 
 
@@ -142,20 +153,20 @@ bool TextureBase::createTexture(const QImage& img)
 }
 
 
-void TextureBase::initializeData()
+bool TextureBase::initializeData()
 {
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     setSize(m_texture->width(), m_texture->height());
     setSourceRectangle(0.0f, 0.0f, width(), height());
     setOrigin(width() / 2.0f, height() / 2.0f);
     setBlendColor(QColor(Qt::white));
+
+    return true;
 }
 
 
 void TextureBase::destroy()
 {
-    RenderBase::destroy();
-
     delete m_vertexBuffer;
     delete m_indexBuffer;
     delete m_texture;
@@ -163,6 +174,8 @@ void TextureBase::destroy()
     m_vertexBuffer = nullptr;
     m_indexBuffer = nullptr;
     m_texture = nullptr;
+
+    RenderBase::destroy();
 }
 
 
@@ -174,7 +187,10 @@ void TextureBase::update(const GameTime& time)
 
 void TextureBase::render()
 {
-    if (!prepareRendering()) return;
+    if (!prepareRendering())
+    {
+        return;
+    }
 
     bindObjects();
     writeVertices();

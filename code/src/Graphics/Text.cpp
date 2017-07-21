@@ -170,18 +170,17 @@ void Text::update(const GameTime& time)
 
     // Copies all transformations.
     m_texture->setShaderProgram(shaderProgram());
-    m_texture->setPosition(pos());
-    m_texture->setAngle(angle());
-    m_texture->setOpacity(opacity());
-    m_texture->setScale(scaleX(), scaleY());
+    m_texture->copyTransform(this, m_texture);
 }
 
 
 void Text::render()
 {
-    if (!RenderBase::prepareRendering()) return;
-
-    if (m_textUpdate)
+    if (!RenderBase::prepareRendering())
+    {
+        return;
+    }
+    else if (m_textUpdate)
     {
         updateTexture();
         m_textUpdate = false;
@@ -255,8 +254,8 @@ void Text::resizeTexture(QSizeF base)
 
     m_texture->texture()->release();
     m_texture->setSize(w, h);
-    m_texture->setOrigin({ w / 2, h / 2 });
-    m_texture->setSourceRectangle({ 0, 0, w, h });
+    m_texture->setOrigin(w / 2.0, h / 2.0);
+    m_texture->setSourceRectangle(0.0, 0.0, w, h);
     m_lastWidth = w;
     m_lastHeight = h;
 }

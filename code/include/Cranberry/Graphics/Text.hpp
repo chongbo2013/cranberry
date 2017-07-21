@@ -31,7 +31,6 @@
 #include <QFont>
 #include <QTextOption>
 
-
 // Forward declarations
 CRANBERRY_FORWARD_Q(QPen)
 CRANBERRY_FORWARD_Q(QBrush)

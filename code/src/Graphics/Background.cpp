@@ -102,11 +102,25 @@ void Background::startScrolling(const QVector2D& advance)
     float byX = qAbs(advance.x());
     float byY = qAbs(advance.y());
 
-    // Calculates the target position.
-    if ((m_scrollDir & MoveEast) != 0 && (m_scrollDir & MoveWest) == 0) m_targetScrollX = m_scrollX + byX;
-    else if ((m_scrollDir & MoveEast) == 0 && (m_scrollDir & MoveWest) != 0) m_targetScrollX = m_scrollX - byX;
-    if ((m_scrollDir & MoveSouth) != 0 && (m_scrollDir & MoveNorth) == 0) m_targetScrollY = m_scrollY + byY;
-    else if ((m_scrollDir & MoveSouth) == 0 && (m_scrollDir & MoveNorth) != 0) m_targetScrollY = m_scrollY - byY;
+    // Calculates the target position (x).
+    if ((m_scrollDir & MoveEast) != 0 && (m_scrollDir & MoveWest) == 0)
+    {
+        m_targetScrollX = m_scrollX + byX;
+    }
+    else if ((m_scrollDir & MoveEast) == 0 && (m_scrollDir & MoveWest) != 0)
+    {
+        m_targetScrollX = m_scrollX - byX;
+    }
+
+    // Calculates the target position (y).
+    if ((m_scrollDir & MoveSouth) != 0 && (m_scrollDir & MoveNorth) == 0)
+    {
+        m_targetScrollY = m_scrollY + byY;
+    }
+    else if ((m_scrollDir & MoveSouth) == 0 && (m_scrollDir & MoveNorth) != 0)
+    {
+        m_targetScrollY = m_scrollY - byY;
+    }
 
     if (m_scrollDir != MoveNone && m_scrollMode != ScrollNone)
     {
@@ -195,10 +209,12 @@ void Background::update(const GameTime& time)
 }
 
 
-void Background::initializeData()
+bool Background::initializeData()
 {
     TextureBase::initializeData();
     prepareTexture();
+
+    return true;
 }
 
 

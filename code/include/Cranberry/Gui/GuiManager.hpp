@@ -117,7 +117,13 @@ public:
     void setEffect(Effect effect);
 
 
-    inline QQuickWindow* window() { return m_renderWindow; }
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the underlying QQuickWindow.
+    ///
+    /// \returns the underlying window.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QQuickWindow* window() const;
 
 
 private:

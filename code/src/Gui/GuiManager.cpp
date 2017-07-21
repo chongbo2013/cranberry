@@ -212,6 +212,12 @@ void GuiManager::setEffect(Effect effect)
 }
 
 
+QQuickWindow* GuiManager::window() const
+{
+    return m_renderWindow;
+}
+
+
 void GuiManager::makeCurrent()
 {
     auto* ct = renderTarget()->context();
