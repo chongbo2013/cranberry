@@ -673,23 +673,3 @@ void SpriteBatch::releaseFrame()
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, offscreenRenderer()));
 }
-
-
-SpriteBatch::operator QString() const
-{
-    QString s;
-
-    s.append(RenderBase::operator QString());
-    s.append("-- SpriteBatch\n");
-    s.append(QString("Objects bound: ") + QString::number(m_objects.size()) + "\n");
-
-    for (int i = 0; i < m_objects.size(); i++)
-    {
-        RenderBase* obj = m_objects.at(i);
-        QString sl = QString("Layer %0: ").arg(QString::number(i));
-
-        s.append(sl + obj->name() + "\n");
-    }
-
-    return s.append("\n");
-}
