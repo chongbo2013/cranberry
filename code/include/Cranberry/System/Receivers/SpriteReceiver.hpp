@@ -57,7 +57,7 @@ public:
     void setSprite(Sprite* sprite);
 
 
-private Q_SLOTS:
+public Q_SLOTS:
 
     void stoppedRunning();
 

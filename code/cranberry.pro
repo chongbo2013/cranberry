@@ -94,7 +94,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
     include/Cranberry/Graphics/Base/RenderBase.hpp \
     include/Cranberry/Graphics/Base/ShapeBase.hpp \
     include/Cranberry/Graphics/Base/TextureBase.hpp \
-    include/Cranberry/Graphics/Base/TransformBase.hpp
+    include/Cranberry/Graphics/Base/TransformBase.hpp \
+    include/Cranberry/Graphics/Base/SpriteMovement.hpp
 
 
 ################################################################################
@@ -136,7 +137,8 @@ SOURCES     +=      src/System/Debug.cpp \
     src/Graphics/Base/RenderBase.cpp \
     src/Graphics/Base/ShapeBase.cpp \
     src/Graphics/Base/TextureBase.cpp \
-    src/Graphics/Base/TransformBase.cpp
+    src/Graphics/Base/TransformBase.cpp \
+    src/Graphics/Base/SpriteMovement.cpp
 
 ################################################################################
 ## OUTPUT

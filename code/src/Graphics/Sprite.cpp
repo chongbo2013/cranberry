@@ -57,9 +57,9 @@ QRectF getJsonRect(QJsonObject& obj)
 }
 
 
-Sprite::Movement::~Movement()
+MovementMode getJsonMoveMode(QJsonValue& val)
 {
-    delete anim;
+    return val.toString() == "tile" ? MovementTile : MovementDefault;
 }
 
 
@@ -74,9 +74,9 @@ Sprite::Sprite()
     // Movement should stop as soon as tile-based stuff is finished.
     QObject::connect(
         transformableEmitter(),
-        SIGNAL(stoppedMoving()),
+        &TransformableEmitter::stoppedMoving,
         &m_receiver,
-        SLOT(stoppedRunning())
+        &SpriteReceiver::stoppedRunning
         );
 }
 
@@ -89,8 +89,7 @@ Sprite::~Sprite()
 
 bool Sprite::isNull() const
 {
-    return RenderBase::isNull() ||
-           m_movements.isEmpty();
+    return RenderBase::isNull() || m_movements.isEmpty();
 }
 
 
@@ -147,32 +146,34 @@ bool Sprite::create(const QString& path, Window* rt)
         Q_FOREACH (QJsonValue m, movements)
         {
             QJsonObject obj = m.toObject();
-            QJsonValue nme = obj.value("name");
-            QJsonValue mode = obj.value("mode");
-            QJsonValue advanceX = obj.value("advanceX");
-            QJsonValue advanceY = obj.value("advanceY");
-            QJsonObject idle = obj.value("idle").toObject();
-            QJsonArray frames = obj.value("frames").toArray();
+            QJsonValue valName = obj.value("name");
+            QJsonValue valMode = obj.value("mode");
+            QJsonValue valAdvX = obj.value("advanceX");
+            QJsonValue valAdvY = obj.value("advanceY");
+            QJsonObject objIdle = obj.value("idle").toObject();
+            QJsonArray arrFrames = obj.value("frames").toArray();
 
-            if (nme.isNull() || advanceX.isNull() || advanceY.isNull() || frames.isEmpty())
+            if (valName.isNull() ||
+                valAdvY.isNull() ||
+                valAdvY.isNull() ||
+                arrFrames.isEmpty())
             {
                 return cranError(ERRARG(e_04));
             }
 
-            auto* move = new Movement;
-            move->name = nme.toString();
-            move->mode = (mode.toString() == "tile") ? MovementTile : MovementDefault;
-            move->totalTime = 0.0;
-            move->advanceX = advanceX.toDouble();
-            move->advanceY = advanceY.toDouble();
-            move->idle = getJsonRect(idle);
-            move->anim = new RawAnimation;
+            SpriteMovement* move = new SpriteMovement;
+            move->setName(valName.toString());
+            move->setMovementMode(getJsonMoveMode(valMode));
+            move->setHorizontalAdvance(valAdvX.toDouble());
+            move->setVerticalAdvance(valAdvX.toDouble());
+            move->setIdleFrame(getJsonRect(objIdle));
+            move->setRawAnimation(new RawAnimation);
 
             QVector<AnimationFrame> animFrames;
             qint32 currentFrame = 0;
 
             // Loads the frames.
-            Q_FOREACH (QJsonValue frame, frames)
+            Q_FOREACH (QJsonValue frame, arrFrames)
             {
                 QJsonObject fobj = frame.toObject();
                 QJsonValue duration = fobj.value("duration");
@@ -189,18 +190,18 @@ bool Sprite::create(const QString& path, Window* rt)
                 animFrame.setFrameId(currentFrame);
                 animFrame.setRectangle(getJsonRect(rect));
 
-                move->totalTime += animFrame.duration();
+                move->setTotalDuration(move->totalDuration() + animFrame.duration());
                 animFrames.append(animFrame);
                 currentFrame++;
             }
 
-            if(!move->anim->createRawAnimation({ img }, animFrames, renderTarget()))
+            if(!move->animation()->createRawAnimation({ img }, animFrames, renderTarget()))
             {
                 return false;
             }
 
-            move->anim->setIdleFrame(0, move->idle);
-            m_movements.insert(move->name, move);
+            move->animation()->setIdleFrame(0, move->idleFrame());
+            m_movements.insert(move->name(), move);
         }
 
         return true;
@@ -234,7 +235,7 @@ void Sprite::runMovement(const QString& n)
     }
     else if (m_isRunning && m_currentMove)
     {
-        startMovingBy(m_currentMove->advanceX, m_currentMove->advanceY);
+        startMovingBy(m_currentMove->horizontalAdvance(), m_currentMove->verticalAdvance());
         resumeMovement();
         return;
     }
@@ -248,14 +249,14 @@ void Sprite::runMovement(const QString& n)
     }
 
     // Runs the animation.
-    m->anim->startAnimation(AnimateForever);
-    if (m->mode == MovementTile)
+    m->animation()->startAnimation(AnimateForever);
+    if (m->mode() == MovementTile)
     {
-        float mx = m->advanceX / m->totalTime;
-        float my = m->advanceY / m->totalTime;
+        float mx = m->horizontalAdvance() / m->totalDuration();
+        float my = m->verticalAdvance()   / m->totalDuration();
 
         setMoveSpeed(mx, my);
-        startMovingBy(m->advanceX, m->advanceY);
+        startMovingBy(m->horizontalAdvance(), m->verticalAdvance());
 
         m_isBlocking = true;
     }
@@ -281,7 +282,7 @@ void Sprite::runIdle(const QString& n)
     }
 
     // Starts the idle mode.
-    m->anim->startIdle();
+    m->animation()->startIdle();
     m_currentMove = m;
     m_isRunning = false;
 }
@@ -294,7 +295,7 @@ void Sprite::resumeMovement()
         return;
     }
 
-    m_currentMove->anim->resumeAnimation();
+    m_currentMove->animation()->resumeAnimation();
     m_isRunning = true;
 }
 
@@ -306,9 +307,9 @@ void Sprite::stopMovement()
         return;
     }
 
-    m_currentMove->anim->stopAnimation();
-    m_currentMove->anim->stopMoving();
-    m_currentMove->anim->startIdle();
+    m_currentMove->animation()->stopAnimation();
+    m_currentMove->animation()->stopMoving();
+    m_currentMove->animation()->startIdle();
 
     m_isBlocking = false;
     m_isRunning = false;
@@ -322,7 +323,7 @@ void Sprite::update(const GameTime& time)
         return;
     }
 
-    m_currentMove->anim->update(time);
+    m_currentMove->animation()->update(time);
     updateTransform(time);
 }
 
@@ -334,9 +335,9 @@ void Sprite::render()
         return;
     }
 
-    m_currentMove->anim->setShaderProgram(shaderProgram());
-    m_currentMove->anim->copyTransform(this, m_currentMove->anim);
-    m_currentMove->anim->render();
+    m_currentMove->animation()->setShaderProgram(shaderProgram());
+    m_currentMove->animation()->copyTransform(this, m_currentMove->animation());
+    m_currentMove->animation()->render();
 }
 
 
@@ -355,7 +356,7 @@ void Sprite::setBlendColor(
 {
     for (auto* const m : m_movements.values())
     {
-        m->anim->setBlendColor(tl, tr, br, bl);
+        m->animation()->setBlendColor(tl, tr, br, bl);
     }
 }
 
@@ -364,7 +365,7 @@ void Sprite::setBlendMode(BlendModes modes)
 {
     for (auto* const m : m_movements.values())
     {
-        m->anim->setBlendMode(modes);
+        m->animation()->setBlendMode(modes);
     }
 }
 
@@ -373,6 +374,6 @@ void Sprite::setEffect(Effect effect)
 {
     for (auto* const m : m_movements.values())
     {
-        m->anim->setEffect(effect);
+        m->animation()->setEffect(effect);
     }
 }

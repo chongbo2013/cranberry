@@ -20,193 +20,188 @@
 
 
 #pragma once
-#ifndef CRANBERRY_SPRITE_HPP
-#define CRANBERRY_SPRITE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_SPRITEMOVEMENT_HPP
+#define CRANBERRY_GRAPHICS_BASE_SPRITEMOVEMENT_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/SpriteMovement.hpp>
-#include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/System/Receivers/SpriteReceiver.hpp>
+#include <Cranberry/Graphics/Base/Enumerations.hpp>
 
 // Qt headers
-#include <QHash>
+#include <QRectF>
+#include <QString>
+
+// Forward declarations
+CRANBERRY_FORWARD_C(RawAnimation)
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Defines a movable and animatable sprite.
+/// Defines one movement consisting of multiple frames for a sprite.
 ///
-/// \class Sprite
+/// \class SpriteMovement
 /// \author Nicolas Kogler
-/// \date July 9, 2017
+/// \date July 22, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Sprite final : public RenderBase
+class CRANBERRY_GRAPHICS_EXPORT SpriteMovement final
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(Sprite)
-    CRANBERRY_DISABLE_MOVE(Sprite)
+    CRANBERRY_DEFAULT_COPY(SpriteMovement)
+    CRANBERRY_DEFAULT_MOVE(SpriteMovement)
 
-    Sprite();
-   ~Sprite();
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether this object is null.
-    ///
-    /// \returns true if null.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool isNull() const override;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether the key input is currently blocked.
-    ///
-    /// \returns true if blocked.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool isBlocking() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether the animation is running right now.
-    ///
-    /// \returns true if running.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool isRunning() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Creates the sprite by loading a JSON file containing the sprite's
-    /// properties.
-    ///
-    /// \param path Path to a *.json file.
-    /// \param renderTarget Target to render animation on.
-    /// \returns true if created successfully.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool create(const QString& path, Window* renderTarget = nullptr);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destroys all resources allocated by this sprite.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void destroy() override;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Runs the movement with the specified name.
-    ///
-    /// \param name Name of the movement to execute.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void runMovement(const QString& name);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Shows the idle frame of the given movement.
-    ///
-    /// \param name Name of the movement to show idle frame from.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void runIdle(const QString& name);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Resumes the current movement.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void resumeMovement();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Stops the current movement.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void stopMovement();
+    SpriteMovement();
+   ~SpriteMovement();
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Updates the animation.
+    /// Retrieves the name of this movement.
     ///
-    /// \param time Contains the delta time.
+    /// \returns the movement's name.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void update(const GameTime& time) override;
+    const QString& name() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Renders the animation.
+    /// Retrieves the idle frame rectangle.
+    ///
+    /// \returns the idle frame.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void render() override;
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the blend color that will be applied on this object. Depends
-    /// on the blend mode used.
-    ///
-    /// \param color Color to use for blending.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setBlendColor(const QColor& color);
+    const QRectF& idleFrame() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the blend color that will be applied on this object. Depends
-    /// on the blend mode used.
+    /// Retrieves the horizontal advance, in pixels.
     ///
-    /// \param tl Top left vertex.
-    /// \param tr Top right vertex.
-    /// \param br Bottom right vertex.
-    /// \param bl Bottom left vertex.
+    /// \returns the horizontal advance.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setBlendColor(
-            const QColor& tl,
-            const QColor& tr,
-            const QColor& br,
-            const QColor& bl
-            );
+    qreal horizontalAdvance() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the blend mode to render this object with.
+    /// Retrieves the vertical advance, in pixels.
     ///
-    /// \param modes One or multiple blending modes.
+    /// \returns the vertical advance.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setBlendMode(BlendModes modes);
+    qreal verticalAdvance() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the effect to render this object with.
+    /// Retrieves the total movement duration.
     ///
-    /// \param effect EffectNone does not modify the image.
+    /// \returns the total duration.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setEffect(Effect effect);
+    qreal totalDuration() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the movement mode.
+    ///
+    /// \returns the movement mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    MovementMode mode() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the underlying raw animation.
+    ///
+    /// \returns the animation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    RawAnimation* animation() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the movement name.
+    ///
+    /// \param name New name of movement.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setName(const QString& name);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the idle frame rectangle.
+    ///
+    /// \param frame Idle frame.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setIdleFrame(const QRectF& frame);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the idle frame rectangle.
+    ///
+    /// \param x X-position.
+    /// \param y Y-position.
+    /// \param width Frame width.
+    /// \param height Frame height.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setIdleFrame(qreal x, qreal y, qreal width, qreal height);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the horizontal advance, in pixels.
+    ///
+    /// \param amount Horizontal advance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setHorizontalAdvance(qreal amount);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the vertical advance, in pixels.
+    ///
+    /// \param amount Vertical advance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setVerticalAdvance(qreal amount);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the horizontal advance, in seconds.
+    ///
+    /// \param total Seconds the movement persists.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setTotalDuration(qreal total);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the movement mode.
+    ///
+    /// \param mode Movement mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setMovementMode(MovementMode mode);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the raw animation. Takes ownership of the animation and
+    /// destroys it upon disposal.
+    ///
+    /// \param anim Animation to set.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setRawAnimation(RawAnimation* anim);
 
 
 private:
 
-    typedef QHash<QString, SpriteMovement*> MovementMap;
-
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    SpriteReceiver  m_receiver;
-    MovementMap     m_movements;
-    SpriteMovement* m_currentMove;
-    bool            m_isRunning;
-    bool            m_isBlocking;
+    QString       m_name;
+    QRectF        m_rect;
+    qreal         m_advanceX;
+    qreal         m_advanceY;
+    qreal         m_duration;
+    MovementMode  m_mode;
+    RawAnimation* m_anim;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class Sprite
+/// \class SpriteMovement
 /// \ingroup Graphics
 ///
-/// More detailed description, code examples.
-///
-/// \code
-/// ...
-/// \endcode
+/// You will usually not need this class.
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
