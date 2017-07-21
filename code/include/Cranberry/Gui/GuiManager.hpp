@@ -125,6 +125,22 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     QQuickWindow* window() const;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root QQuickItem.
+    ///
+    /// \returns the root item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QQuickItem* rootItem() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the top-left position of the root item.
+    ///
+    /// \returns the top-left pos of the root item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QPointF topLeft() const;
+
 
 private:
 
@@ -150,7 +166,6 @@ private:
     QQmlComponent*            m_qmlComponent;
     QQuickItem*               m_rootItem;
     QOpenGLFramebufferObject* m_fbo;
-    QVector2D                 m_lastPos;
     bool                      m_requiresUpdate;
     bool                      m_isInitialized;
     bool                      m_isReady;

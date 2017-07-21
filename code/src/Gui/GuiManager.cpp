@@ -64,6 +64,7 @@ GuiManager::GuiManager()
 
     m_receiver.setGuiManager(this);
     m_renderWindow->setClearBeforeRendering(false);
+    m_renderWindow->setMouseGrabEnabled(true);
     m_renderWindow->create();
 
     // Signals & slots
@@ -162,15 +163,6 @@ void GuiManager::update(const GameTime& time)
 {
     updateTransform(time);
 
-    // Moves the entire window if position changed. Why? In order to be able to
-    // click buttons etc. even when the entire Gui is moved.
-    int x1 = m_lastPos.x(), y1 = m_lastPos.y(), x2 = pos().x(), y2 = pos().y();
-    if (x1 != x2 || y1 != y2)
-    {
-        m_renderWindow->setPosition(x2, y2);
-        m_lastPos = pos();
-    }
-
     // Copies all transformations.
     m_batch->setShaderProgram(shaderProgram());
     m_batch->copyTransform(this, m_batch);
@@ -218,6 +210,18 @@ QQuickWindow* GuiManager::window() const
 }
 
 
+QQuickItem* GuiManager::rootItem() const
+{
+    return m_rootItem;
+}
+
+
+QPointF GuiManager::topLeft() const
+{
+    return m_rootItem->position();
+}
+
+
 void GuiManager::makeCurrent()
 {
     auto* ct = renderTarget()->context();
@@ -261,6 +265,7 @@ void GuiManager::loadComponents()
         }
         else
         {
+            m_rootItem->setAcceptHoverEvents(true);
             m_rootItem->setParentItem(m_renderWindow->contentItem());
             m_renderWindow->setGeometry(0, 0, m_rootItem->width(), m_rootItem->height());
 
@@ -282,7 +287,7 @@ void GuiManager::clearFbo()
     if (m_fbo != nullptr)
     {
         glDebug(m_fbo->bind());
-        glDebug(gl->glClearColor(0, 0, 0, 0));
+        glDebug(gl->glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
         glDebug(gl->glClear(GL_COLOR_BUFFER_BIT));
         glDebug(m_fbo->release());
     }
