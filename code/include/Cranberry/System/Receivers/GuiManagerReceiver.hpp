@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GUIMANAGERRECEIVER_HPP
-#define CRANBERRY_GUIMANAGERRECEIVER_HPP
+#ifndef CRANBERRY_SYSTEM_RECEIVERS_GUIMANAGERRECEIVER_HPP
+#define CRANBERRY_SYSTEM_RECEIVERS_GUIMANAGERRECEIVER_HPP
 
 
 // Cranberry headers
@@ -57,7 +57,7 @@ public:
     void setGuiManager(GuiManager* manager);
 
 
-private slots:
+private Q_SLOTS:
 
     void loadComponents();
     void requestUpdate();

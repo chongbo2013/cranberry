@@ -27,7 +27,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/SpriteBatch.hpp>
 #include <Cranberry/Graphics/Text.hpp>
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/Window/Window.hpp>
 
@@ -55,7 +55,7 @@ protected:
 private:
 
     SpriteBatch* m_batch;
-    ITexture*    m_texture;
+    TextureBase*    m_texture;
     Text*        m_linkText;
 
     Q_OBJECT

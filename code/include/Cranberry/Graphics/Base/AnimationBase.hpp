@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,252 +20,255 @@
 
 
 #pragma once
-#ifndef CRANBERRY_IRENDERABLE_HPP
-#define CRANBERRY_IRENDERABLE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_ANIMATIONBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_ANIMATIONBASE_HPP
 
 
 // Cranberry headers
-#include <Cranberry/System/GameTime.hpp>
-#include <Cranberry/System/Emitters/RenderableEmitter.hpp>
+#include <Cranberry/Graphics/Base/AnimationFrame.hpp>
+#include <Cranberry/Graphics/Base/Enumerations.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
+#include <Cranberry/Graphics/Base/TextureAtlas.hpp>
+#include <Cranberry/System/Emitters/AnimationEmitter.hpp>
 
 // Qt headers
-#include <QObject>
-
-
-// Forward declarations
-CRANBERRY_FORWARD_Q(QOpenGLFunctions)
-CRANBERRY_FORWARD_C(Window)
-CRANBERRY_FORWARD_C(OpenGLShader)
+#include <QVector>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Provides an interface for all renderable objects in cranberry.
+/// Defines an abstract class that is able to play animations of an arbitrary
+/// format.
 ///
-/// \class IRenderable
+/// \class AnimationBase
 /// \author Nicolas Kogler
-/// \date June 4, 2017
+/// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IRenderable
+class CRANBERRY_GRAPHICS_EXPORT AnimationBase : public RenderBase
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(IRenderable)
-    CRANBERRY_DISABLE_MOVE(IRenderable)
+    CRANBERRY_DISABLE_COPY(AnimationBase)
+    CRANBERRY_DISABLE_MOVE(AnimationBase)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Constructs a new IRenderable instance.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    IRenderable();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destructs this IRenderable instance and calls IRenderable::destroy() as
-    /// last resort to free OpenGL-related objects.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual ~IRenderable();
+    AnimationBase();
+   ~AnimationBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether this IRenderable object is valid. If a devired class
-    /// needs more conditions for the object to be valid, this method should
-    /// be overridden.
+    /// Determines whether this animation is null.
     ///
-    /// \returns true if this object is not valid.
+    /// \returns true if this animation is null.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual bool isNull() const;
+    bool isNull() const override;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Creates this object by specifying the render target and retrieving the
-    /// OpenGL functions from its context.
+    /// Determines whether the animation is running.
     ///
-    /// \param renderTarget Window to render object on.
-    /// \returns false if initialization failed.
+    /// \returns true if the animation is running.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual bool create(Window* renderTarget);
+    bool isAnimating() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Destroys the custom shader object, if any. It is recommended to
-    /// override this method in order to implement custom clean-up.
+    /// Retrieves the amount of frames.
+    ///
+    /// \returns the amount of frames.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void destroy();
+    int frameCount() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Updates the object. Must implement.
+    /// Creates a new animation by loading the file at the given path and
+    /// extracting the animation data. Devired classes must implement this.
+    ///
+    /// \param path Path to, for example, a *.gif file.
+    /// \param renderTarget Target to render animation on.
+    /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void update(const GameTime& time) = 0;
+    virtual bool create(const QString& path, Window* renderTarget) = 0;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Renders the object. Must implement.
+    /// Destroys all texture atlases used by this class.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void render() = 0;
+    void destroy() override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Runs the animation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startAnimation(AnimationMode mode);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Switches into idle mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startIdle();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Resumes the animation, while leaving the mode, current frame or elapsed
+    /// time unchanged.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void resumeAnimation();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Stops the animation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void stopAnimation();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the tranformations and the animation.
+    ///
+    /// \param time Contains the delta time.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void update(const GameTime& time) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Renders the current frame with all transformations.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void render() override;
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Provides a lightweight way to make the render target's context current.
-    /// Normally, you do not need to use this, only if Qt code interferes with
-    /// the context of the render target.
+    /// Specifies the idle frame (animation doing nothing).
+    ///
+    /// \param atlas Atlas in which the idle frame resides.
+    /// \param frame Source rectangle of the idle frame.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void makeCurrent();
+    void setIdleFrame(uint atlas, const QRectF& frame);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Prepares the render process by making the target's context current or
-    /// by determining whether the object is null.
+    /// Specifies the blend color that will be applied on this object. Depends
+    /// on the blend mode used.
     ///
-    /// \returns true if preparing was successful.
+    /// \param color Color to use for blending.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool prepareRendering();
+    void setBlendColor(const QColor& color);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves a pointer to the render target.
+    /// Specifies the blend color that will be applied on this object. Depends
+    /// on the blend mode used.
     ///
-    /// \returns a pointer to the render target.
+    /// \param tl Top left vertex.
+    /// \param tr Top right vertex.
+    /// \param br Bottom right vertex.
+    /// \param bl Bottom left vertex.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    Window* renderTarget() const;
+    void setBlendColor(
+            const QColor& tl,
+            const QColor& tr,
+            const QColor& br,
+            const QColor& bl
+            );
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves a pointer to the shader program. If no custom shader program
-    /// was specified using IRenderable::setShaderProgram, the default shader
-    /// program for this object will be returned.
+    /// Specifies the blend mode to render this object with.
     ///
-    /// \returns a pointer to the currently used shader program.
+    /// \param modes One or multiple blending modes.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader* shaderProgram() const;
+    void setBlendMode(BlendModes modes);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the object's offscreen renderer.
+    /// Specifies the effect to render this object with.
     ///
-    /// \returns the handle of the OS renderer.
+    /// \param effect EffectNone does not modify the image.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    uint offscreenRenderer() const;
+    void setEffect(Effect effect);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the name of this object.
-    ///
-    /// \returns the name.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    const QString& name() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the shader program. If the given program is nullptr, the
-    /// default shader program will be used instead. Will NOT take ownership
-    /// of \p program. You need to free it yourself.
-    ///
-    /// \param program Program to use. Nullptr yields default shader program.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setShaderProgram(OpenGLShader* program);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the object's offscreen renderer.
-    ///
-    /// \param fbo Handle of the OS renderer.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setOffscreenRenderer(uint fbo);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Setting a name is not required, but recommended, since it can be easily
-    /// retrieved by name and it simplifies debugging by being able to track
-    /// down the error source.
-    ///
-    /// \param name New name of this object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setName(const QString& name);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Returns the emitter for this object.
+    /// Retrieves the emitter object for this instance.
     ///
     /// \returns a pointer to the emitter.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    RenderableEmitter* renderableEmitter();
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the string representation of this object.
-    ///
-    /// \returns the string representation.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    operator QString() const;
+    AnimationEmitter* animationEmitter();
 
 
 protected:
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the default shader program. Only available to sub-classes.
+    /// Creates the texture atlases internally.
     ///
-    /// \param program Program to use. Must not be nullptr.
+    /// \param frames Frames to insert.
+    /// \param durations Duration of each frame (in milliseconds).
+    /// \param renderTarget The target to show animation on.
+    /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setDefaultShaderProgram(OpenGLShader* program);
+    bool createInternal(
+            const QVector<QImage>& frames,
+            const QVector<qreal>& durations,
+            Window* renderTarget
+            );
 
     ////////////////////////////////////////////////////////////////////////////
-    // Protected members
+    /// Creates the texture atlases but skips packing the frames, since they are
+    /// already specified through the \p frames parameter.
+    ///
+    /// \param sheets The spritesheets to use.
+    /// \param frames The frames to use.
+    /// \param renderTarget The target to show animation on.
+    /// \returns true if created successfully.
+    ///
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLFunctions* gl;
-
+    bool createInternal(
+            const QVector<QImage>& sheets,
+            const QVector<AnimationFrame>& frames,
+            Window* renderTarget
+            );
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////
+    TextureBase* getCurrentTexture();
+
+    ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    Window*           m_renderTarget;   ///< Target to render object on
-    OpenGLShader*     m_defaultProgram; ///< Default shader program
-    OpenGLShader*     m_customProgram;  ///< Custom shader program
-    QString           m_name;           ///< Name of the object
-    RenderableEmitter m_emitter;        ///< Emits signals for this class
-    uint              m_osRenderer;     ///< Offscreen renderer, if any
-
-    friend class SpriteBatch;
+    AnimationMode           m_mode;
+    AnimationEmitter        m_emitter;
+    QVector<AnimationFrame> m_frames;
+    QVector<TextureAtlas*>  m_atlases;
+    QString                 m_name;
+    AnimationFrame          m_idleFrame;
+    AnimationFrame*         m_currentFrame;
+    qreal                   m_elapsedTime;
+    bool                    m_isAnimating;
 };
 
 
-extern QString cranResourcePath(const QString& src);
-
-
 ////////////////////////////////////////////////////////////////////////////////
-/// \class IRenderable
+/// \class AnimationBase
 /// \ingroup Graphics
 ///
-/// The IRenderable class is the base for all graphic objects in cranberry. It
-/// provides the render target, the shader program and the OpenGL functions.
+/// This class is the base for all animations.
 ///
 /// \code
-/// class MyObject : public IRenderable
+/// class GifAnimation : public AnimationBase
 /// {
 /// public:
-///     bool isNull() const override;
-///     bool create() override;
-///     void destroy() override;
-///     void update(const GameTime& time) override;
-///     void render() override;
+///
+///     bool create(const QString& path, Window* renderTarget) override;
+///
 ///     ...
 /// };
-///
-/// {
-///     renderTarget()->makeCurrent();
-///     ...
-///     gl->glDrawArrays(...);
-/// }
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

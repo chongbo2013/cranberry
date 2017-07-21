@@ -20,130 +20,140 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GAME_GAME_HPP
-#define CRANBERRY_GAME_GAME_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_ANIMATIONFRAME_HPP
+#define CRANBERRY_GRAPHICS_BASE_ANIMATIONFRAME_HPP
 
 
 // Cranberry headers
 #include <Cranberry/Config.hpp>
 
 // Qt headers
-#include <QVector>
-
-// Forward declarations
-CRANBERRY_FORWARD_C(Window)
+#include <QRectF>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Handles all windows in the game and more.
+/// The AnimationFrame class holds one frame containing rectangle, duration,
+/// frame number and the index of the atlas in which it is embedded.
 ///
-/// \class Game
+/// \class AnimationFrame
 /// \author Nicolas Kogler
-/// \date June 5, 2017
+/// \date July 21, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT Game
+class CRANBERRY_GRAPHICS_EXPORT AnimationFrame
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(Game)
-    CRANBERRY_DISABLE_MOVE(Game)
+    CRANBERRY_DEFAULT_DTOR(AnimationFrame)
+    CRANBERRY_DEFAULT_COPY(AnimationFrame)
+    CRANBERRY_DEFAULT_MOVE(AnimationFrame)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new Game instance.
-    ///
-    /// \param argc Argument count.
-    /// \param argv Argument strings.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    Game(int& argc, char* argv[]);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Closes remaining windows, cleans up all resources of all windows.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    ~Game();
+    AnimationFrame();
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Adds the given window to the manager and shows it immediately. Fails if
-    /// window is not valid or if game is not running yet.
+    /// Retrieves the frame rectangle.
     ///
-    /// \param window Window to add.
-    /// \returns if adding succeeded.
+    /// \returns the frame rectangle.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool addWindow(Window* window);
+    const QRectF& rectangle() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Removes the given window from the manager and hides it immediately.
-    /// Fails if window is not valid, does not exist in the manager or if the
-    /// game is not running yet.
+    /// Retrieves the frame duration.
     ///
-    /// \note The window will not be deleted.
-    /// \param window Window to remove.
-    /// \returns true if removal succeeded.
+    /// \returns the frame duration.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool removeWindow(Window* window);
+    qreal duration() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Runs the game and shows the main window. From now on, other child
-    /// windows can be added via Game::addWindow().
+    /// Retrieves the frame number.
     ///
-    /// \param mainWindow Main window to use.
-    /// \returns the exit code of the game.
+    /// \returns the frame number.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    int run(Window* mainWindow);
+    int frameId() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Exits the game, closes all the windows and cleans up all the resources.
+    /// Retrieves the texture atlas number.
     ///
-    /// \param exitCode The code to exit with.
+    /// \returns the atlas number.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void exit(int exitCode = 0);
+    int atlasId() const;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the frame rectangle.
+    ///
+    /// \param rect The rectangle, in real coordinates.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setRectangle(const QRectF& rect);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the current game instance.
+    /// Specifies the frame rectangle.
     ///
-    /// \returns the game instance.
+    /// \param x X-position in pixels.
+    /// \param y Y-position in pixels.
+    /// \param width Width in pixels.
+    /// \param height Height in pixels.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    static Game* instance();
+    void setRectangle(qreal x, qreal y, qreal width, qreal height);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the duration of this frame, in seconds.
+    ///
+    /// \param duration Duration of the frame.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setDuration(qreal duration);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the frame number.
+    ///
+    /// \param id Number of the frame.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setFrameId(int id);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the index of the parent atlas.
+    ///
+    /// \param id Index of the atlas.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setAtlasId(int id);
 
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Helpers
-    ////////////////////////////////////////////////////////////////////////////
-    void printCranberryLogo();
-
-    ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QVector<Window*> m_windows;
-    bool             m_isRunning;
+    QRectF m_rect;     ///< Frame rectangle
+    qreal  m_duration; ///< Frame duration in seconds
+    int    m_frameId;  ///< Frame number
+    int    m_atlasId;  ///< Parent atlas
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class Game
-/// \ingroup Game
+/// \class AnimationFrame
+/// \ingroup Graphics
 ///
-/// The Game class handles all windows.
+/// You will usually only need this class when constructing raw animations.
 ///
 /// \code
-/// Game game(argc, argv);
-/// MyWindow mainWindow;
-///
-/// return game.run(&mainWindow);
+/// AnimationFrame frame;
+/// frame.setRectangle(0, 0, 200, 200);
+/// frame.setDuration(60.0 / 1000.0); // milliseconds <> seconds
+/// frame.setFrameId(0);
+/// frame.setAtlasId(0);
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

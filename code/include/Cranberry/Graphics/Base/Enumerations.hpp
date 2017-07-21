@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_ENUMERATIONS_HPP
-#define CRANBERRY_ENUMERATIONS_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_ENUMERATIONS_HPP
+#define CRANBERRY_GRAPHICS_BASE_ENUMERATIONS_HPP
 
 
 // Cranberry headers

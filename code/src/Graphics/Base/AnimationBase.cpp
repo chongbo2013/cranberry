@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IAnimation.hpp>
+#include <Cranberry/Graphics/Base/AnimationBase.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
 
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - The given render target is invalid.")
 CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
@@ -34,9 +34,8 @@ CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 CRANBERRY_USING_NAMESPACE
 
 
-IAnimation::IAnimation()
-    : IRenderable()
-    , ITransformable()
+AnimationBase::AnimationBase()
+    : RenderBase()
     , m_mode(AnimateOnce)
     , m_currentFrame(nullptr)
     , m_elapsedTime(0.0)
@@ -46,77 +45,79 @@ IAnimation::IAnimation()
 }
 
 
-IAnimation::~IAnimation()
+AnimationBase::~AnimationBase()
 {
     destroy();
 }
 
 
-bool IAnimation::isNull() const
+bool AnimationBase::isNull() const
 {
-    return IRenderable::isNull()     ||
+    return RenderBase::isNull()     ||
            m_currentFrame == nullptr ||
            m_frames.isEmpty()        ||
            m_atlases.isEmpty();
 }
 
 
-bool IAnimation::isAnimating() const
+bool AnimationBase::isAnimating() const
 {
     return m_isAnimating;
 }
 
 
-int IAnimation::frameCount() const
+int AnimationBase::frameCount() const
 {
     return m_frames.size();
 }
 
 
-void IAnimation::destroy()
+void AnimationBase::destroy()
 {
-    for (auto* atlas : m_atlases) delete atlas;
+    for (TextureAtlas* atlas : m_atlases)
+    {
+        delete atlas;
+    }
 
     m_frames.clear();
     m_atlases.clear();
     m_currentFrame = nullptr;
     m_isAnimating = false;
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
-void IAnimation::startAnimation(AnimationMode mode)
+void AnimationBase::startAnimation(AnimationMode mode)
 {
     m_mode = mode;
     m_elapsedTime = 0.0;
-    m_currentFrame = &m_frames[0];
-
+    m_currentFrame = &m_frames.first();
     m_isAnimating = true;
 }
 
 
-void IAnimation::startIdle()
+void AnimationBase::startIdle()
 {
     m_currentFrame = &m_idleFrame;
     m_isAnimating = false;
 }
 
 
-void IAnimation::resumeAnimation()
+void AnimationBase::resumeAnimation()
 {
     m_isAnimating = true;
 }
 
 
-void IAnimation::stopAnimation()
+void AnimationBase::stopAnimation()
 {
     m_emitter.emitStoppedAnimating();
     m_isAnimating = false;
 }
 
 
-void IAnimation::update(const GameTime& time)
+void AnimationBase::update(const GameTime& time)
 {
     updateTransform(time);
 
@@ -124,10 +125,10 @@ void IAnimation::update(const GameTime& time)
     if (m_isAnimating && Q_LIKELY(!isNull()))
     {
         m_elapsedTime += time.deltaTime();
-        if (m_elapsedTime >= m_currentFrame->duration)
+        if (m_elapsedTime >= m_currentFrame->duration())
         {
             // Jump to the next frame and handle overflow.
-            int frameIndex = m_currentFrame->frame + 1;
+            int frameIndex = m_currentFrame->frameId() + 1;
             if (frameIndex >= m_frames.size())
             {
                 frameIndex = 0;
@@ -146,66 +147,64 @@ void IAnimation::update(const GameTime& time)
     }
 
     // Copies all transformations.
-    ITexture* texture = m_atlases[m_currentFrame->atlas]->texture();
-    texture->setShaderProgram(shaderProgram());
-    texture->setPosition(pos());
-    texture->setAngle(angle());
-    texture->setOpacity(opacity());
-    texture->setOrigin(origin().toVector2D());
-    texture->setScale(scaleX(), scaleY());
-    texture->setSourceRectangle(m_currentFrame->rect);
+    TextureBase* texture = getCurrentTexture();
+    {
+        texture->setShaderProgram(shaderProgram());
+        texture->setSourceRectangle(m_currentFrame->rectangle());
+        copyTransform(this, texture);
+    }
 }
 
 
-void IAnimation::render()
+void AnimationBase::render()
 {
     if (!prepareRendering()) return;
 
     // Renders the current texture.
-    m_atlases[m_currentFrame->atlas]->texture()->render();
+    getCurrentTexture()->render();
 }
 
 
-void IAnimation::setIdleFrame(uint atlas, const QRectF& frame)
+void AnimationBase::setIdleFrame(uint atlas, const QRectF& frame)
 {
-    m_idleFrame.atlas = atlas;
-    m_idleFrame.rect = frame;
-    m_idleFrame.duration = 0;
-    m_idleFrame.frame = -1;
+    m_idleFrame.setAtlasId(atlas);
+    m_idleFrame.setRectangle(frame);
+    m_idleFrame.setDuration(0.0);
+    m_idleFrame.setFrameId(-1);
 }
 
 
-void IAnimation::setBlendColor(const QColor& color)
+void AnimationBase::setBlendColor(const QColor& color)
 {
     setBlendColor(color, color, color, color);
 }
 
 
-void IAnimation::setBlendColor(
-        const QColor& tl,
-        const QColor& tr,
-        const QColor& br,
-        const QColor& bl
-        )
+void AnimationBase::setBlendColor(
+    const QColor& tl,
+    const QColor& tr,
+    const QColor& br,
+    const QColor& bl
+    )
 {
 
-    for (auto* atlas : m_atlases)
+    for (TextureAtlas* atlas : m_atlases)
     {
         atlas->texture()->setBlendColor(tl, tr, br, bl);
     }
 }
 
 
-void IAnimation::setBlendMode(BlendModes modes)
+void AnimationBase::setBlendMode(BlendModes modes)
 {
-    for (auto* atlas : m_atlases)
+    for (TextureAtlas* atlas : m_atlases)
     {
         atlas->texture()->setBlendMode(modes);
     }
 }
 
 
-void IAnimation::setEffect(Effect effect)
+void AnimationBase::setEffect(Effect effect)
 {
     for (auto* atlas : m_atlases)
     {
@@ -214,33 +213,28 @@ void IAnimation::setEffect(Effect effect)
 }
 
 
-AnimationEmitter* IAnimation::animationEmitter()
+AnimationEmitter* AnimationBase::animationEmitter()
 {
     return &m_emitter;
 }
 
 
-void IAnimation::saveAtlas(TextureAtlas* atlas)
+bool AnimationBase::createInternal(
+    const QVector<QImage>& frames,
+    const QVector<qreal>& durations,
+          Window* rt
+    )
 {
-    m_atlases.append(atlas);
-}
+    if (!RenderBase::create(rt)) return false;
 
-
-bool IAnimation::createInternal(
-        const QVector<QImage>& frames,
-        const QVector<qreal>& durations,
-        Window* rt
-        )
-{
-    if (!IRenderable::create(rt)) return false;
-
-    qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
+    qint32 maxSize = qMin(c_maxSize, TextureBase::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
-    qint32 frameCount = frames.size();
     QSize largestSize;
-    Frame currentFrame;
 
-    // Finds a nice place in the atlas for every frame.
+    AnimationFrame currentFrame;
+    qint32 frameCount = frames.size();
+
+    // Finds a nice place in the atlas, for every frame.
     for (int i = 0; i < frameCount; i++)
     {
         const QImage& img = frames.at(i);
@@ -248,15 +242,15 @@ bool IAnimation::createInternal(
         if (!currentAtlas->canInsert())
         {
             // Atlas is full; create new one.
-            saveAtlas(currentAtlas);
+            m_atlases.append(currentAtlas);
             currentAtlas = new TextureAtlas(maxSize, renderTarget());
         }
 
         currentAtlas->insert(img);
-        currentFrame.atlas = m_atlases.size();
-        currentFrame.duration = dura / 1000.0; // to seconds
-        currentFrame.rect = currentAtlas->lastRectangle();
-        currentFrame.frame = i;
+        currentFrame.setAtlasId(m_atlases.size());
+        currentFrame.setDuration(dura / 1000.0);
+        currentFrame.setRectangle(currentAtlas->lastRectangle());
+        currentFrame.setFrameId(i);
 
         m_frames.push_back(currentFrame);
 
@@ -266,8 +260,8 @@ bool IAnimation::createInternal(
     }
 
     // Adds the last atlas to the list.
-    saveAtlas(currentAtlas);
-    m_currentFrame = &m_frames[0];
+    m_atlases.append(currentAtlas);
+    m_currentFrame = &m_frames.first();
 
     setSize(largestSize.width(), largestSize.height());
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
@@ -276,20 +270,20 @@ bool IAnimation::createInternal(
 }
 
 
-bool IAnimation::createInternal(
-        const QVector<QImage>& sheets,
-        const QVector<Frame>& frames,
-        Window* rt
-        )
+bool AnimationBase::createInternal(
+    const QVector<QImage>& sheets,
+    const QVector<AnimationFrame>& frames,
+          Window* rt
+    )
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     QSize largestSize;
 
     // Creates texture atlases out of the sheets.
     for (const QImage& img : sheets)
     {
-        saveAtlas(new TextureAtlas(img, renderTarget()));
+        m_atlases.append(new TextureAtlas(img, renderTarget()));
 
         // Finds the largest image.
         largestSize.rwidth() = qMax(img.width(), largestSize.width());
@@ -298,7 +292,7 @@ bool IAnimation::createInternal(
 
     // Simply copies the frames since everything is prepared.
     m_frames = frames;
-    m_currentFrame = &m_frames[0];
+    m_currentFrame = &m_frames.first();
 
     setSize(largestSize.width(), largestSize.height());
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
@@ -307,22 +301,11 @@ bool IAnimation::createInternal(
 }
 
 
-IAnimation::operator QString() const
+TextureBase* AnimationBase::getCurrentTexture()
 {
-    QRectF r = m_currentFrame->rect;
-    QString sx = " x=" + QString::number(r.x());
-    QString sy = " y=" + QString::number(r.y());
-    QString sw = " w=" + QString::number(r.width());
-    QString sh = " h=" + QString::number(r.height());
-    QString s;
-
-    s.append(IRenderable::operator QString());
-    s.append(ITransformable::operator QString());
-    s.append("-- Animation\n");
-    s.append(QString("Is animating: ") + ((m_isAnimating) ? "true\n" : "false\n"));
-    s.append(QString("Frame amount: ") + QString::number(m_frames.size()) + "\n");
-    s.append(QString("Current frame: ") + QString::number(m_currentFrame->frame) + "\n");
-    s.append(QString("Current rect:") + sx + sy + sw + sh + "\n\n");
-
-    return s;
+    return m_atlases
+           [
+               m_currentFrame
+              ->atlasId()
+           ]  ->texture();
 }

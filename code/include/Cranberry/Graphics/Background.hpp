@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -25,10 +25,8 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/System/Emitters/BackgroundEmitter.hpp>
-
-// Forward declarations
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -43,18 +41,13 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 24, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Background : public ITexture
+class CRANBERRY_GRAPHICS_EXPORT Background : public TextureBase
 {
 public:
 
     CRANBERRY_DISABLE_COPY(Background)
     CRANBERRY_DISABLE_MOVE(Background)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the Background class and sets all members
-    /// to their logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
     Background();
 
 
@@ -140,18 +133,9 @@ public:
     virtual void update(const GameTime& time) override;
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the string representation of this object.
-    ///
-    /// \returns the string representation.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    operator QString() const;
-
-
 protected:
 
-    void initializeData() override;
+    bool initializeData() override;
     void prepareTexture();
     void updateUVs();
 

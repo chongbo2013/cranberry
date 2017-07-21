@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_BACKGROUNDEMITTER_HPP
-#define CRANBERRY_BACKGROUNDEMITTER_HPP
+#ifndef CRANBERRY_SYSTEM_EMITTERS_BACKGROUNDEMITTER_HPP
+#define CRANBERRY_SYSTEM_EMITTERS_BACKGROUNDEMITTER_HPP
 
 
 // Cranberry headers
@@ -52,9 +52,9 @@ public:
     CRANBERRY_DEFAULT_MOVE(BackgroundEmitter)
 
 
-    inline void emitStoppedScrolling() { emit stoppedScrolling(); }
+    inline void emitStoppedScrolling() { Q_EMIT stoppedScrolling(); }
 
-signals:
+Q_SIGNALS:
 
     void stoppedScrolling();
 

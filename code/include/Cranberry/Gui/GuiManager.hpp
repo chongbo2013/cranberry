@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -25,8 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
-#include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/System/Receivers/GuiManagerReceiver.hpp>
 
 
@@ -53,9 +52,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 18, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GUI_EXPORT GuiManager
-    : public IRenderable
-    , public ITransformable
+class CRANBERRY_GUI_EXPORT GuiManager : public RenderBase
 {
 public:
 
@@ -120,7 +117,29 @@ public:
     void setEffect(Effect effect);
 
 
-    inline QQuickWindow* window() { return m_renderWindow; }
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the underlying QQuickWindow.
+    ///
+    /// \returns the underlying window.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QQuickWindow* window() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root QQuickItem.
+    ///
+    /// \returns the root item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QQuickItem* rootItem() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the top-left position of the root item.
+    ///
+    /// \returns the top-left pos of the root item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QPointF topLeft() const;
 
 
 private:
@@ -130,6 +149,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     void makeCurrent();
     void loadComponents();
+    void clearFbo();
     void createFbo();
     void resizeFbo();
     void requestUpdate();
@@ -146,7 +166,6 @@ private:
     QQmlComponent*            m_qmlComponent;
     QQuickItem*               m_rootItem;
     QOpenGLFramebufferObject* m_fbo;
-    QVector2D                 m_lastPos;
     bool                      m_requiresUpdate;
     bool                      m_isInitialized;
     bool                      m_isReady;

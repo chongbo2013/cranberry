@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_TRANSFORMABLEEMITTER_HPP
-#define CRANBERRY_TRANSFORMABLEEMITTER_HPP
+#ifndef CRANBERRY_SYSTEM_EMITTERS_TRANSFORMABLEEMITTER_HPP
+#define CRANBERRY_SYSTEM_EMITTERS_TRANSFORMABLEEMITTER_HPP
 
 
 // Cranberry headers
@@ -52,15 +52,15 @@ public:
     CRANBERRY_DEFAULT_MOVE(TransformableEmitter)
 
 
-    inline void emitStoppedMoving() { emit stoppedMoving(); }
-    inline void emitStoppedRotating() { emit stoppedRotating(); }
-    inline void emitStoppedScaling() { emit stoppedScaling(); }
-    inline void emitStoppedFading() { emit stoppedFading(); }
-    inline void emitPositionChanged() { emit positionChanged(); }
-    inline void emitSizeChanged() { emit sizeChanged(); }
+    inline void emitStoppedMoving() { Q_EMIT stoppedMoving(); }
+    inline void emitStoppedRotating() { Q_EMIT stoppedRotating(); }
+    inline void emitStoppedScaling() { Q_EMIT stoppedScaling(); }
+    inline void emitStoppedFading() { Q_EMIT stoppedFading(); }
+    inline void emitPositionChanged() { Q_EMIT positionChanged(); }
+    inline void emitSizeChanged() { Q_EMIT sizeChanged(); }
 
 
-signals:
+Q_SIGNALS:
 
     void stoppedMoving();
     void stoppedRotating();

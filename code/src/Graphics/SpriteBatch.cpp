@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -77,7 +77,7 @@ SpriteBatch::~SpriteBatch()
 
 bool SpriteBatch::isNull() const
 {
-    return IRenderable::isNull() ||
+    return RenderBase::isNull() ||
            m_frameBuffer  == 0   ||
            m_msFrameBuffer == 0  ||
            m_renderBuffer == 0   ||
@@ -110,7 +110,7 @@ void SpriteBatch::destroy()
 }
 
 
-bool SpriteBatch::addObject(IRenderable* object)
+bool SpriteBatch::addObject(RenderBase* object)
 {
     if (m_objects.contains(object)) return false;
 
@@ -119,7 +119,7 @@ bool SpriteBatch::addObject(IRenderable* object)
 }
 
 
-bool SpriteBatch::insertObject(int layer, IRenderable* object)
+bool SpriteBatch::insertObject(int layer, RenderBase* object)
 {
     if (m_objects.contains(object)) return false;
     if (layer < 0 || layer >= m_objects.size()) m_objects.append(object);
@@ -129,7 +129,7 @@ bool SpriteBatch::insertObject(int layer, IRenderable* object)
 }
 
 
-bool SpriteBatch::removeObject(IRenderable* object)
+bool SpriteBatch::removeObject(RenderBase* object)
 {
     return m_objects.removeOne(object);
 }
@@ -139,7 +139,7 @@ void SpriteBatch::update(const GameTime& time)
 {
     updateTransform(time);
 
-    for (IRenderable* obj : m_objects)
+    for (RenderBase* obj : m_objects)
     {
         obj->update(time);
     }
@@ -204,7 +204,7 @@ void SpriteBatch::setEffect(Effect effect)
 
 bool SpriteBatch::createInternal(Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     egl = renderTarget()->context()->extraFunctions();
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
@@ -580,7 +580,7 @@ void SpriteBatch::setupBatch()
 
 void SpriteBatch::renderBatch()
 {
-    for (IRenderable* obj : m_objects)
+    for (RenderBase* obj : m_objects)
     {
         obj->setOffscreenRenderer(m_msFrameBuffer);
         obj->render();
@@ -672,24 +672,4 @@ void SpriteBatch::releaseFrame()
     glDebug(egl->glUseProgram(0));
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, offscreenRenderer()));
-}
-
-
-SpriteBatch::operator QString() const
-{
-    QString s;
-
-    s.append(IRenderable::operator QString());
-    s.append("-- SpriteBatch\n");
-    s.append(QString("Objects bound: ") + QString::number(m_objects.size()) + "\n");
-
-    for (int i = 0; i < m_objects.size(); i++)
-    {
-        IRenderable* obj = m_objects.at(i);
-        QString sl = QString("Layer %0: ").arg(QString::number(i));
-
-        s.append(sl + obj->name() + "\n");
-    }
-
-    return s.append("\n");
 }

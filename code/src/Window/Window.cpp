@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -51,6 +51,7 @@ CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT   |
 Window::Window(Window* parent)
     : QOpenGLWindow(QOpenGLWindow::NoPartialUpdate, parent)
     , m_gl(nullptr)
+    , m_activeGui(nullptr)
     , m_keyCount(0)
     , m_padCount(0)
     , m_btnCount(0)
@@ -208,8 +209,11 @@ void Window::dispatchEvents(QEvent* event)
     {
         if (canReceiveFocus)
         {
+            QRectF hitbox = w->rect();
+            hitbox.moveTo(hitbox.topLeft() + w->topLeft());
+
             // Is current manager in range of the mouse cursor?
-            if (w->rect().contains(localMousePos.x(), localMousePos.y()))
+            if (hitbox.contains(localMousePos.x(), localMousePos.y()))
             {
                 m_activeGui = w;
                 m_fakeFocusOut = true;
@@ -226,6 +230,7 @@ void Window::dispatchEvents(QEvent* event)
                     m_activeGui = nullptr;
                     m_fakeFocusOut = false;
                     requestActivate();
+
                 }
             }
         }
@@ -347,34 +352,42 @@ void Window::mouseDoubleClickEvent(QMouseEvent* event)
 
 void Window::keyPressEvent(QKeyEvent* event)
 {
-    if (!event->text().isEmpty())
+    // Does not send key events if a GuiManager is in focus.
+    if (m_activeGui == nullptr)
     {
-        // Emits also a key character event if key has not been pressed before
-        // or if the given key was repeated.
-        if (!m_keyState.isKeyDown(event->key()) || event->isAutoRepeat())
+        if (!event->text().isEmpty())
         {
-            onKeyCharacter(event->text());
+            // Emits also a key character event if key has not been pressed before
+            // or if the given key was repeated.
+            if (!m_keyState.isKeyDown(event->key()) || event->isAutoRepeat())
+            {
+                onKeyCharacter(event->text());
+            }
         }
+
+        m_keyState.setKeyState(event->key(), true);
+        m_keyState.setModifiers(event->modifiers());
+        m_keyCount++;
+
+        onKeyDown(m_keyState);
+        dispatchEvents(event);
     }
-
-    m_keyState.setKeyState(event->key(), true);
-    m_keyState.setModifiers(event->modifiers());
-    m_keyCount++;
-
-    onKeyDown(m_keyState);
-    dispatchEvents(event);
 }
 
 
 void Window::keyReleaseEvent(QKeyEvent* event)
 {
-    m_keyState.setKeyState(event->key(), false);
-    m_keyCount--;
-
-    if (!event->isAutoRepeat())
+    // Does not send key events if a GuiManager is in focus.
+    if (m_activeGui == nullptr)
     {
-        onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
-        dispatchEvents(event);
+        m_keyState.setKeyState(event->key(), false);
+        m_keyCount--;
+
+        if (!event->isAutoRepeat())
+        {
+            onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+            dispatchEvents(event);
+        }
     }
 }
 

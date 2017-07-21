@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_SPRITERECEIVER_HPP
-#define CRANBERRY_SPRITERECEIVER_HPP
+#ifndef CRANBERRY_SYSTEM_RECEIVERS_SPRITERECEIVER_HPP
+#define CRANBERRY_SYSTEM_RECEIVERS_SPRITERECEIVER_HPP
 
 
 // Cranberry headers
@@ -57,7 +57,7 @@ public:
     void setSprite(Sprite* sprite);
 
 
-private slots:
+public Q_SLOTS:
 
     void stoppedRunning();
 

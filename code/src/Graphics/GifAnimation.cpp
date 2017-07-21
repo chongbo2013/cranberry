@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -27,12 +27,12 @@
 #include <QFileInfo>
 #include <QImageReader>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - File %2 does not exist.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Frame %2 could not be read.")
+
+
+CRANBERRY_USING_NAMESPACE
 
 
 bool GifAnimation::create(const QString& path, Window* renderTarget)

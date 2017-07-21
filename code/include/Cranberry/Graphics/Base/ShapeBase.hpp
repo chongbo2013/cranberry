@@ -20,105 +20,125 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GRAPHICS_BASE_TEXTUREATLAS_HPP
-#define CRANBERRY_GRAPHICS_BASE_TEXTUREATLAS_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_SHAPEBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_SHAPEBASE_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/TextureBase.hpp>
+#include <Cranberry/Graphics/Base/Enumerations.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
+#include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
 // Qt headers
-#include <QRectF>
-#include <QVector>
+#include <QMatrix4x4>
+
+// Forward declarations
+CRANBERRY_FORWARD_Q(QOpenGLBuffer)
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Defines a texture atlas that holds multiple textures in one big texture.
-/// Algorithm based on code from Jukka Jylänki with some adjustments.
+/// Defines the base class for rendering primitives.
 ///
-/// \class TextureAtlas
+/// \class ShapeBase
 /// \author Nicolas Kogler
-/// \date June 25, 2017
+/// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT TextureAtlas
+class CRANBERRY_GRAPHICS_EXPORT ShapeBase : public RenderBase
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(TextureAtlas)
-    CRANBERRY_DISABLE_MOVE(TextureAtlas)
+    CRANBERRY_DISABLE_COPY(ShapeBase)
+    CRANBERRY_DISABLE_MOVE(ShapeBase)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Creates a new texture atlas with the given size. Size is equal for width
-    /// and height. Use ITexture::maxSize() to determine maximum size of OpenGL
-    /// textures on the current hardware.
-    ///
-    /// \param size Size of the texture, in pixels.
-    /// \param renderTarget Target to render atlas on.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    TextureAtlas(int size, Window* renderTarget = nullptr);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes the texture atlas with an image.
-    ///
-    /// \param img Image that spans across the entire atlas.
-    /// \param renderTarget Target to render atlas on.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    TextureAtlas(const QImage& img, Window* renderTarget = nullptr);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Frees all OpenGL textures allocated in this atlas.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual ~TextureAtlas();
+    ShapeBase();
+    virtual ~ShapeBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Inserts a new image into the texture atlas.
+    /// Reimplements IRenderable::isNull(). Adds the condition that the
+    /// vertex buffer is valid.
     ///
-    /// \param img Image to insert.
-    /// \returns true if image could be inserted.
+    /// \returns true if the object is invalid.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool insert(const QImage& img);
+    virtual bool isNull() const override;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether another image could be inserted into the atlas.
-    /// Rule of thumb: If 90% of the space is occupied, do not allow insertion.
-    ///
-    /// \returns false if can not insert another image.
+    /// Destroys all OpenGL resources allocated for this object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool canInsert() const;
+    virtual void destroy() override;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the rectangle inserted the last.
+    /// Updates the transformations of this object.
     ///
-    /// \returns the last rectangle.
+    /// \param time Contains the delta time.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    const QRect& lastRectangle() const;
+    virtual void update(const GameTime& time) override;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves all rectangles inserted so far.
-    ///
-    /// \returns all the current rectangles.
+    /// Renders this object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    const QVector<QRect>& rectangles() const;
+    virtual void render() override;
+
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the big texture associated with this atlas.
+    /// Retrieves the amount of vertices for this object.
     ///
-    /// \returns the big texture.
+    /// \returns the amount of vertices.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TextureBase* texture() const;
+    uint vertexCount() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Determines whether this shape is filled.
+    ///
+    /// \returns true if filled.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isShapeFilled() const;
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Renders this primitive filled or wired.
+    ///
+    /// \param filled True to fill primitive.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setShapeFilled(bool filled);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the color that will be applied on this object.
+    ///
+    /// \param color Color to use for blending.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setColor(const QColor& color);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the colors that will be applied on this object. Note that the
+    /// amount of
+    ///
+    /// \param tl Top left vertex.
+    /// \param tr Top right vertex.
+    /// \param br Bottom right vertex.
+    /// \param bl Bottom left vertex.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setColor(const QVector<QColor>& colors);
+
+
+protected:
+
+    virtual uint renderModeWired() const = 0;
+    virtual uint renderModeFilled() const = 0;
+    bool createInternal(const QVector<QVector2D>& points, Window* renderTarget);
 
 
 private:
@@ -126,34 +146,48 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
-    void merge();
-    void split(const QRect& free, const QRect& used);
-    void drawIntoTexture(QImage img, const QRect& src);
-    int score(int width, int height, const QRect& free);
-    QRect find(int width, int height, int& index);
+    bool createBuffer();
+    auto findCenter(const QVector<QVector2D>&) -> QVector2D;
+    auto findSize(const QVector<QVector2D>&) -> QVector2D;
+    void bindObjects();
+    void releaseObjects();
+    void writeVertices();
+    void modifyProgram();
+    void modifyAttribs();
+    void drawElements();
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLFunctions* gl;
-    QVector<QRect>    m_used;
-    QVector<QRect>    m_free;
-    qint32            m_size;
-    qint64            m_usedSpace;
-    qreal             m_occupancy;
-    quint32           m_texId;
-    TextureBase*      m_texture;
+    priv::VarVertices m_vertices;
+    QOpenGLBuffer*    m_vertexBuffer;
+    QVector<QColor>   m_colorBuffer;
+    bool              m_filled;
+    bool              m_colorUpdate;
+    bool              m_update;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class TextureAtlas
+/// \class ShapeBase
 /// \ingroup Graphics
 ///
-/// More detailed description, code examples.
+/// This class is the base for all shape objects. The renderModeWired() and the
+/// renderModeFilled() expect values like GL_LINES, GL_TRIANGLES and so on.
 ///
 /// \code
-/// ...
+/// class Polygon : public ShapeBase
+/// {
+/// public:
+///
+///     bool create(...);
+///
+///
+/// protected:
+///
+///    uint renderModeWired() const override;
+///    uint renderModeFilled() const override;
+/// };
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

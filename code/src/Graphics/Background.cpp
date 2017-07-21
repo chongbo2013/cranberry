@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ CRANBERRY_USING_NAMESPACE
 
 
 Background::Background()
-    : ITexture()
+    : TextureBase()
     , m_speedScrollX(100.f)
     , m_speedScrollY(100.f)
     , m_scrollX(0.f)
@@ -102,11 +102,25 @@ void Background::startScrolling(const QVector2D& advance)
     float byX = qAbs(advance.x());
     float byY = qAbs(advance.y());
 
-    // Calculates the target position.
-    if ((m_scrollDir & MoveEast) != 0 && (m_scrollDir & MoveWest) == 0) m_targetScrollX = m_scrollX + byX;
-    else if ((m_scrollDir & MoveEast) == 0 && (m_scrollDir & MoveWest) != 0) m_targetScrollX = m_scrollX - byX;
-    if ((m_scrollDir & MoveSouth) != 0 && (m_scrollDir & MoveNorth) == 0) m_targetScrollY = m_scrollY + byY;
-    else if ((m_scrollDir & MoveSouth) == 0 && (m_scrollDir & MoveNorth) != 0) m_targetScrollY = m_scrollY - byY;
+    // Calculates the target position (x).
+    if ((m_scrollDir & MoveEast) != 0 && (m_scrollDir & MoveWest) == 0)
+    {
+        m_targetScrollX = m_scrollX + byX;
+    }
+    else if ((m_scrollDir & MoveEast) == 0 && (m_scrollDir & MoveWest) != 0)
+    {
+        m_targetScrollX = m_scrollX - byX;
+    }
+
+    // Calculates the target position (y).
+    if ((m_scrollDir & MoveSouth) != 0 && (m_scrollDir & MoveNorth) == 0)
+    {
+        m_targetScrollY = m_scrollY + byY;
+    }
+    else if ((m_scrollDir & MoveSouth) == 0 && (m_scrollDir & MoveNorth) != 0)
+    {
+        m_targetScrollY = m_scrollY - byY;
+    }
 
     if (m_scrollDir != MoveNone && m_scrollMode != ScrollNone)
     {
@@ -123,7 +137,7 @@ void Background::stopScrolling()
 
 void Background::update(const GameTime& time)
 {
-    ITexture::update(time);
+    TextureBase::update(time);
 
     // Updates the scroll value.
     if (m_isScrolling)
@@ -195,10 +209,12 @@ void Background::update(const GameTime& time)
 }
 
 
-void Background::initializeData()
+bool Background::initializeData()
 {
-    ITexture::initializeData();
+    TextureBase::initializeData();
     prepareTexture();
+
+    return true;
 }
 
 
@@ -242,23 +258,4 @@ void Background::updateUVs()
     vertices().at(1).uv(+uvW, -uvY);
     vertices().at(2).uv(+uvW, +uvH);
     vertices().at(3).uv(-uvX, +uvH);
-}
-
-
-Background::operator QString() const
-{
-    QString s;
-    QString vx = " x=" + QString::number(m_view.x());
-    QString vy = " y=" + QString::number(m_view.y());
-    QString vw = " w=" + QString::number(m_view.width());
-    QString vh = " h=" + QString::number(m_view.height());
-    QString sx = " x=" + QString::number(m_scrollX);
-    QString sy = " y=" + QString::number(m_scrollY);
-
-    s.append(ITexture::operator QString());
-    s.append("-- Background\n");
-    s.append(QString("View:") + vx + vy + vw + vh + "\n");
-    s.append(QString("Scroll position:") + sx + sy + "\n\n");
-
-    return s;
 }

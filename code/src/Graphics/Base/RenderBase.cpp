@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/Game/Game.hpp>
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
@@ -30,39 +30,40 @@
 #include <QApplication>
 #include <QOpenGLFunctions>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - The given render target is invalid.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - There is no default shader program.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Cannot render invalid object.")
 
 
-IRenderable::IRenderable()
-    : gl(nullptr)
+CRANBERRY_USING_NAMESPACE
+
+
+RenderBase::RenderBase()
+    : TransformBase()
+    , gl(nullptr)
     , m_renderTarget(nullptr)
     , m_defaultProgram(nullptr)
     , m_customProgram(nullptr)
-    , m_name("<no name>")
+    , m_name("{no_name}")
     , m_osRenderer(0)
 {
 }
 
 
-IRenderable::~IRenderable()
+RenderBase::~RenderBase()
 {
     destroy();
 }
 
 
-bool IRenderable::isNull() const
+bool RenderBase::isNull() const
 {
     return m_renderTarget == nullptr;
 }
 
 
-bool IRenderable::create(Window* renderTarget)
+bool RenderBase::create(Window* renderTarget)
 {
     if (renderTarget == nullptr)
     {
@@ -75,13 +76,12 @@ bool IRenderable::create(Window* renderTarget)
     gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
     m_emitter.emitCreated();
-    makeCurrent();
 
-    return true;
+    return makeCurrent();
 }
 
 
-void IRenderable::destroy()
+void RenderBase::destroy()
 {
     m_customProgram = nullptr;
     m_renderTarget = nullptr;
@@ -89,41 +89,38 @@ void IRenderable::destroy()
 }
 
 
-void IRenderable::makeCurrent()
+bool RenderBase::makeCurrent()
 {
     auto* cc = QOpenGLContext::currentContext();
     if (cc != renderTarget()->context() || cc->surface() != renderTarget())
     {
         renderTarget()->makeCurrent();
     }
-}
 
-
-bool IRenderable::prepareRendering()
-{
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_03));
-
-#ifndef QT_DEBUG
-        Game::instance()->exit(CRANBERRY_EXIT_FATAL);
-#endif
-
-        return false;
-    }
-
-    makeCurrent();
     return true;
 }
 
 
-Window* IRenderable::renderTarget() const
+bool RenderBase::prepareRendering()
+{
+    if (Q_UNLIKELY(isNull()))
+    {
+        cranError(ERRARG(e_03));
+        if_debug(Game::instance()->exit(CRANBERRY_EXIT_FATAL));
+        return false;
+    }
+
+    return makeCurrent();
+}
+
+
+Window* RenderBase::renderTarget() const
 {
     return m_renderTarget;
 }
 
 
-OpenGLShader* IRenderable::shaderProgram() const
+OpenGLShader* RenderBase::shaderProgram() const
 {
     if (Q_UNLIKELY(m_defaultProgram == nullptr))
     {
@@ -135,64 +132,45 @@ OpenGLShader* IRenderable::shaderProgram() const
 }
 
 
-const QString& IRenderable::name() const
+const QString& RenderBase::name() const
 {
     return m_name;
 }
 
 
-void IRenderable::setShaderProgram(OpenGLShader* program)
+void RenderBase::setShaderProgram(OpenGLShader* program)
 {
     m_customProgram = program;
 }
 
 
-void IRenderable::setDefaultShaderProgram(OpenGLShader* program)
+void RenderBase::setDefaultShaderProgram(OpenGLShader* program)
 {
     m_defaultProgram = program;
 }
 
 
-uint IRenderable::offscreenRenderer() const
+uint RenderBase::offscreenRenderer() const
 {
     return m_osRenderer;
 }
 
 
-void IRenderable::setOffscreenRenderer(uint fbo)
+void RenderBase::setOffscreenRenderer(uint fbo)
 {
     m_osRenderer = fbo;
 }
 
 
-void IRenderable::setName(const QString& name)
+void RenderBase::setName(const QString& name)
 {
     m_name = name;
 }
 
 
-RenderableEmitter* IRenderable::renderableEmitter()
+RenderableEmitter* RenderBase::renderableEmitter()
 {
     return &m_emitter;
-}
-
-
-IRenderable::operator QString() const
-{
-    QString s;
-
-    s.append("--------------------------------------------------------\n");
-    s.append("--- Cranberry object\n");
-    s.append("-- Renderable\n");
-    s.append(QString("Name: ") + m_name + "\n");
-    s.append(QString("Is valid: ") + ((isNull())? "false\n" : "true\n"));
-
-    if (!isNull())
-    {
-        s.append(QString("Render target: " + m_renderTarget->settings().title() + "\n\n"));
-    }
-
-    return s;
 }
 
 

@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IAnimation.hpp>
+#include <Cranberry/Graphics/Base/AnimationBase.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT RawAnimation final : public IAnimation
+class CRANBERRY_GRAPHICS_EXPORT RawAnimation final : public AnimationBase
 {
 public:
 
@@ -79,7 +79,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     bool createRawAnimation(
             const QVector<QImage> &images,
-            const QVector<Frame> &frames,
+            const QVector<AnimationFrame> &frames,
             Window *renderTarget = nullptr
             );
 };

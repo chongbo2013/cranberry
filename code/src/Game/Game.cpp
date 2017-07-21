@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -36,8 +36,9 @@
 CRANBERRY_USING_NAMESPACE
 
 
+// Global variables
 CRANBERRY_GLOBAL_VAR_A(QApplication*, g_application, nullptr)
-CRANBERRY_GLOBAL_VAR_A(Game*, g_instance, nullptr)
+CRANBERRY_GLOBAL_VAR_A(Game*,         g_instance,    nullptr)
 
 
 void cranberryGlobalSignalHandler(int)
@@ -65,9 +66,7 @@ Game::Game(int& argc, char* argv[])
     std::signal(SIGFPE, &cranberryGlobalSignalHandler);
     std::signal(SIGILL, &cranberryGlobalSignalHandler);
 
-#ifdef QT_DEBUG
-    cranberryLogo();
-#endif
+    printCranberryLogo();
 }
 
 
@@ -77,7 +76,6 @@ Game::~Game()
     {
         g_application->closeAllWindows();
         g_application->exit(CRANBERRY_EXIT_NORMAL);
-        m_isRunning = false;
     }
 
     delete g_application;
@@ -145,12 +143,11 @@ void Game::exit(int exitCode)
         }
     }
 
-    m_windows.clear();
-
     if (m_isRunning)
     {
         g_application->closeAllWindows();
         g_application->exit(exitCode);
+
         m_isRunning = false;
     }
 }
@@ -162,9 +159,9 @@ Game* Game::instance()
 }
 
 
-#ifdef QT_DEBUG
-void Game::cranberryLogo()
+void Game::printCranberryLogo()
 {
+#ifdef QT_DEBUG
     qDebug() << "-------------------------------------------------------";
     qDebug() << "Cranberry - C++ game engine based on the Qt5 framework.";
     qDebug() << "Copyright (C) 2017 Nicolas Kogler";
@@ -192,5 +189,5 @@ void Game::cranberryLogo()
     qDebug() << "          `8b:!!!:Yb!!!!:::::!d88";
     qDebug() << "              \"\"\"  Y88!!!!!!!d8P";
     qDebug() << "                      \"\"\"\"\"\"\"\n\n";
-}
 #endif
+}

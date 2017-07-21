@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -25,16 +25,12 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
-#include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Graphics/Base/SpriteMovement.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/System/Receivers/SpriteReceiver.hpp>
 
 // Qt headers
 #include <QHash>
-
-
-// Forward declarations
-CRANBERRY_FORWARD_C(RawAnimation)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -48,41 +44,15 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Sprite
-    : public IRenderable
-    , public ITransformable
+class CRANBERRY_GRAPHICS_EXPORT Sprite final : public RenderBase
 {
 public:
-
-    struct Movement
-    {
-        QString name;
-        qreal advanceX;
-        qreal advanceY;
-        qreal totalTime;
-        QRectF idle;
-        MovementMode mode;
-        RawAnimation* anim;
-
-        ~Movement();
-    };
-
 
     CRANBERRY_DISABLE_COPY(Sprite)
     CRANBERRY_DISABLE_MOVE(Sprite)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of Sprite and sets all members to their
-    /// logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
     Sprite();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Last resort to destroy any OpenGL resources.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    ~Sprite();
+   ~Sprite();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -215,14 +185,16 @@ public:
 
 private:
 
+    typedef QHash<QString, SpriteMovement*> MovementMap;
+
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    SpriteReceiver            m_receiver;
-    QHash<QString, Movement*> m_movements;
-    Movement*                 m_currentMove;
-    bool                      m_isRunning;
-    bool                      m_isBlocking;
+    SpriteReceiver  m_receiver;
+    MovementMap     m_movements;
+    SpriteMovement* m_currentMove;
+    bool            m_isRunning;
+    bool            m_isBlocking;
 };
 
 

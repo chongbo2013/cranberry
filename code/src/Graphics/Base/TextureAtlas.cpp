@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ TextureAtlas::TextureAtlas(int size, Window* renderTarget)
     : m_size(size)
     , m_usedSpace(0)
     , m_occupancy(0.0)
-    , m_texture(new ITexture)
+    , m_texture(new TextureBase)
 {
     if (renderTarget == nullptr)
     {
@@ -82,7 +82,7 @@ TextureAtlas::TextureAtlas(const QImage& img, Window* renderTarget)
     : m_size(img.size().width())
     , m_usedSpace(0)
     , m_occupancy(1.0)
-    , m_texture(new ITexture)
+    , m_texture(new TextureBase)
 {
     if (renderTarget == nullptr)
     {
@@ -148,7 +148,7 @@ const QVector<QRect>& TextureAtlas::rectangles() const
 }
 
 
-ITexture* TextureAtlas::texture() const
+TextureBase* TextureAtlas::texture() const
 {
     return m_texture;
 }

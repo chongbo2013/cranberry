@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -43,11 +43,10 @@ CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 
 
 Text::Text()
-    : IRenderable()
-    , ITransformable()
+    : RenderBase()
     , m_textPen(new QPen(Qt::white))
     , m_outlineBrush(new QBrush(Qt::black))
-    , m_texture(new ITexture)
+    , m_texture(new TextureBase)
     , m_outlineWidth(0)
     , m_columnLimit(-1)
     , m_rowLimit(-1)
@@ -150,7 +149,7 @@ void Text::setOutlineWidth(int width)
 
 bool Text::create(Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     return true;
@@ -161,7 +160,7 @@ void Text::destroy()
 {
     if (!m_texture->isNull()) m_texture->destroy();
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
@@ -171,18 +170,17 @@ void Text::update(const GameTime& time)
 
     // Copies all transformations.
     m_texture->setShaderProgram(shaderProgram());
-    m_texture->setPosition(pos());
-    m_texture->setAngle(angle());
-    m_texture->setOpacity(opacity());
-    m_texture->setScale(scaleX(), scaleY());
+    m_texture->copyTransform(this, m_texture);
 }
 
 
 void Text::render()
 {
-    if (!IRenderable::prepareRendering()) return;
-
-    if (m_textUpdate)
+    if (!RenderBase::prepareRendering())
+    {
+        return;
+    }
+    else if (m_textUpdate)
     {
         updateTexture();
         m_textUpdate = false;
@@ -256,8 +254,8 @@ void Text::resizeTexture(QSizeF base)
 
     m_texture->texture()->release();
     m_texture->setSize(w, h);
-    m_texture->setOrigin({ w / 2, h / 2 });
-    m_texture->setSourceRectangle({ 0, 0, w, h });
+    m_texture->setOrigin(w / 2.0, h / 2.0);
+    m_texture->setSourceRectangle(0.0, 0.0, w, h);
     m_lastWidth = w;
     m_lastHeight = h;
 }
@@ -353,28 +351,4 @@ QSizeF Text::measureText()
     if ((sz.height() % 2) != 0) sz.rheight() += 1;
 
     return sz;
-}
-
-
-Text::operator QString() const
-{
-    QString s;
-    QString cr = " r=" + QString::number(m_textPen->color().red());
-    QString cg = " g=" + QString::number(m_textPen->color().green());
-    QString cb = " b=" + QString::number(m_textPen->color().blue());
-    QString ca = " a=" + QString::number(m_textPen->color().alpha());
-    QString dr = " r=" + QString::number(m_outlineBrush->color().red());
-    QString dg = " g=" + QString::number(m_outlineBrush->color().green());
-    QString db = " b=" + QString::number(m_outlineBrush->color().blue());
-    QString da = " a=" + QString::number(m_outlineBrush->color().alpha());
-
-    s.append(IRenderable::operator QString());
-    s.append(ITransformable::operator QString());
-    s.append("-- Text\n");
-    s.append(QString("Text: ") + m_text + "\n");
-    s.append(QString("Color:") + cr + cg + cb + ca + "\n");
-    s.append(QString("Outline width: ") + QString::number(m_outlineWidth) + "\n");
-    s.append(QString("Outline color:" + dr + dg + db + da + "\n\n"));
-
-    return s;
 }

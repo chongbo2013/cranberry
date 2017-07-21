@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IShape.hpp>
+#include <Cranberry/Graphics/Base/ShapeBase.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
@@ -32,16 +32,15 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 
+// Constants
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
+CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Color count does not match vertex count.")
+
 
 CRANBERRY_USING_NAMESPACE
 
 
-CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
-CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Cannot render invalid object.")
-CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Color count does not match vertex count.")
-
-
-IShape::IShape()
+ShapeBase::ShapeBase()
     : m_vertexBuffer(nullptr)
     , m_filled(false)
     , m_colorUpdate(false)
@@ -50,45 +49,44 @@ IShape::IShape()
 }
 
 
-IShape::~IShape()
+ShapeBase::~ShapeBase()
 {
     destroy();
 }
 
 
-bool IShape::isNull() const
+bool ShapeBase::isNull() const
 {
-    return IRenderable::isNull()     ||
+    return RenderBase::isNull()      ||
            m_vertexBuffer == nullptr ||
           !m_vertexBuffer->isCreated();
 }
 
 
-void IShape::destroy()
+void ShapeBase::destroy()
 {
-    if (m_vertexBuffer != nullptr)
-    {
-        m_vertexBuffer->destroy();
-        delete m_vertexBuffer;
-        m_vertexBuffer = nullptr;
-    }
+    delete m_vertexBuffer;
 
+    m_vertexBuffer = nullptr;
     m_colorBuffer.clear();
     m_update = false;
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
-void IShape::update(const GameTime& time)
+void ShapeBase::update(const GameTime& time)
 {
     updateTransform(time);
 }
 
 
-void IShape::render()
+void ShapeBase::render()
 {
-    if (!prepareRendering()) return;
+    if (!prepareRendering())
+    {
+        return;
+    }
 
     bindObjects();
     writeVertices();
@@ -99,25 +97,25 @@ void IShape::render()
 }
 
 
-uint IShape::vertexCount() const
+uint ShapeBase::vertexCount() const
 {
     return m_vertices.size();
 }
 
 
-bool IShape::isShapeFilled() const
+bool ShapeBase::isShapeFilled() const
 {
     return m_filled;
 }
 
 
-void IShape::setShapeFilled(bool filled)
+void ShapeBase::setShapeFilled(bool filled)
 {
     m_filled = filled;
 }
 
 
-void IShape::setColor(const QColor& color)
+void ShapeBase::setColor(const QColor& color)
 {
     m_colorBuffer.clear();
     m_colorBuffer.append(color);
@@ -126,11 +124,11 @@ void IShape::setColor(const QColor& color)
 }
 
 
-void IShape::setColor(const QVector<QColor>& colors)
+void ShapeBase::setColor(const QVector<QColor>& colors)
 {
     if (colors.size() != (int) m_vertices.size())
     {
-        cranError(ERRARG(e_03));
+        cranError(ERRARG(e_02));
         return;
     }
 
@@ -140,10 +138,16 @@ void IShape::setColor(const QVector<QColor>& colors)
 }
 
 
-bool IShape::createInternal(const QVector<QVector2D>& points, Window* rt)
+bool ShapeBase::createInternal(const QVector<QVector2D>& points, Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
-    if (!createBuffer()) return false;
+    if (!RenderBase::create(rt))
+    {
+        return false;
+    }
+    else if (!createBuffer())
+    {
+        return false;
+    }
 
     // Allocates as much data as we need to store all points.
     m_vertexBuffer->allocate(priv::Vertex::size() * points.size());
@@ -167,22 +171,21 @@ bool IShape::createInternal(const QVector<QVector2D>& points, Window* rt)
 }
 
 
-bool IShape::createBuffer()
+bool ShapeBase::createBuffer()
 {
     // Attempts to create the buffer holding the vertex data.
     m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
     if (!m_vertexBuffer->create() || !m_vertexBuffer->bind())
     {
         return cranError(ERRARG(e_01));
     }
 
-    m_vertexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
-
     return true;
 }
 
 
-QVector2D IShape::findCenter(const QVector<QVector2D>& points)
+QVector2D ShapeBase::findCenter(const QVector<QVector2D>& points)
 {
     QVector2D center;
     qreal signedArea = 0.0, x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0, a = 0.0;
@@ -221,19 +224,19 @@ QVector2D IShape::findCenter(const QVector<QVector2D>& points)
 }
 
 
-QVector2D IShape::findSize(const QVector<QVector2D>& points)
+QVector2D ShapeBase::findSize(const QVector<QVector2D>& points)
 {
     auto extremeX = std::minmax_element(
-                points.begin(), points.end(),
-                [] (const QVector2D& l, const QVector2D& r) {
-                    return l.x() < r.x();
-                });
+            points.begin(), points.end(),
+            [] (const QVector2D& l, const QVector2D& r) {
+                return l.x() < r.x();
+            });
 
     auto extremeY = std::minmax_element(
-                points.begin(), points.end(),
-                [] (const QVector2D& l, const QVector2D& r) {
-                    return l.y() < r.y();
-                });
+            points.begin(), points.end(),
+            [] (const QVector2D& l, const QVector2D& r) {
+                return l.y() < r.y();
+            });
 
     QVector2D upperLeft(extremeX.first->x(), extremeY.first->y());
     QVector2D lowerRight(extremeX.second->x(), extremeY.second->y());
@@ -242,21 +245,21 @@ QVector2D IShape::findSize(const QVector<QVector2D>& points)
 }
 
 
-void IShape::bindObjects()
+void ShapeBase::bindObjects()
 {
     glDebug(m_vertexBuffer->bind());
     glDebug(shaderProgram()->program()->bind());
 }
 
 
-void IShape::releaseObjects()
+void ShapeBase::releaseObjects()
 {
     glDebug(m_vertexBuffer->release());
     glDebug(shaderProgram()->program()->release());
 }
 
 
-void IShape::writeVertices()
+void ShapeBase::writeVertices()
 {
     if (m_update || m_colorUpdate)
     {
@@ -275,9 +278,9 @@ void IShape::writeVertices()
 
         // Uploads the vertex data.
         glDebug(m_vertexBuffer->write(
-                    0, m_vertices.data(),
-                    priv::Vertex::size() * vertexCount())
-                    );
+                0, m_vertices.data(),
+                priv::Vertex::size() * vertexCount())
+                );
 
         m_update = false;
         m_colorUpdate = false;
@@ -285,7 +288,7 @@ void IShape::writeVertices()
 }
 
 
-void IShape::modifyProgram()
+void ShapeBase::modifyProgram()
 {
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
@@ -296,7 +299,7 @@ void IShape::modifyProgram()
 }
 
 
-void IShape::modifyAttribs()
+void ShapeBase::modifyAttribs()
 {
     glDebug(gl->glVertexAttribPointer(
                 priv::Vertex::xyzAttrib(),
@@ -318,24 +321,11 @@ void IShape::modifyAttribs()
 }
 
 
-void IShape::drawElements()
+void ShapeBase::drawElements()
 {
-    uint mode = (m_filled) ? renderModeFilled() : renderModeWired();
+    uint mode = (m_filled)
+              ? renderModeFilled()
+              : renderModeWired();
+
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
-}
-
-
-IShape::operator QString() const
-{
-    QString s;
-    uint m = (m_filled) ? renderModeFilled() : renderModeWired();
-
-    s.append(IRenderable::operator QString());
-    s.append(ITransformable::operator QString());
-    s.append("-- Shape\n");
-    s.append(QString("Vertex count: ") + QString::number(vertexCount()) + "\n");
-    s.append(QString("Is filled: ") + ((m_filled) ? "true\n" : "false\n"));
-    s.append(QString("Render mode: ") + QString::number(m) + "\n\n");
-
-    return s;
 }

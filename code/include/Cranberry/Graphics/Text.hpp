@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -25,12 +25,11 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 
 // Qt headers
 #include <QFont>
 #include <QTextOption>
-
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QPen)
@@ -55,9 +54,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Text
-    : public IRenderable
-    , public ITransformable
+class CRANBERRY_GRAPHICS_EXPORT Text : public RenderBase
 {
 public:
 
@@ -233,15 +230,6 @@ public:
     void render() override;
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the string representation of this object.
-    ///
-    /// \returns the string representation.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    operator QString() const;
-
-
 private:
 
     ////////////////////////////////////////////////////////////////////////////
@@ -263,7 +251,7 @@ private:
     QPen*         m_textPen;
     QBrush*       m_outlineBrush;
     QTextOption   m_options;
-    ITexture*     m_texture;
+    TextureBase*  m_texture;
     int           m_outlineWidth;
     int           m_columnLimit;
     int           m_rowLimit;

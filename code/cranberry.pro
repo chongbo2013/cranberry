@@ -12,7 +12,7 @@
 ##
 ################################################################################
 QT             +=       widgets gamepad qml quick
-CONFIG         +=       c++11 exceptions
+CONFIG         +=       c++11 exceptions no_keywords
 DEFINES        +=       CRANBERRY_BUILD
 DEFINES        +=       CRANBERRY_VERSION=\\\"1.0.0\\\"
 TEMPLATE        =       lib
@@ -76,16 +76,11 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
                     include/Cranberry/Window/Window.hpp \
-                    include/Cranberry/Graphics/Base/IRenderable.hpp \
-                    include/Cranberry/Graphics/Base/ITransformable.hpp \
-                    include/Cranberry/Graphics/Base/ITexture.hpp \
                     include/Cranberry/Graphics/Base/Enumerations.hpp \
                     include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Graphics/Base/TextureAtlas.hpp \
-                    include/Cranberry/Graphics/Base/IAnimation.hpp \
                     include/Cranberry/Graphics/GifAnimation.hpp \
                     include/Cranberry/Graphics/CranAnimation.hpp \
-                    include/Cranberry/Graphics/Base/IShape.hpp \
                     include/Cranberry/Graphics/Polygon.hpp \
                     include/Cranberry/Graphics/Ellipse.hpp \
                     include/Cranberry/Graphics/Text.hpp \
@@ -93,7 +88,14 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Sprite.hpp \
                     include/Cranberry/Graphics/RawAnimation.hpp \
                     include/Cranberry/Game/Game.hpp \
-                    include/Cranberry/Gui/GuiManager.hpp
+                    include/Cranberry/Gui/GuiManager.hpp \
+    include/Cranberry/Graphics/Base/AnimationFrame.hpp \
+    include/Cranberry/Graphics/Base/AnimationBase.hpp \
+    include/Cranberry/Graphics/Base/RenderBase.hpp \
+    include/Cranberry/Graphics/Base/ShapeBase.hpp \
+    include/Cranberry/Graphics/Base/TextureBase.hpp \
+    include/Cranberry/Graphics/Base/TransformBase.hpp \
+    include/Cranberry/Graphics/Base/SpriteMovement.hpp
 
 
 ################################################################################
@@ -118,15 +120,10 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
                     src/Window/Window.cpp \
-                    src/Graphics/Base/IRenderable.cpp \
-                    src/Graphics/Base/ITransformable.cpp \
                     src/Graphics/Background.cpp \
-                    src/Graphics/Base/ITexture.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
-                    src/Graphics/Base/IAnimation.cpp \
                     src/Graphics/GifAnimation.cpp \
                     src/Graphics/CranAnimation.cpp \
-                    src/Graphics/Base/IShape.cpp \
                     src/Graphics/Polygon.cpp \
                     src/Graphics/Ellipse.cpp \
                     src/Graphics/Text.cpp \
@@ -134,7 +131,14 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Sprite.cpp \
                     src/Graphics/RawAnimation.cpp \
                     src/Game/Game.cpp \
-                    src/Gui/GuiManager.cpp
+                    src/Gui/GuiManager.cpp \
+    src/Graphics/Base/AnimationFrame.cpp \
+    src/Graphics/Base/AnimationBase.cpp \
+    src/Graphics/Base/RenderBase.cpp \
+    src/Graphics/Base/ShapeBase.cpp \
+    src/Graphics/Base/TextureBase.cpp \
+    src/Graphics/Base/TransformBase.cpp \
+    src/Graphics/Base/SpriteMovement.cpp
 
 ################################################################################
 ## OUTPUT

@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,199 +20,188 @@
 
 
 #pragma once
-#ifndef CRANBERRY_ISHAPE_HPP
-#define CRANBERRY_ISHAPE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_SPRITEMOVEMENT_HPP
+#define CRANBERRY_GRAPHICS_BASE_SPRITEMOVEMENT_HPP
 
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
-#include <Cranberry/Graphics/Base/ITransformable.hpp>
-#include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
 // Qt headers
-#include <QMatrix4x4>
-
+#include <QRectF>
+#include <QString>
 
 // Forward declarations
-CRANBERRY_FORWARD_Q(QOpenGLBuffer)
+CRANBERRY_FORWARD_C(RawAnimation)
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Defines the base class for rendering primitives.
+/// Defines one movement consisting of multiple frames for a sprite.
 ///
-/// \class IShape
+/// \class SpriteMovement
 /// \author Nicolas Kogler
-/// \date July 5, 2017
+/// \date July 22, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IShape
-    : public IRenderable
-    , public ITransformable
+class CRANBERRY_GRAPHICS_EXPORT SpriteMovement final
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(IShape)
-    CRANBERRY_DISABLE_MOVE(IShape)
+    CRANBERRY_DEFAULT_COPY(SpriteMovement)
+    CRANBERRY_DEFAULT_MOVE(SpriteMovement)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the ITexture class and sets all members
-    /// to their logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    IShape();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destroys this texture. Last resort for releasing all OpenGL resources
-    /// before the context will eventually be destroyed.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual ~IShape();
+    SpriteMovement();
+   ~SpriteMovement();
 
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Reimplements IRenderable::isNull(). Adds the condition that the
-    /// vertex buffer is valid.
+    /// Retrieves the name of this movement.
     ///
-    /// \returns true if the object is invalid.
+    /// \returns the movement's name.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual bool isNull() const override;
+    const QString& name() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Destroys all OpenGL resources allocated for this object.
+    /// Retrieves the idle frame rectangle.
+    ///
+    /// \returns the idle frame.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void destroy() override;
+    const QRectF& idleFrame() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Updates the transformations of this object.
+    /// Retrieves the horizontal advance, in pixels.
     ///
-    /// \param time Contains the delta time.
+    /// \returns the horizontal advance.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void update(const GameTime& time) override;
+    qreal horizontalAdvance() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Renders this object.
+    /// Retrieves the vertical advance, in pixels.
+    ///
+    /// \returns the vertical advance.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void render() override;
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the amount of vertices for this object.
-    ///
-    /// \returns the amount of vertices.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    uint vertexCount() const;
+    qreal verticalAdvance() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether this shape is filled.
+    /// Retrieves the total movement duration.
     ///
-    /// \returns true if filled.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool isShapeFilled() const;
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Renders this primitive filled or wired.
-    ///
-    /// \param filled True to fill primitive.
+    /// \returns the total duration.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setShapeFilled(bool filled);
+    qreal totalDuration() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the color that will be applied on this object.
+    /// Retrieves the movement mode.
     ///
-    /// \param color Color to use for blending.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setColor(const QColor& color);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the colors that will be applied on this object. Note that the
-    /// amount of
-    ///
-    /// \param tl Top left vertex.
-    /// \param tr Top right vertex.
-    /// \param br Bottom right vertex.
-    /// \param bl Bottom left vertex.
+    /// \returns the movement mode.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setColor(const QVector<QColor>& colors);
-
+    MovementMode mode() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the string representation of this object.
+    /// Retrieves the underlying raw animation.
     ///
-    /// \returns the string representation.
+    /// \returns the animation.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    operator QString() const;
+    RawAnimation* animation() const;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the movement name.
+    ///
+    /// \param name New name of movement.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setName(const QString& name);
 
-protected:
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the idle frame rectangle.
+    ///
+    /// \param frame Idle frame.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setIdleFrame(const QRectF& frame);
 
-    virtual uint renderModeWired() const = 0;
-    virtual uint renderModeFilled() const = 0;
-    bool createInternal(const QVector<QVector2D>& points, Window* renderTarget);
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the idle frame rectangle.
+    ///
+    /// \param x X-position.
+    /// \param y Y-position.
+    /// \param width Frame width.
+    /// \param height Frame height.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setIdleFrame(qreal x, qreal y, qreal width, qreal height);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the horizontal advance, in pixels.
+    ///
+    /// \param amount Horizontal advance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setHorizontalAdvance(qreal amount);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the vertical advance, in pixels.
+    ///
+    /// \param amount Vertical advance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setVerticalAdvance(qreal amount);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the horizontal advance, in seconds.
+    ///
+    /// \param total Seconds the movement persists.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setTotalDuration(qreal total);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the movement mode.
+    ///
+    /// \param mode Movement mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setMovementMode(MovementMode mode);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the raw animation. Takes ownership of the animation and
+    /// destroys it upon disposal.
+    ///
+    /// \param anim Animation to set.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setRawAnimation(RawAnimation* anim);
 
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Helpers
-    ////////////////////////////////////////////////////////////////////////////
-    bool createBuffer();
-    auto findCenter(const QVector<QVector2D>&) -> QVector2D;
-    auto findSize(const QVector<QVector2D>&) -> QVector2D;
-    void bindObjects();
-    void releaseObjects();
-    void writeVertices();
-    void modifyProgram();
-    void modifyAttribs();
-    void drawElements();
-
-    ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    priv::VarVertices   m_vertices;
-    QOpenGLBuffer*      m_vertexBuffer;
-    QVector<QColor>     m_colorBuffer;
-    bool                m_filled;
-    bool                m_colorUpdate;
-    bool                m_update;
+    QString       m_name;
+    QRectF        m_rect;
+    qreal         m_advanceX;
+    qreal         m_advanceY;
+    qreal         m_duration;
+    MovementMode  m_mode;
+    RawAnimation* m_anim;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class IShape
+/// \class SpriteMovement
 /// \ingroup Graphics
 ///
-/// This class is the base for all shape objects. The renderModeWired() and the
-/// renderModeFilled() expect values like GL_LINES, GL_TRIANGLES and so on.
-///
-/// \code
-/// class Polygon : public IShape
-/// {
-/// public:
-///
-///     bool create(...);
-///
-///
-/// protected:
-///
-///    uint renderModeWired() const override;
-///    uint renderModeFilled() const override;
-/// };
-/// \endcode
+/// You will usually not need this class.
 ///
 ////////////////////////////////////////////////////////////////////////////////
 

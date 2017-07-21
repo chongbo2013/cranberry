@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt5 framework.
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_ITRANSFORMABLE_HPP
-#define CRANBERRY_ITRANSFORMABLE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_TRANSFORMBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_TRANSFORMBASE_HPP
 
 
 // Cranberry headers
@@ -34,9 +34,8 @@
 #include <QMatrix4x4>
 #include <QVector2D>
 
-
 // Forward declarations
-CRANBERRY_FORWARD_C(IRenderable)
+CRANBERRY_FORWARD_C(RenderBase)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -45,25 +44,25 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 /// Provides functions for rotating, scaling, moving and fading objects.
 ///
-/// \class ITransformable
+/// \class TransformBase
 /// \author Nicolas Kogler
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT ITransformable
+class CRANBERRY_GRAPHICS_EXPORT TransformBase
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(ITransformable)
-    CRANBERRY_DISABLE_COPY(ITransformable)
-    CRANBERRY_DISABLE_MOVE(ITransformable)
+    CRANBERRY_DEFAULT_DTOR(TransformBase)
+    CRANBERRY_DISABLE_COPY(TransformBase)
+    CRANBERRY_DISABLE_MOVE(TransformBase)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the ITransformable class and resets the
+    /// Initializes a new instance of the TransformBase class and resets the
     /// members to their logical default values.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    ITransformable();
+    TransformBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -204,7 +203,7 @@ public:
     /// \returns the transformation matrix.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QMatrix4x4 matrix(IRenderable* obj) const;
+    QMatrix4x4 matrix(RenderBase* obj) const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the move direction of the object.
@@ -482,6 +481,16 @@ public:
     void setSize(const QSizeF& size);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Copies all transformations from one base to another.
+    ///
+    /// \param src Source transformation base.
+    /// \param dst Destination transformation base.
+    /// \param copySize Should size also be copied?
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void copyTransform(TransformBase* src, TransformBase* dst, bool copySize = false);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Moves the object by \p advanceX in the X-direction and by \p advanceY
     /// in the Y-direction.
     ///
@@ -597,15 +606,6 @@ public:
     void stopFading();
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the string representation of this object.
-    ///
-    /// \returns the string representation.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    operator QString() const;
-
-
 protected:
 
     ////////////////////////////////////////////////////////////////////////////
@@ -683,7 +683,7 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class ITransformable
+/// \class TransformBase
 /// \ingroup Graphics
 ///
 /// This class is capable of applying all kinds of transformations on an object.

@@ -26,7 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Text.hpp>
-#include <Cranberry/Graphics/Base/ITexture.hpp>
+#include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 
@@ -58,7 +58,7 @@ private slots:
 
 private:
 
-    ITexture* m_texture;
+    TextureBase* m_texture;
     Text*     m_linkText;
 
     Q_OBJECT
