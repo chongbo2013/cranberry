@@ -136,12 +136,12 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLFunctions* gl;
-    QVector<QRect> m_used;
-    QVector<QRect> m_free;
-    qint32         m_size;
-    qint64         m_usedSpace;
-    qreal          m_occupancy;
-    quint32        m_texId;
+    QVector<QRect>    m_used;
+    QVector<QRect>    m_free;
+    qint32            m_size;
+    qint64            m_usedSpace;
+    qreal             m_occupancy;
+    quint32           m_texId;
     TextureBase*      m_texture;
 };
 

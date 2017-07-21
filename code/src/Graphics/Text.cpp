@@ -44,7 +44,6 @@ CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 
 Text::Text()
     : RenderBase()
-    , TransformBase()
     , m_textPen(new QPen(Qt::white))
     , m_outlineBrush(new QBrush(Qt::black))
     , m_texture(new TextureBase)

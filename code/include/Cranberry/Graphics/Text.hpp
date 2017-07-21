@@ -55,9 +55,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Text
-    : public RenderBase
-    , public TransformBase
+class CRANBERRY_GRAPHICS_EXPORT Text : public RenderBase
 {
 public:
 
@@ -263,7 +261,7 @@ private:
     QPen*         m_textPen;
     QBrush*       m_outlineBrush;
     QTextOption   m_options;
-    TextureBase*     m_texture;
+    TextureBase*  m_texture;
     int           m_outlineWidth;
     int           m_columnLimit;
     int           m_rowLimit;

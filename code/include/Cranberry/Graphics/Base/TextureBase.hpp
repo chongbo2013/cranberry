@@ -27,7 +27,6 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
 // Qt headers
@@ -50,9 +49,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT TextureBase
-    : public RenderBase
-    , public TransformBase
+class CRANBERRY_GRAPHICS_EXPORT TextureBase : public RenderBase
 {
 public:
 

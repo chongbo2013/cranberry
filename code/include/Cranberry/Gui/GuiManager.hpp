@@ -26,7 +26,6 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/System/Receivers/GuiManagerReceiver.hpp>
 
 
@@ -53,9 +52,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 18, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GUI_EXPORT GuiManager
-    : public RenderBase
-    , public TransformBase
+class CRANBERRY_GUI_EXPORT GuiManager : public RenderBase
 {
 public:
 

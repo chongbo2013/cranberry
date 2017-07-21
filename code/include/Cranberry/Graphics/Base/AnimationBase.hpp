@@ -28,7 +28,6 @@
 #include <Cranberry/Graphics/Base/AnimationFrame.hpp>
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/Graphics/Base/TextureAtlas.hpp>
 #include <Cranberry/System/Emitters/AnimationEmitter.hpp>
 
@@ -48,9 +47,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT AnimationBase
-        : public RenderBase
-        , public TransformBase
+class CRANBERRY_GRAPHICS_EXPORT AnimationBase : public RenderBase
 {
 public:
 

@@ -36,7 +36,6 @@ CRANBERRY_USING_NAMESPACE
 
 AnimationBase::AnimationBase()
     : RenderBase()
-    , TransformBase()
     , m_mode(AnimateOnce)
     , m_currentFrame(nullptr)
     , m_elapsedTime(0.0)

@@ -25,6 +25,7 @@
 
 
 // Cranberry headers
+#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/System/GameTime.hpp>
 #include <Cranberry/System/Emitters/RenderableEmitter.hpp>
 
@@ -45,7 +46,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT RenderBase
+class CRANBERRY_GRAPHICS_EXPORT RenderBase : public TransformBase
 {
 public:
 
@@ -234,7 +235,7 @@ extern QString cranResourcePath(const QString& src);
 /// provides the render target, the shader program and the OpenGL functions.
 ///
 /// \code
-/// class MyObject : public IRenderable
+/// class MyObject : public RenderBase
 /// {
 /// public:
 ///     bool isNull() const override;

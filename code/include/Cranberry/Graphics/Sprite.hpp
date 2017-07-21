@@ -26,7 +26,6 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/System/Receivers/SpriteReceiver.hpp>
 
 // Qt headers
@@ -48,9 +47,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Sprite
-    : public RenderBase
-    , public TransformBase
+class CRANBERRY_GRAPHICS_EXPORT Sprite : public RenderBase
 {
 public:
 

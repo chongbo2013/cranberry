@@ -41,7 +41,8 @@ CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Cannot render invalid object.")
 
 
 RenderBase::RenderBase()
-    : gl(nullptr)
+    : TransformBase()
+    , gl(nullptr)
     , m_renderTarget(nullptr)
     , m_defaultProgram(nullptr)
     , m_customProgram(nullptr)

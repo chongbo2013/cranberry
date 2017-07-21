@@ -27,7 +27,6 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
-#include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 #include <Cranberry/System/GameTime.hpp>
 
@@ -54,9 +53,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT SpriteBatch
-    : public RenderBase
-    , public TransformBase
+class CRANBERRY_GRAPHICS_EXPORT SpriteBatch : public RenderBase
 {
 public:
 
@@ -249,7 +246,7 @@ private:
     QOpenGLFramebufferObject* m_fbo;
     Effect                    m_effect;
     priv::QuadVertices        m_vertices;
-    QList<RenderBase*>       m_objects;
+    QList<RenderBase*>        m_objects;
     QString                   m_name;
     QRectF                    m_geometry;
     QColor                    m_backColor;

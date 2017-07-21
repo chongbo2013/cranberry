@@ -47,7 +47,6 @@ CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 TextureBase::TextureBase()
     : RenderBase()
-    , TransformBase()
     , m_blendMode(BlendNone)
     , m_effect(EffectNone)
     , m_texture(nullptr)
