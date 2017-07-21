@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IAnimation.hpp>
+#include <Cranberry/Graphics/Base/AnimationBase.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT GifAnimation final : public IAnimation
+class CRANBERRY_GRAPHICS_EXPORT GifAnimation final : public AnimationBase
 {
 public:
 

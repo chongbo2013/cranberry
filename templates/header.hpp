@@ -31,7 +31,6 @@
 
 // Standard headers
 
-
 // Forward declarations
 
 

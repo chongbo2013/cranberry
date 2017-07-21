@@ -57,7 +57,7 @@ public:
     void setGuiManager(GuiManager* manager);
 
 
-private slots:
+private Q_SLOTS:
 
     void loadComponents();
     void requestUpdate();

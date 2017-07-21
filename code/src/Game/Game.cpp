@@ -36,6 +36,7 @@
 CRANBERRY_USING_NAMESPACE
 
 
+// Global variables
 CRANBERRY_GLOBAL_VAR_A(QApplication*, g_application, nullptr)
 CRANBERRY_GLOBAL_VAR_A(Game*,         g_instance,    nullptr)
 

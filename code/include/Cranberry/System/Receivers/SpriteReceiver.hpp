@@ -57,7 +57,7 @@ public:
     void setSprite(Sprite* sprite);
 
 
-private slots:
+private Q_SLOTS:
 
     void stoppedRunning();
 

@@ -45,7 +45,7 @@ bool RawAnimation::createRawAnimation(
 
 bool RawAnimation::createRawAnimation(
         const QVector<QImage>& images,
-        const QVector<Frame>& frames,
+        const QVector<AnimationFrame>& frames,
         Window* renderTarget
         )
 {

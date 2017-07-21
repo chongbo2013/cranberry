@@ -145,7 +145,7 @@ bool Sprite::create(const QString& path, Window* rt)
 
         // Loads the movements.
         QJsonArray movements = top.value("movements").toArray();
-        foreach (QJsonValue m, movements)
+        Q_FOREACH (QJsonValue m, movements)
         {
             QJsonObject obj = m.toObject();
             QJsonValue nme = obj.value("name");
@@ -169,11 +169,11 @@ bool Sprite::create(const QString& path, Window* rt)
             move->idle = getJsonRect(idle);
             move->anim = new RawAnimation;
 
-            QVector<IAnimation::Frame> animFrames;
+            QVector<AnimationFrame> animFrames;
             qint32 currentFrame = 0;
 
             // Loads the frames.
-            foreach (QJsonValue frame, frames)
+            Q_FOREACH (QJsonValue frame, frames)
             {
                 QJsonObject fobj = frame.toObject();
                 QJsonValue duration = fobj.value("duration");
@@ -184,19 +184,21 @@ bool Sprite::create(const QString& path, Window* rt)
                     return cranError(ERRARG(e_05));
                 }
 
-                IAnimation::Frame f;
-                f.atlas = 0;
-                f.duration = duration.toDouble() / 1000.0;
-                f.frame = currentFrame;
-                f.rect = getJsonRect(rect);
+                AnimationFrame animFrame;
+                animFrame.setAtlasId(0);
+                animFrame.setDuration(duration.toDouble() / 1000.0);
+                animFrame.setFrameId(currentFrame);
+                animFrame.setRectangle(getJsonRect(rect));
 
-                move->totalTime += f.duration;
-
-                animFrames.append(f);
+                move->totalTime += animFrame.duration();
+                animFrames.append(animFrame);
                 currentFrame++;
             }
 
-            if(!move->anim->createRawAnimation({ img }, animFrames, renderTarget())) return false;
+            if(!move->anim->createRawAnimation({ img }, animFrames, renderTarget()))
+            {
+                return false;
+            }
 
             move->anim->setIdleFrame(0, move->idle);
             m_movements.insert(move->name, move);

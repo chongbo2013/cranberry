@@ -52,11 +52,11 @@ public:
     CRANBERRY_DEFAULT_MOVE(RenderableEmitter)
 
 
-    inline void emitCreated() { emit created(); }
-    inline void emitDestroyed() { emit destroyed(); }
+    inline void emitCreated() { Q_EMIT created(); }
+    inline void emitDestroyed() { Q_EMIT destroyed(); }
 
 
-signals:
+Q_SIGNALS:
 
     void created();
     void destroyed();

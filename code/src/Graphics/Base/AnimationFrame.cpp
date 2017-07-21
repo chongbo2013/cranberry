@@ -19,53 +19,71 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#pragma once
-#ifndef CRANBERRY_ANIMATIONEMITTER_HPP
-#define CRANBERRY_ANIMATIONEMITTER_HPP
-
-
 // Cranberry headers
-#include <Cranberry/Config.hpp>
-
-// Qt headers
-#include <QObject>
+#include <Cranberry/Graphics/Base/AnimationFrame.hpp>
 
 
-CRANBERRY_BEGIN_NAMESPACE
+CRANBERRY_USING_NAMESPACE
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// Emits signals for IAnimation objects.
-///
-/// \class AnimationEmitter
-/// \author Nicolas Kogler
-/// \date June 25, 2017
-///
-////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT AnimationEmitter : public QObject
+AnimationFrame::AnimationFrame()
+    : m_rect(0.0, 0.0, 0.0, 0.0)
+    , m_duration(0.0)
+    , m_frameId(-1)
+    , m_atlasId(-1)
 {
-public:
-
-    CRANBERRY_DEFAULT_CTOR(AnimationEmitter)
-    CRANBERRY_DEFAULT_DTOR(AnimationEmitter)
-    CRANBERRY_DEFAULT_COPY(AnimationEmitter)
-    CRANBERRY_DEFAULT_MOVE(AnimationEmitter)
+}
 
 
-    inline void emitStoppedAnimating() { Q_EMIT stoppedAnimating(); }
-
-Q_SIGNALS:
-
-    void stoppedAnimating();
-
-
-private:
-
-    Q_OBJECT
-};
+const QRectF& AnimationFrame::rectangle() const
+{
+    return m_rect;
+}
 
 
-CRANBERRY_END_NAMESPACE
+qreal AnimationFrame::duration() const
+{
+    return m_duration;
+}
 
 
-#endif
+int AnimationFrame::frameId() const
+{
+    return m_frameId;
+}
+
+
+int AnimationFrame::atlasId() const
+{
+    return m_atlasId;
+}
+
+
+void AnimationFrame::setRectangle(const QRectF& rect)
+{
+    m_rect = rect;
+}
+
+
+void AnimationFrame::setRectangle(qreal x, qreal y, qreal width, qreal height)
+{
+    m_rect = QRectF(x, y, width, height);
+}
+
+
+void AnimationFrame::setDuration(qreal duration)
+{
+    m_duration = duration;
+}
+
+
+void AnimationFrame::setFrameId(int id)
+{
+    m_frameId = id;
+}
+
+
+void AnimationFrame::setAtlasId(int id)
+{
+    m_atlasId = id;
+}

@@ -20,11 +20,12 @@
 
 
 #pragma once
-#ifndef CRANBERRY_IANIMATION_HPP
-#define CRANBERRY_IANIMATION_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_IANIMATION_HPP
+#define CRANBERRY_GRAPHICS_BASE_IANIMATION_HPP
 
 
 // Cranberry headers
+#include <Cranberry/Graphics/Base/AnimationFrame.hpp>
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
@@ -47,36 +48,17 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IAnimation
+class CRANBERRY_GRAPHICS_EXPORT AnimationBase
         : public IRenderable
         , public ITransformable
 {
 public:
 
-    struct Frame
-    {
-        QRectF rect;
-        qreal duration;
-        qint32 frame;
-        qint32 atlas;
-    };
-
-
     CRANBERRY_DISABLE_COPY(IAnimation)
     CRANBERRY_DISABLE_MOVE(IAnimation)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the IAnimation class and resets the
-    /// members to their logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    IAnimation();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destroys all texture atlases used by this class.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    ~IAnimation();
+    AnimationBase();
+   ~AnimationBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -258,29 +240,24 @@ protected:
     ////////////////////////////////////////////////////////////////////////////
     bool createInternal(
             const QVector<QImage>& sheets,
-            const QVector<Frame>& frames,
+            const QVector<AnimationFrame>& frames,
             Window* renderTarget
             );
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Helpers
-    ////////////////////////////////////////////////////////////////////////////
-    void saveAtlas(TextureAtlas* atlas);
-
-    ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    AnimationMode          m_mode;
-    AnimationEmitter       m_emitter;
-    QVector<Frame>         m_frames;
-    QVector<TextureAtlas*> m_atlases;
-    QString                m_name;
-    Frame                  m_idleFrame;
-    Frame*                 m_currentFrame;
-    qreal                  m_elapsedTime;
-    bool                   m_isAnimating;
+    AnimationMode           m_mode;
+    AnimationEmitter        m_emitter;
+    QVector<AnimationFrame> m_frames;
+    QVector<TextureAtlas*>  m_atlases;
+    QString                 m_name;
+    AnimationFrame          m_idleFrame;
+    AnimationFrame*         m_currentFrame;
+    qreal                   m_elapsedTime;
+    bool                    m_isAnimating;
 };
 
 

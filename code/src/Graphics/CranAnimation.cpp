@@ -45,7 +45,7 @@ CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Frame %2: Invalid rectangle.")
 bool CranAnimation::create(const QString& path, Window* renderTarget)
 {
     QVector<QImage> frames;
-    QVector<Frame> rects;
+    QVector<AnimationFrame> rects;
     QVector<qreal> durations;
 
     // Attempts to load the file.
@@ -79,7 +79,7 @@ bool CranAnimation::create(const QString& path, Window* renderTarget)
             frames.resize(sheets.count());
 
             // Loads all spritesheets.
-            foreach (QJsonValue value, sheets)
+            Q_FOREACH (QJsonValue value, sheets)
             {
                 QJsonObject obj = value.toObject();
                 QJsonValue index = obj.value("index");
@@ -96,7 +96,7 @@ bool CranAnimation::create(const QString& path, Window* renderTarget)
             }
 
             // Loads all frames.
-            foreach (QJsonValue value, array)
+            Q_FOREACH (QJsonValue value, array)
             {
                 QJsonObject obj = value.toObject();
                 QJsonValue index = obj.value("sheetindex");
@@ -118,13 +118,13 @@ bool CranAnimation::create(const QString& path, Window* renderTarget)
                     return cranError(ERRARG_1(e_05, QString::number(currentFrame)));
                 }
 
-                Frame f;
-                f.rect = { x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble() };
-                f.duration = duration.toDouble() / 1000.0;
-                f.frame = currentFrame;
-                f.atlas = index.toInt();
+                AnimationFrame frame;
+                frame.setRectangle(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble());
+                frame.setDuration(duration.toDouble() / 1000.0);
+                frame.setFrameId(currentFrame);
+                frame.setAtlasId(index.toInt());
 
-                rects.append(f);
+                rects.append(frame);
                 currentFrame++;
             }
 
@@ -133,7 +133,7 @@ bool CranAnimation::create(const QString& path, Window* renderTarget)
         else
         {
             // Loads all frames.
-            foreach (QJsonValue value, array)
+            Q_FOREACH (QJsonValue value, array)
             {
                 QJsonObject obj = value.toObject();
                 QJsonValue path = obj.value("image");
