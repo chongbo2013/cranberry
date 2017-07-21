@@ -45,7 +45,7 @@ CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 
 ITexture::ITexture()
-    : IRenderable()
+    : RenderBase()
     , ITransformable()
     , m_blendMode(BlendNone)
     , m_effect(EffectNone)
@@ -65,7 +65,7 @@ ITexture::~ITexture()
 
 bool ITexture::isNull() const
 {
-    return IRenderable::isNull()       ||
+    return RenderBase::isNull()       ||
            m_texture == nullptr        ||
            m_vertexBuffer == nullptr   ||
            m_indexBuffer == nullptr    ||
@@ -77,7 +77,7 @@ bool ITexture::isNull() const
 
 bool ITexture::create(const QImage& img, Window* renderTarget)
 {
-    if (!IRenderable::create(renderTarget)) return false;
+    if (!RenderBase::create(renderTarget)) return false;
     if (!createBuffers()) return false;
     if (!createTexture(img)) return false;
 
@@ -89,7 +89,7 @@ bool ITexture::create(const QImage& img, Window* renderTarget)
 
 bool ITexture::create(QOpenGLTexture* img, Window* renderTarget)
 {
-    if (!IRenderable::create(renderTarget)) return false;
+    if (!RenderBase::create(renderTarget)) return false;
     if (!createBuffers()) return false;
 
     m_texture = img;
@@ -154,7 +154,7 @@ void ITexture::initializeData()
 
 void ITexture::destroy()
 {
-    IRenderable::destroy();
+    RenderBase::destroy();
 
     if (m_vertexBuffer != nullptr)
     {
@@ -394,7 +394,7 @@ ITexture::operator QString() const
 {
     QString s;
 
-    s.append(IRenderable::operator QString());
+    s.append(RenderBase::operator QString());
     s.append(ITransformable::operator QString());
     s.append("-- Texture\n");
     s.append("OpenGL texture ID: " + QString::number(m_texture->textureId()) + "\n\n");

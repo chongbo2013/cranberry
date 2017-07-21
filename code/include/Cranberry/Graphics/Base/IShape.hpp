@@ -26,7 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
@@ -50,7 +50,7 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT IShape
-    : public IRenderable
+    : public RenderBase
     , public ITransformable
 {
 public:

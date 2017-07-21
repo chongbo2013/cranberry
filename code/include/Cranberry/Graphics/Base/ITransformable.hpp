@@ -36,7 +36,7 @@
 
 
 // Forward declarations
-CRANBERRY_FORWARD_C(IRenderable)
+CRANBERRY_FORWARD_C(RenderBase)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -204,7 +204,7 @@ public:
     /// \returns the transformation matrix.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QMatrix4x4 matrix(IRenderable* obj) const;
+    QMatrix4x4 matrix(RenderBase* obj) const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the move direction of the object.

@@ -20,22 +20,18 @@
 
 
 #pragma once
-#ifndef CRANBERRY_IRENDERABLE_HPP
-#define CRANBERRY_IRENDERABLE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_RENDERBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_RENDERBASE_HPP
 
 
 // Cranberry headers
 #include <Cranberry/System/GameTime.hpp>
 #include <Cranberry/System/Emitters/RenderableEmitter.hpp>
 
-// Qt headers
-#include <QObject>
-
-
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
-CRANBERRY_FORWARD_C(Window)
 CRANBERRY_FORWARD_C(OpenGLShader)
+CRANBERRY_FORWARD_C(Window)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -44,30 +40,20 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 /// Provides an interface for all renderable objects in cranberry.
 ///
-/// \class IRenderable
+/// \class RenderBase
 /// \author Nicolas Kogler
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IRenderable
+class CRANBERRY_GRAPHICS_EXPORT RenderBase
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(IRenderable)
-    CRANBERRY_DISABLE_MOVE(IRenderable)
+    CRANBERRY_DISABLE_COPY(RenderBase)
+    CRANBERRY_DISABLE_MOVE(RenderBase)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Constructs a new IRenderable instance.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    IRenderable();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destructs this IRenderable instance and calls IRenderable::destroy() as
-    /// last resort to free OpenGL-related objects.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual ~IRenderable();
+    RenderBase();
+    virtual ~RenderBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -116,7 +102,7 @@ public:
     /// the context of the render target.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void makeCurrent();
+    bool makeCurrent();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Prepares the render process by making the target's context current or
@@ -234,8 +220,6 @@ private:
     QString           m_name;           ///< Name of the object
     RenderableEmitter m_emitter;        ///< Emits signals for this class
     uint              m_osRenderer;     ///< Offscreen renderer, if any
-
-    friend class SpriteBatch;
 };
 
 
@@ -243,7 +227,7 @@ extern QString cranResourcePath(const QString& src);
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class IRenderable
+/// \class RenderBase
 /// \ingroup Graphics
 ///
 /// The IRenderable class is the base for all graphic objects in cranberry. It

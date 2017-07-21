@@ -20,7 +20,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
 #include <Cranberry/Window/Window.hpp>
 
@@ -173,7 +173,7 @@ float ITransformable::opacity() const
 }
 
 
-QMatrix4x4 ITransformable::matrix(IRenderable* obj) const
+QMatrix4x4 ITransformable::matrix(RenderBase* obj) const
 {
     QMatrix4x4 proj, tran, rot, scale, orig, norig;
     qreal fw = static_cast<qreal>(obj->renderTarget()->width());

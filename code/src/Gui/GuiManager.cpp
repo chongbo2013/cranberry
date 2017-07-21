@@ -96,7 +96,7 @@ GuiManager::~GuiManager()
 
 bool GuiManager::isNull() const
 {
-    return IRenderable::isNull()     ||
+    return RenderBase::isNull()     ||
            m_batch->isNull()         ||
            m_qmlComponent == nullptr ||
            m_qmlComponent->isNull()  ||
@@ -110,7 +110,7 @@ bool GuiManager::isNull() const
 
 bool GuiManager::create(const QString& qml, Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     // Tries to create the surface.
     m_offscreenSurface->setFormat(renderTarget()->context()->format());
@@ -214,7 +214,7 @@ void GuiManager::render()
 
     renderTarget()->restoreOpenGLSettings();
 
-    if (!IRenderable::prepareRendering()) return;
+    if (!RenderBase::prepareRendering()) return;
 
     // Need to pass OS renderer through.
     m_batch->setOffscreenRenderer(offscreenRenderer());

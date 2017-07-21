@@ -43,7 +43,7 @@ CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
 
 
 Text::Text()
-    : IRenderable()
+    : RenderBase()
     , ITransformable()
     , m_textPen(new QPen(Qt::white))
     , m_outlineBrush(new QBrush(Qt::black))
@@ -150,7 +150,7 @@ void Text::setOutlineWidth(int width)
 
 bool Text::create(Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     return true;
@@ -161,7 +161,7 @@ void Text::destroy()
 {
     if (!m_texture->isNull()) m_texture->destroy();
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
@@ -180,7 +180,7 @@ void Text::update(const GameTime& time)
 
 void Text::render()
 {
-    if (!IRenderable::prepareRendering()) return;
+    if (!RenderBase::prepareRendering()) return;
 
     if (m_textUpdate)
     {
@@ -368,7 +368,7 @@ Text::operator QString() const
     QString db = " b=" + QString::number(m_outlineBrush->color().blue());
     QString da = " a=" + QString::number(m_outlineBrush->color().alpha());
 
-    s.append(IRenderable::operator QString());
+    s.append(RenderBase::operator QString());
     s.append(ITransformable::operator QString());
     s.append("-- Text\n");
     s.append(QString("Text: ") + m_text + "\n");

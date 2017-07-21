@@ -56,7 +56,7 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT Text
-    : public IRenderable
+    : public RenderBase
     , public ITransformable
 {
 public:

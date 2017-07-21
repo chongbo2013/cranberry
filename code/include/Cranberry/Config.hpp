@@ -108,6 +108,16 @@
 #define CRANBERRY_ALIAS(x, y) typedef x y;
 
 ////////////////////////////////////////////////////////////////////////////////
+/// A macro to execute code only in debug mode.
+///
+////////////////////////////////////////////////////////////////////////////////
+#ifdef QT_DEBUG
+    #define if_debug(x) x
+#else
+    #define if_debug(x)
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
 /// These macroes are to be used inside classes in order to declare the
 /// constructor, destructor, copy constructor and/or move constructor as either
 /// default or deleted.

@@ -35,7 +35,7 @@ CRANBERRY_USING_NAMESPACE
 
 
 AnimationBase::AnimationBase()
-    : IRenderable()
+    : RenderBase()
     , ITransformable()
     , m_mode(AnimateOnce)
     , m_currentFrame(nullptr)
@@ -54,7 +54,7 @@ AnimationBase::~AnimationBase()
 
 bool AnimationBase::isNull() const
 {
-    return IRenderable::isNull()     ||
+    return RenderBase::isNull()     ||
            m_currentFrame == nullptr ||
            m_frames.isEmpty()        ||
            m_atlases.isEmpty();
@@ -85,7 +85,7 @@ void AnimationBase::destroy()
     m_currentFrame = nullptr;
     m_isAnimating = false;
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
@@ -228,7 +228,7 @@ bool AnimationBase::createInternal(
     Window* rt
     )
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
@@ -279,7 +279,7 @@ bool AnimationBase::createInternal(
     Window* rt
     )
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     QSize largestSize;
 
@@ -313,7 +313,7 @@ AnimationBase::operator QString() const
     QString sh = " h=" + QString::number(r.height());
     QString s;
 
-    s.append(IRenderable::operator QString());
+    s.append(RenderBase::operator QString());
     s.append(ITransformable::operator QString());
     s.append("-- Animation\n");
     s.append(QString("Is animating: ") + ((m_isAnimating) ? "true\n" : "false\n"));

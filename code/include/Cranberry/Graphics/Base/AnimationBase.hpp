@@ -20,14 +20,14 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GRAPHICS_BASE_IANIMATION_HPP
-#define CRANBERRY_GRAPHICS_BASE_IANIMATION_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_ANIMATIONBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_ANIMATIONBASE_HPP
 
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/AnimationFrame.hpp>
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
 #include <Cranberry/Graphics/Base/TextureAtlas.hpp>
 #include <Cranberry/System/Emitters/AnimationEmitter.hpp>
@@ -43,19 +43,19 @@ CRANBERRY_BEGIN_NAMESPACE
 /// Defines an abstract class that is able to play animations of an arbitrary
 /// format.
 ///
-/// \class IAnimation
+/// \class AnimationBase
 /// \author Nicolas Kogler
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT AnimationBase
-        : public IRenderable
+        : public RenderBase
         , public ITransformable
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(IAnimation)
-    CRANBERRY_DISABLE_MOVE(IAnimation)
+    CRANBERRY_DISABLE_COPY(AnimationBase)
+    CRANBERRY_DISABLE_MOVE(AnimationBase)
 
     AnimationBase();
    ~AnimationBase();
@@ -262,13 +262,13 @@ private:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class IAnimation
+/// \class AnimationBase
 /// \ingroup Graphics
 ///
 /// This class is the base for all animations.
 ///
 /// \code
-/// class GifAnimation : public IAnimation
+/// class GifAnimation : public AnimationBase
 /// {
 /// public:
 ///

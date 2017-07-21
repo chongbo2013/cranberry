@@ -58,7 +58,7 @@ IShape::~IShape()
 
 bool IShape::isNull() const
 {
-    return IRenderable::isNull()     ||
+    return RenderBase::isNull()     ||
            m_vertexBuffer == nullptr ||
           !m_vertexBuffer->isCreated();
 }
@@ -76,7 +76,7 @@ void IShape::destroy()
     m_colorBuffer.clear();
     m_update = false;
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
@@ -142,7 +142,7 @@ void IShape::setColor(const QVector<QColor>& colors)
 
 bool IShape::createInternal(const QVector<QVector2D>& points, Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
     if (!createBuffer()) return false;
 
     // Allocates as much data as we need to store all points.
@@ -330,7 +330,7 @@ IShape::operator QString() const
     QString s;
     uint m = (m_filled) ? renderModeFilled() : renderModeWired();
 
-    s.append(IRenderable::operator QString());
+    s.append(RenderBase::operator QString());
     s.append(ITransformable::operator QString());
     s.append("-- Shape\n");
     s.append(QString("Vertex count: ") + QString::number(vertexCount()) + "\n");

@@ -26,7 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
-#include <Cranberry/Graphics/Base/IRenderable.hpp>
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 #include <Cranberry/System/GameTime.hpp>
@@ -55,7 +55,7 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT SpriteBatch
-    : public IRenderable
+    : public RenderBase
     , public ITransformable
 {
 public:
@@ -120,7 +120,7 @@ public:
     /// \returns false if that object already exists.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool addObject(IRenderable* object);
+    bool addObject(RenderBase* object);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Inserts a new renderable object at the specified layer. Zero is the
@@ -132,7 +132,7 @@ public:
     /// \returns false if that object already exists.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool insertObject(int layer, IRenderable* object);
+    bool insertObject(int layer, RenderBase* object);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Removes the given object from the sprite batch.
@@ -141,7 +141,7 @@ public:
     /// \returns false if that object does not exist.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool removeObject(IRenderable* object);
+    bool removeObject(RenderBase* object);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Updates all objects in the sprite batch (e.g. transformations).
@@ -249,7 +249,7 @@ private:
     QOpenGLFramebufferObject* m_fbo;
     Effect                    m_effect;
     priv::QuadVertices        m_vertices;
-    QList<IRenderable*>       m_objects;
+    QList<RenderBase*>       m_objects;
     QString                   m_name;
     QRectF                    m_geometry;
     QColor                    m_backColor;

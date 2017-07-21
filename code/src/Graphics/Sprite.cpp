@@ -64,7 +64,7 @@ Sprite::Movement::~Movement()
 
 
 Sprite::Sprite()
-    : IRenderable()
+    : RenderBase()
     , ITransformable()
     , m_currentMove(nullptr)
     , m_isRunning(false)
@@ -90,7 +90,7 @@ Sprite::~Sprite()
 
 bool Sprite::isNull() const
 {
-    return IRenderable::isNull() ||
+    return RenderBase::isNull() ||
            m_movements.isEmpty();
 }
 
@@ -109,7 +109,7 @@ bool Sprite::isRunning() const
 
 bool Sprite::create(const QString& path, Window* rt)
 {
-    if (!IRenderable::create(rt)) return false;
+    if (!RenderBase::create(rt)) return false;
 
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
@@ -223,7 +223,7 @@ void Sprite::destroy()
     m_isBlocking = false;
     m_isRunning = false;
 
-    IRenderable::destroy();
+    RenderBase::destroy();
 }
 
 
