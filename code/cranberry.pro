@@ -83,7 +83,6 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/TextureAtlas.hpp \
                     include/Cranberry/Graphics/GifAnimation.hpp \
                     include/Cranberry/Graphics/CranAnimation.hpp \
-                    include/Cranberry/Graphics/Base/IShape.hpp \
                     include/Cranberry/Graphics/Polygon.hpp \
                     include/Cranberry/Graphics/Ellipse.hpp \
                     include/Cranberry/Graphics/Text.hpp \
@@ -94,7 +93,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Gui/GuiManager.hpp \
     include/Cranberry/Graphics/Base/AnimationFrame.hpp \
     include/Cranberry/Graphics/Base/AnimationBase.hpp \
-    include/Cranberry/Graphics/Base/RenderBase.hpp
+    include/Cranberry/Graphics/Base/RenderBase.hpp \
+    include/Cranberry/Graphics/Base/ShapeBase.hpp
 
 
 ################################################################################
@@ -125,7 +125,6 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
                     src/Graphics/GifAnimation.cpp \
                     src/Graphics/CranAnimation.cpp \
-                    src/Graphics/Base/IShape.cpp \
                     src/Graphics/Polygon.cpp \
                     src/Graphics/Ellipse.cpp \
                     src/Graphics/Text.cpp \
@@ -136,7 +135,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Gui/GuiManager.cpp \
     src/Graphics/Base/AnimationFrame.cpp \
     src/Graphics/Base/AnimationBase.cpp \
-    src/Graphics/Base/RenderBase.cpp
+    src/Graphics/Base/RenderBase.cpp \
+    src/Graphics/Base/ShapeBase.cpp
 
 ################################################################################
 ## OUTPUT

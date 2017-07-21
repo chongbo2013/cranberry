@@ -20,7 +20,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IShape.hpp>
+#include <Cranberry/Graphics/Base/ShapeBase.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
@@ -41,7 +41,7 @@ CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Color count does not match vertex count.")
 
 
-IShape::IShape()
+ShapeBase::ShapeBase()
     : m_vertexBuffer(nullptr)
     , m_filled(false)
     , m_colorUpdate(false)
@@ -50,13 +50,13 @@ IShape::IShape()
 }
 
 
-IShape::~IShape()
+ShapeBase::~ShapeBase()
 {
     destroy();
 }
 
 
-bool IShape::isNull() const
+bool ShapeBase::isNull() const
 {
     return RenderBase::isNull()     ||
            m_vertexBuffer == nullptr ||
@@ -64,7 +64,7 @@ bool IShape::isNull() const
 }
 
 
-void IShape::destroy()
+void ShapeBase::destroy()
 {
     if (m_vertexBuffer != nullptr)
     {
@@ -80,13 +80,13 @@ void IShape::destroy()
 }
 
 
-void IShape::update(const GameTime& time)
+void ShapeBase::update(const GameTime& time)
 {
     updateTransform(time);
 }
 
 
-void IShape::render()
+void ShapeBase::render()
 {
     if (!prepareRendering()) return;
 
@@ -99,25 +99,25 @@ void IShape::render()
 }
 
 
-uint IShape::vertexCount() const
+uint ShapeBase::vertexCount() const
 {
     return m_vertices.size();
 }
 
 
-bool IShape::isShapeFilled() const
+bool ShapeBase::isShapeFilled() const
 {
     return m_filled;
 }
 
 
-void IShape::setShapeFilled(bool filled)
+void ShapeBase::setShapeFilled(bool filled)
 {
     m_filled = filled;
 }
 
 
-void IShape::setColor(const QColor& color)
+void ShapeBase::setColor(const QColor& color)
 {
     m_colorBuffer.clear();
     m_colorBuffer.append(color);
@@ -126,7 +126,7 @@ void IShape::setColor(const QColor& color)
 }
 
 
-void IShape::setColor(const QVector<QColor>& colors)
+void ShapeBase::setColor(const QVector<QColor>& colors)
 {
     if (colors.size() != (int) m_vertices.size())
     {
@@ -140,7 +140,7 @@ void IShape::setColor(const QVector<QColor>& colors)
 }
 
 
-bool IShape::createInternal(const QVector<QVector2D>& points, Window* rt)
+bool ShapeBase::createInternal(const QVector<QVector2D>& points, Window* rt)
 {
     if (!RenderBase::create(rt)) return false;
     if (!createBuffer()) return false;
@@ -167,7 +167,7 @@ bool IShape::createInternal(const QVector<QVector2D>& points, Window* rt)
 }
 
 
-bool IShape::createBuffer()
+bool ShapeBase::createBuffer()
 {
     // Attempts to create the buffer holding the vertex data.
     m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
@@ -182,7 +182,7 @@ bool IShape::createBuffer()
 }
 
 
-QVector2D IShape::findCenter(const QVector<QVector2D>& points)
+QVector2D ShapeBase::findCenter(const QVector<QVector2D>& points)
 {
     QVector2D center;
     qreal signedArea = 0.0, x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0, a = 0.0;
@@ -221,7 +221,7 @@ QVector2D IShape::findCenter(const QVector<QVector2D>& points)
 }
 
 
-QVector2D IShape::findSize(const QVector<QVector2D>& points)
+QVector2D ShapeBase::findSize(const QVector<QVector2D>& points)
 {
     auto extremeX = std::minmax_element(
                 points.begin(), points.end(),
@@ -242,21 +242,21 @@ QVector2D IShape::findSize(const QVector<QVector2D>& points)
 }
 
 
-void IShape::bindObjects()
+void ShapeBase::bindObjects()
 {
     glDebug(m_vertexBuffer->bind());
     glDebug(shaderProgram()->program()->bind());
 }
 
 
-void IShape::releaseObjects()
+void ShapeBase::releaseObjects()
 {
     glDebug(m_vertexBuffer->release());
     glDebug(shaderProgram()->program()->release());
 }
 
 
-void IShape::writeVertices()
+void ShapeBase::writeVertices()
 {
     if (m_update || m_colorUpdate)
     {
@@ -285,7 +285,7 @@ void IShape::writeVertices()
 }
 
 
-void IShape::modifyProgram()
+void ShapeBase::modifyProgram()
 {
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
@@ -296,7 +296,7 @@ void IShape::modifyProgram()
 }
 
 
-void IShape::modifyAttribs()
+void ShapeBase::modifyAttribs()
 {
     glDebug(gl->glVertexAttribPointer(
                 priv::Vertex::xyzAttrib(),
@@ -318,14 +318,14 @@ void IShape::modifyAttribs()
 }
 
 
-void IShape::drawElements()
+void ShapeBase::drawElements()
 {
     uint mode = (m_filled) ? renderModeFilled() : renderModeWired();
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
 }
 
 
-IShape::operator QString() const
+ShapeBase::operator QString() const
 {
     QString s;
     uint m = (m_filled) ? renderModeFilled() : renderModeWired();

@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_ISHAPE_HPP
-#define CRANBERRY_ISHAPE_HPP
+#ifndef CRANBERRY_GRAPHICS_BASE_SHAPEBASE_HPP
+#define CRANBERRY_GRAPHICS_BASE_SHAPEBASE_HPP
 
 
 // Cranberry headers
@@ -33,7 +33,6 @@
 // Qt headers
 #include <QMatrix4x4>
 
-
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLBuffer)
 
@@ -44,33 +43,33 @@ CRANBERRY_BEGIN_NAMESPACE
 ////////////////////////////////////////////////////////////////////////////////
 /// Defines the base class for rendering primitives.
 ///
-/// \class IShape
+/// \class ShapeBase
 /// \author Nicolas Kogler
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT IShape
+class CRANBERRY_GRAPHICS_EXPORT ShapeBase
     : public RenderBase
     , public ITransformable
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(IShape)
-    CRANBERRY_DISABLE_MOVE(IShape)
+    CRANBERRY_DISABLE_COPY(ShapeBase)
+    CRANBERRY_DISABLE_MOVE(ShapeBase)
 
     ////////////////////////////////////////////////////////////////////////////
     /// Initializes a new instance of the ITexture class and sets all members
     /// to their logical default values.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    IShape();
+    ShapeBase();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Destroys this texture. Last resort for releasing all OpenGL resources
     /// before the context will eventually be destroyed.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual ~IShape();
+    virtual ~ShapeBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -183,24 +182,24 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    priv::VarVertices   m_vertices;
-    QOpenGLBuffer*      m_vertexBuffer;
-    QVector<QColor>     m_colorBuffer;
-    bool                m_filled;
-    bool                m_colorUpdate;
-    bool                m_update;
+    priv::VarVertices m_vertices;
+    QOpenGLBuffer*    m_vertexBuffer;
+    QVector<QColor>   m_colorBuffer;
+    bool              m_filled;
+    bool              m_colorUpdate;
+    bool              m_update;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class IShape
+/// \class ShapeBase
 /// \ingroup Graphics
 ///
 /// This class is the base for all shape objects. The renderModeWired() and the
 /// renderModeFilled() expect values like GL_LINES, GL_TRIANGLES and so on.
 ///
 /// \code
-/// class Polygon : public IShape
+/// class Polygon : public ShapeBase
 /// {
 /// public:
 ///

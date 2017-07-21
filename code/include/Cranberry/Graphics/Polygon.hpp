@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/IShape.hpp>
+#include <Cranberry/Graphics/Base/ShapeBase.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Polygon : public IShape
+class CRANBERRY_GRAPHICS_EXPORT Polygon : public ShapeBase
 {
 public:
 

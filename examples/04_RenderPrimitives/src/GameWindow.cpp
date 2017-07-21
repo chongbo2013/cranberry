@@ -57,7 +57,7 @@ GameWindow::~GameWindow()
 }
 
 
-QVector<QColor> colorGenerator(IShape* e, uint f)
+QVector<QColor> colorGenerator(ShapeBase* e, uint f)
 {
 
     QVector<QColor> v;
