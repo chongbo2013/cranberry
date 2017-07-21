@@ -20,12 +20,14 @@
 
 
 // Cranberry headers
+#include <Cranberry/Game/Game.hpp>
 #include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
+#include <QApplication>
 #include <QOpenGLFunctions>
 
 
@@ -34,6 +36,7 @@ CRANBERRY_USING_NAMESPACE
 
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - The given render target is invalid.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - There is no default shader program.")
+CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Cannot render invalid object.")
 
 
 IRenderable::IRenderable()
@@ -41,6 +44,8 @@ IRenderable::IRenderable()
     , m_renderTarget(nullptr)
     , m_defaultProgram(nullptr)
     , m_customProgram(nullptr)
+    , m_name("<no name>")
+    , m_osRenderer(0)
 {
 }
 
@@ -70,6 +75,7 @@ bool IRenderable::create(Window* renderTarget)
     gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
     m_emitter.emitCreated();
+    makeCurrent();
 
     return true;
 }
@@ -77,11 +83,37 @@ bool IRenderable::create(Window* renderTarget)
 
 void IRenderable::destroy()
 {
-    if (m_customProgram != m_defaultProgram) delete m_customProgram;
-
     m_customProgram = nullptr;
     m_renderTarget = nullptr;
     m_emitter.emitDestroyed();
+}
+
+
+void IRenderable::makeCurrent()
+{
+    auto* cc = QOpenGLContext::currentContext();
+    if (cc != renderTarget()->context() || cc->surface() != renderTarget())
+    {
+        renderTarget()->makeCurrent();
+    }
+}
+
+
+bool IRenderable::prepareRendering()
+{
+    if (Q_UNLIKELY(isNull()))
+    {
+        cranError(ERRARG(e_03));
+
+#ifndef QT_DEBUG
+        Game::instance()->exit(CRANBERRY_EXIT_FATAL);
+#endif
+
+        return false;
+    }
+
+    makeCurrent();
+    return true;
 }
 
 
@@ -121,6 +153,18 @@ void IRenderable::setDefaultShaderProgram(OpenGLShader* program)
 }
 
 
+uint IRenderable::offscreenRenderer() const
+{
+    return m_osRenderer;
+}
+
+
+void IRenderable::setOffscreenRenderer(uint fbo)
+{
+    m_osRenderer = fbo;
+}
+
+
 void IRenderable::setName(const QString& name)
 {
     m_name = name;
@@ -130,4 +174,34 @@ void IRenderable::setName(const QString& name)
 RenderableEmitter* IRenderable::renderableEmitter()
 {
     return &m_emitter;
+}
+
+
+IRenderable::operator QString() const
+{
+    QString s;
+
+    s.append("--------------------------------------------------------\n");
+    s.append("--- Cranberry object\n");
+    s.append("-- Renderable\n");
+    s.append(QString("Name: ") + m_name + "\n");
+    s.append(QString("Is valid: ") + ((isNull())? "false\n" : "true\n"));
+
+    if (!isNull())
+    {
+        s.append(QString("Render target: " + m_renderTarget->settings().title() + "\n\n"));
+    }
+
+    return s;
+}
+
+
+QString cran::cranResourcePath(const QString& src)
+{
+    if (src.startsWith(":/"))
+    {
+        return src;
+    }
+
+    return qApp->applicationFilePath() + "/" + src;
 }

@@ -67,13 +67,9 @@ bool IAnimation::isAnimating() const
 }
 
 
-bool IAnimation::createRawAnimation(
-        const QVector<QImage> &frames,
-        const QVector<qreal> &durations,
-        Window* renderTarget
-        )
+int IAnimation::frameCount() const
 {
-    return createInternal(frames, durations, renderTarget);
+    return m_frames.size();
 }
 
 
@@ -84,6 +80,7 @@ void IAnimation::destroy()
     m_frames.clear();
     m_atlases.clear();
     m_currentFrame = nullptr;
+    m_isAnimating = false;
 
     IRenderable::destroy();
 }
@@ -92,6 +89,22 @@ void IAnimation::destroy()
 void IAnimation::startAnimation(AnimationMode mode)
 {
     m_mode = mode;
+    m_elapsedTime = 0.0;
+    m_currentFrame = &m_frames[0];
+
+    m_isAnimating = true;
+}
+
+
+void IAnimation::startIdle()
+{
+    m_currentFrame = &m_idleFrame;
+    m_isAnimating = false;
+}
+
+
+void IAnimation::resumeAnimation()
+{
     m_isAnimating = true;
 }
 
@@ -131,26 +144,34 @@ void IAnimation::update(const GameTime& time)
             m_currentFrame = &m_frames[frameIndex];
         }
     }
-}
 
-
-void IAnimation::render()
-{
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_01));
-        return;
-    }
-
-    // Copies all transformations and renders the current texture.
+    // Copies all transformations.
     ITexture* texture = m_atlases[m_currentFrame->atlas]->texture();
     texture->setShaderProgram(shaderProgram());
     texture->setPosition(pos());
     texture->setAngle(angle());
     texture->setOpacity(opacity());
+    texture->setOrigin(origin().toVector2D());
     texture->setScale(scaleX(), scaleY());
     texture->setSourceRectangle(m_currentFrame->rect);
-    texture->render();
+}
+
+
+void IAnimation::render()
+{
+    if (!prepareRendering()) return;
+
+    // Renders the current texture.
+    m_atlases[m_currentFrame->atlas]->texture()->render();
+}
+
+
+void IAnimation::setIdleFrame(uint atlas, const QRectF& frame)
+{
+    m_idleFrame.atlas = atlas;
+    m_idleFrame.rect = frame;
+    m_idleFrame.duration = 0;
+    m_idleFrame.frame = -1;
 }
 
 
@@ -213,14 +234,14 @@ bool IAnimation::createInternal(
 {
     if (!IRenderable::create(rt)) return false;
 
-    renderTarget()->makeCurrent();
-
     qint32 maxSize = qMin(c_maxSize, ITexture::maxSize());
     TextureAtlas* currentAtlas = new TextureAtlas(maxSize, renderTarget());
+    qint32 frameCount = frames.size();
+    QSize largestSize;
     Frame currentFrame;
 
     // Finds a nice place in the atlas for every frame.
-    for (int i = 0; i < frames.size(); i++)
+    for (int i = 0; i < frameCount; i++)
     {
         const QImage& img = frames.at(i);
         const qreal& dura = durations.at(i);
@@ -238,12 +259,70 @@ bool IAnimation::createInternal(
         currentFrame.frame = i;
 
         m_frames.push_back(currentFrame);
+
+        // Finds the largest image.
+        largestSize.rwidth() = qMax(img.width(), largestSize.width());
+        largestSize.rheight() = qMax(img.height(), largestSize.height());
     }
 
     // Adds the last atlas to the list.
     saveAtlas(currentAtlas);
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
     m_currentFrame = &m_frames[0];
 
+    setSize(largestSize.width(), largestSize.height());
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+
     return true;
+}
+
+
+bool IAnimation::createInternal(
+        const QVector<QImage>& sheets,
+        const QVector<Frame>& frames,
+        Window* rt
+        )
+{
+    if (!IRenderable::create(rt)) return false;
+
+    QSize largestSize;
+
+    // Creates texture atlases out of the sheets.
+    for (const QImage& img : sheets)
+    {
+        saveAtlas(new TextureAtlas(img, renderTarget()));
+
+        // Finds the largest image.
+        largestSize.rwidth() = qMax(img.width(), largestSize.width());
+        largestSize.rheight() = qMax(img.height(), largestSize.height());
+    }
+
+    // Simply copies the frames since everything is prepared.
+    m_frames = frames;
+    m_currentFrame = &m_frames[0];
+
+    setSize(largestSize.width(), largestSize.height());
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+
+    return true;
+}
+
+
+IAnimation::operator QString() const
+{
+    QRectF r = m_currentFrame->rect;
+    QString sx = " x=" + QString::number(r.x());
+    QString sy = " y=" + QString::number(r.y());
+    QString sw = " w=" + QString::number(r.width());
+    QString sh = " h=" + QString::number(r.height());
+    QString s;
+
+    s.append(IRenderable::operator QString());
+    s.append(ITransformable::operator QString());
+    s.append("-- Animation\n");
+    s.append(QString("Is animating: ") + ((m_isAnimating) ? "true\n" : "false\n"));
+    s.append(QString("Frame amount: ") + QString::number(m_frames.size()) + "\n");
+    s.append(QString("Current frame: ") + QString::number(m_currentFrame->frame) + "\n");
+    s.append(QString("Current rect:") + sx + sy + sw + sh + "\n\n");
+
+    return s;
 }

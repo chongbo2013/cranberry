@@ -24,6 +24,7 @@
 #include <Cranberry/System/Debug.hpp>
 
 // Qt headers
+#include <QApplication>
 #include <QFile>
 #include <QImage>
 #include <QJsonArray>
@@ -37,11 +38,14 @@ CRANBERRY_USING_NAMESPACE
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - File %2 does not exist.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Invalid version: %2.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Frame %2 could not be read.")
+CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Invalid spritesheet.")
+CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Frame %2: Invalid rectangle.")
 
 
 bool CranAnimation::create(const QString& path, Window* renderTarget)
 {
     QVector<QImage> frames;
+    QVector<Frame> rects;
     QVector<qreal> durations;
 
     // Attempts to load the file.
@@ -65,26 +69,90 @@ bool CranAnimation::create(const QString& path, Window* renderTarget)
     }
     else if (v == 1)
     {
-        QJsonArray array = top.value("frames").toArray();
-        qint32 currentFrame = 0;
+        auto array = top.value("frames").toArray();
+        auto currentFrame = 0;
 
-        foreach (QJsonValue value, array)
+        // Determines whether there are spritesheets or not.
+        auto sheets = top.value("spritesheets").toArray();
+        if (!sheets.isEmpty())
         {
-            QJsonObject obj = value.toObject();
-            QJsonValue path = obj.value("image");
-            QJsonValue duration = obj.value("duration");
-            QImage img(path.toString());
+            frames.resize(sheets.count());
 
-            if (path.isNull() || duration.isNull() || img.isNull())
+            // Loads all spritesheets.
+            foreach (QJsonValue value, sheets)
             {
-                return cranError(ERRARG_1(e_03, QString::number(currentFrame)));
+                QJsonObject obj = value.toObject();
+                QJsonValue index = obj.value("index");
+                QJsonValue sheet = obj.value("sheet");
+                QImage img(cranResourcePath(sheet.toString()));
+
+                if (index.isNull() || sheet.isNull() || img.isNull() ||
+                    index.toInt() < 0 || index.toInt() >= sheets.count())
+                {
+                    return cranError(ERRARG(e_04));
+                }
+
+                frames[index.toInt()] = img;
             }
 
-            frames.append(img);
-            durations.append(duration.toInt());
-            currentFrame++;
+            // Loads all frames.
+            foreach (QJsonValue value, array)
+            {
+                QJsonObject obj = value.toObject();
+                QJsonValue index = obj.value("sheetindex");
+                QJsonValue duration = obj.value("duration");
+                QJsonObject rect = obj.value("rect").toObject();
+
+                if (rect.isEmpty() || index.isNull() || duration.isNull())
+                {
+                    return cranError(ERRARG_1(e_03, QString::number(currentFrame)));
+                }
+
+                QJsonValue x = rect.value("x");
+                QJsonValue y = rect.value("y");
+                QJsonValue w = rect.value("w");
+                QJsonValue h = rect.value("h");
+
+                if (x.isNull() || y.isNull() || w.isNull() || h.isNull())
+                {
+                    return cranError(ERRARG_1(e_05, QString::number(currentFrame)));
+                }
+
+                Frame f;
+                f.rect = { x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble() };
+                f.duration = duration.toDouble() / 1000.0;
+                f.frame = currentFrame;
+                f.atlas = index.toInt();
+
+                rects.append(f);
+                currentFrame++;
+            }
+
+            return createInternal(frames, rects, renderTarget);
+        }
+        else
+        {
+            // Loads all frames.
+            foreach (QJsonValue value, array)
+            {
+                QJsonObject obj = value.toObject();
+                QJsonValue path = obj.value("image");
+                QJsonValue duration = obj.value("duration");
+                QImage img(cranResourcePath(path.toString()));
+
+                if (path.isNull() || duration.isNull() || img.isNull())
+                {
+                    return cranError(ERRARG_1(e_03, QString::number(currentFrame)));
+                }
+
+                frames.append(img);
+                durations.append(duration.toDouble());
+                currentFrame++;
+            }
+
+            return createInternal(frames, durations, renderTarget);
         }
     }
 
-    return createInternal(frames, durations, renderTarget);
+    return false;
 }

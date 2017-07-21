@@ -20,7 +20,9 @@
 
 
 // Cranberry headers
+#include <Cranberry/Graphics/Base/IRenderable.hpp>
 #include <Cranberry/Graphics/Base/ITransformable.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 // Qt headers
 #include <QTransform>
@@ -42,7 +44,9 @@ ITransformable::ITransformable()
     , m_rotateMode(RotateOnce)
     , m_isMovingX(false)
     , m_isMovingY(false)
-    , m_isRotating(false)
+    , m_isRotatingX(false)
+    , m_isRotatingY(false)
+    , m_isRotatingZ(false)
     , m_isScalingX(false)
     , m_isScalingY(false)
     , m_isFading(false)
@@ -51,8 +55,8 @@ ITransformable::ITransformable()
     , m_speedRotateX(50.f)
     , m_speedRotateY(50.f)
     , m_speedRotateZ(50.f)
-    , m_speedScaleX(50.f)
-    , m_speedScaleY(50.f)
+    , m_speedScaleX(1.f)
+    , m_speedScaleY(1.f)
     , m_speedFade(1.f)
     , m_targetMoveX(0.f)
     , m_targetMoveY(0.f)
@@ -80,19 +84,19 @@ ITransformable::ITransformable()
 
 bool ITransformable::isMoving() const
 {
-    return m_isMovingX && m_isMovingY;
+    return m_isMovingX || m_isMovingY;
 }
 
 
 bool ITransformable::isRotating() const
 {
-    return m_isRotating;
+    return m_isRotatingX || m_isRotatingY || m_isRotatingZ;
 }
 
 
 bool ITransformable::isScaling() const
 {
-    return m_isScalingX && m_isScalingY;
+    return m_isScalingX || m_isScalingY;
 }
 
 
@@ -169,6 +173,25 @@ float ITransformable::opacity() const
 }
 
 
+QMatrix4x4 ITransformable::matrix(IRenderable* obj) const
+{
+    QMatrix4x4 proj, tran, rot, scale, orig, norig;
+    qreal fw = static_cast<qreal>(obj->renderTarget()->width());
+    qreal fh = static_cast<qreal>(obj->renderTarget()->height());
+
+    proj.ortho(0.f, fw, fh, 0.f, -1, 1);
+    tran.translate(x(), y());
+    rot.rotate(angleX(), 1.f, 0.f, 0.f);
+    rot.rotate(angleY(), 0.f, 1.f, 0.f);
+    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
+    scale.scale(scaleX(), scaleY());
+    orig.translate(origin());
+    norig.translate(origin() * -1);
+
+    return proj * tran * orig * rot * norig * orig * scale * norig;
+}
+
+
 MoveDirections ITransformable::moveDirection() const
 {
     return m_moveDir;
@@ -233,9 +256,9 @@ QVector3D ITransformable::rotateAxes() const
 {
     QVector3D axes;
 
-    if ((m_rotateAxes & AxisX) != 0) axes.setX(1);
-    if ((m_rotateAxes & AxisY) != 0) axes.setY(1);
-    if ((m_rotateAxes & AxisZ) != 0) axes.setZ(1);
+    if (m_angleX != 0.f) axes.setX(1);
+    if (m_angleY != 0.f) axes.setY(1);
+    if (m_angleZ != 0.f) axes.setZ(1);
 
     return axes;
 }
@@ -244,16 +267,34 @@ QVector3D ITransformable::rotateAxes() const
 QPainterPath ITransformable::bounds() const
 {
     QPainterPath path;
-    QTransform trans;
+    QTransform transform;
 
-    if ((m_rotateAxes & AxisX) != 0) trans.rotate(m_angleX, Qt::XAxis);
-    if ((m_rotateAxes & AxisY) != 0) trans.rotate(m_angleY, Qt::YAxis);
-    if ((m_rotateAxes & AxisZ) != 0) trans.rotate(m_angleZ, Qt::ZAxis);
+    path.addRect(m_x / m_scaleX, m_y / m_scaleY, m_width, m_height);
+    transform.translate(m_originX, m_originY);
 
-    trans.scale(m_scaleX, m_scaleY);
-    path.addRect(m_x, m_y, m_width, m_height);
+    if (m_angleX != 0.f) transform.rotate(m_angleX, Qt::XAxis);
+    if (m_angleY != 0.f) transform.rotate(m_angleY, Qt::YAxis);
+    if (m_angleZ != 0.f) transform.rotate(m_angleZ, Qt::ZAxis);
 
-    return trans.map(path);
+    transform.scale(m_scaleX, m_scaleY);
+    transform.translate(-m_originX, -m_originY);
+
+    return transform.map(path);
+}
+
+
+QRectF ITransformable::rect() const
+{
+    QPainterPath path;
+    QTransform transform;
+
+    path.addRect(m_x / m_scaleX, m_y / m_scaleY, m_width, m_height);
+
+    transform.translate(m_originX, m_originY);
+    transform.scale(m_scaleX, m_scaleY);
+    transform.translate(-m_originX, -m_originY);
+
+    return transform.map(path).boundingRect();
 }
 
 
@@ -270,35 +311,11 @@ void ITransformable::setMoveSpeed(float speedX, float speedY)
 }
 
 
-void ITransformable::setMoveDirection(MoveDirections dir)
-{
-    m_moveDir = dir;
-}
-
-
 void ITransformable::setRotateSpeed(float speedX, float speedY, float speedZ)
 {
     m_speedRotateX = speedX;
     m_speedRotateY = speedY;
     m_speedRotateZ = speedZ;
-}
-
-
-void ITransformable::setRotateDirection(RotateDirection dir)
-{
-    setRotateDirection(RotateNone, RotateNone, dir);
-}
-
-
-void ITransformable::setRotateDirection(
-        RotateDirection dirX,
-        RotateDirection dirY,
-        RotateDirection dirZ
-        )
-{
-    m_rotateDirX = dirX;
-    m_rotateDirY = dirY;
-    m_rotateDirZ = dirZ;
 }
 
 
@@ -321,15 +338,23 @@ void ITransformable::setScaleSpeed(float speedX, float speedY)
 }
 
 
+void ITransformable::setFadeSpeed(float speed)
+{
+    m_speedFade = speed;
+}
+
+
 void ITransformable::setX(float x)
 {
     m_x = x;
+    m_emitter.emitPositionChanged();
 }
 
 
 void ITransformable::setY(float y)
 {
     m_y = y;
+    m_emitter.emitPositionChanged();
 }
 
 
@@ -351,6 +376,7 @@ void ITransformable::setScale(float scaleX, float scaleY)
 {
     m_scaleX = scaleX;
     m_scaleY = scaleY;
+    m_emitter.emitSizeChanged();
 }
 
 
@@ -360,93 +386,238 @@ void ITransformable::setOpacity(float opacity)
 }
 
 
+void ITransformable::setPosition(float x, float y)
+{
+    m_x = x;
+    m_y = y;
+    m_emitter.emitPositionChanged();
+}
+
+
 void ITransformable::setPosition(const QVector2D& pos)
 {
-    m_x = pos.x();
-    m_y = pos.y();
+    setPosition(pos.x(), pos.y());
+}
+
+
+void ITransformable::setOrigin(float x, float y)
+{
+    m_originX = x;
+    m_originY = y;
 }
 
 
 void ITransformable::setOrigin(const QVector2D& origin)
 {
-    m_originX = origin.x();
-    m_originY = origin.y();
+    setOrigin(origin.x(), origin.y());
 }
 
 
-void ITransformable::startMoving(float advanceX, float advanceY)
+void ITransformable::startMovingBy(float advanceX, float advanceY)
 {
-    // Do not accept negative values. Use ITransformable::setMoveDirections
-    // to specify the directions to move object in.
-    advanceX = qAbs(advanceX);
-    advanceY = qAbs(advanceY);
+    m_isMovingX = false;
+    m_isMovingY = false;
+    m_moveDir = MoveNone;
 
     // Calculates the target position.
-    if ((m_moveDir & MoveEast) != 0 && (m_moveDir & MoveWest) == 0) m_targetMoveX = m_x + advanceX;
-    else if ((m_moveDir & MoveEast) == 0 && (m_moveDir & MoveWest) != 0) m_targetMoveX = m_x - advanceX;
-    if ((m_moveDir & MoveSouth) != 0 && (m_moveDir & MoveNorth) == 0) m_targetMoveY = m_y + advanceY;
-    else if ((m_moveDir & MoveSouth) == 0 && (m_moveDir & MoveNorth) != 0) m_targetMoveY = m_y - advanceY;
-
-    if ((m_moveDir & MoveEast)  || (m_moveDir & MoveWest))  m_isMovingX = true;
-    if ((m_moveDir & MoveSouth) || (m_moveDir & MoveNorth)) m_isMovingY = true;
-}
-
-
-void ITransformable::startRotating(float advance)
-{
-    startRotating(0, 0, advance);
-}
-
-
-void ITransformable::startRotating(float advanceX, float advanceY, float advanceZ)
-{
-    // Do not accept negative values. Use ITransformable::setRotateDirection
-    // to specify the direction to move object in.
-    advanceX = qAbs(advanceX);
-    advanceY = qAbs(advanceY);
-    advanceZ = qAbs(advanceZ);
-
-    // Calculates the target rotation.
-    if (m_rotateDirX & RotateCW) m_targetRotateX = m_angleX + advanceX;
-    else if (m_rotateDirY & RotateCCW) m_targetRotateX = m_angleX - advanceX;
-    if (m_rotateDirY & RotateCW) m_targetRotateY = m_angleY + advanceY;
-    else if (m_rotateDirY & RotateCCW) m_targetRotateY = m_angleY - advanceY;
-    if (m_rotateDirZ & RotateCW) m_targetRotateZ = m_angleZ + advanceZ;
-    else if (m_rotateDirZ & RotateCCW) m_targetRotateZ = m_angleZ - advanceZ;
-
-    if (m_rotateDirX != RotateNone ||
-        m_rotateDirY != RotateNone ||
-        m_rotateDirZ != RotateNone)
+    if (advanceX != 0.f)
     {
-        m_isRotating = true;
+        m_isMovingX = true;
+        m_targetMoveX = m_x + advanceX;
+
+        if (advanceX < 0)
+        {
+            m_moveDir |= MoveWest;
+        }
+        else
+        {
+            m_moveDir |= MoveEast;
+        }
+    }
+
+    if (advanceY != 0.f)
+    {
+        m_isMovingY = true;
+        m_targetMoveY = m_y + advanceY;
+
+        if (advanceY < 0)
+        {
+            m_moveDir |= MoveNorth;
+        }
+        else
+        {
+            m_moveDir |= MoveSouth;
+        }
     }
 }
 
 
-void ITransformable::startScaling(float scaleX, float scaleY)
+void ITransformable::startMovingTo(float targetX, float targetY)
 {
-    // Do not accept negative values.
-    scaleX = qAbs(scaleX);
-    scaleY = qAbs(scaleY);
+    m_isMovingX = false;
+    m_isMovingY = false;
+    m_moveDir = MoveNone;
 
-    // Calculates the target scale.
-    if (scaleX <= m_scaleX) m_scaleDirX = ScaleDown;
-    else m_scaleDirX = ScaleUp;
-    if (scaleY <= m_scaleY) m_scaleDirY = ScaleDown;
-    else m_scaleDirY = ScaleUp;
+    // Gathers amount of pixels to move in real coordinates.
+    auto b = rect();
+    float toMoveX = targetX - b.x();
+    float toMoveY = targetY - b.y();
 
-    m_targetScaleX = scaleX;
-    m_targetScaleY = scaleY;
+    // Determines the target location.
+    if (targetX < b.x())
+    {
+        m_moveDir |= MoveWest;
+        m_targetMoveX = m_x + toMoveX;
+    }
+    else
+    {
+        m_moveDir |= MoveEast;
+        m_targetMoveX = m_x + toMoveX;
+    }
 
-    if (scaleX != 0) m_isScalingX = true;
-    if (scaleY != 0) m_isScalingY = true;
+    if (targetY < m_y)
+    {
+        m_moveDir |= MoveNorth;
+        m_targetMoveY = m_y + toMoveY;
+    }
+    else
+    {
+        m_moveDir |= MoveSouth;
+        m_targetMoveY = m_y + toMoveY;
+    }
+
+    if (int(toMoveX) != 0) m_isMovingX = true;
+    if (int(toMoveY) != 0) m_isMovingY = true;
 }
 
 
-void ITransformable::startFading(float target)
+void ITransformable::startRotating(bool cwX, bool cwY, bool cwZ)
+{
+    if (m_rotateMode != RotateForever) return;
+
+    m_isRotatingX = (m_rotateAxes & AxisX);
+    m_isRotatingY = (m_rotateAxes & AxisY);
+    m_isRotatingZ = (m_rotateAxes & AxisZ);
+
+    m_rotateDirX  = cwX ? RotateCW : RotateCCW;
+    m_rotateDirY  = cwY ? RotateCW : RotateCCW;
+    m_rotateDirZ  = cwZ ? RotateCW : RotateCCW;
+}
+
+
+void ITransformable::startRotatingBy(float advance)
+{
+    startRotatingBy(0, 0, advance);
+}
+
+
+void ITransformable::startRotatingBy(float advanceX, float advanceY, float advanceZ)
+{
+    m_isRotatingX = false;
+    m_isRotatingY = false;
+    m_isRotatingZ = false;
+    m_rotateDirX = RotateNone;
+    m_rotateDirY = RotateNone;
+    m_rotateDirZ = RotateNone;
+
+    // Calculates the target angle.
+    if (advanceX != 0)
+    {
+        m_isRotatingX = true;
+
+        if (advanceX < 0)
+        {
+            m_rotateDirX = RotateCCW;
+            m_targetRotateX = m_angleX - advanceX;
+        }
+        else
+        {
+            m_rotateDirX = RotateCW;
+            m_targetRotateX = m_angleX + advanceX;
+        }
+    }
+
+    if (advanceY != 0)
+    {
+        m_isRotatingY = true;
+
+        if (advanceY < 0)
+        {
+            m_rotateDirY = RotateCCW;
+            m_targetRotateY = m_angleY - advanceY;
+        }
+        else
+        {
+            m_rotateDirY = RotateCW;
+            m_targetRotateY = m_angleY + advanceY;
+        }
+    }
+
+    if (advanceZ != 0)
+    {
+        m_isRotatingZ = true;
+
+        if (advanceZ < 0)
+        {
+            m_rotateDirZ = RotateCCW;
+            m_targetRotateZ = m_angleZ - advanceZ;
+        }
+        else
+        {
+            m_rotateDirZ = RotateCW;
+            m_targetRotateZ = m_angleZ + advanceZ;
+        }
+    }
+}
+
+
+void ITransformable::startRotatingTo(float target)
+{
+    startRotatingTo(0, 0, target);
+}
+
+
+void ITransformable::startRotatingTo(float targetX, float targetY, float targetZ)
+{
+    m_targetRotateX = targetX;
+    m_targetRotateY = targetY;
+    m_targetRotateZ = targetZ;
+
+    // Determines the rotate directions.
+    if (targetX < m_angleX) m_rotateDirX = RotateCCW;
+    else m_rotateDirX = RotateCW;
+    if (targetY < m_angleY) m_rotateDirY = RotateCCW;
+    else m_rotateDirY = RotateCW;
+    if (targetZ < m_angleZ) m_rotateDirZ = RotateCCW;
+    else m_rotateDirY = RotateCW;
+
+    m_isRotatingX = true;
+    m_isRotatingY = true;
+    m_isRotatingZ = true;
+}
+
+
+void ITransformable::startScalingTo(float scaleX, float scaleY)
 {
     // Do not accept negative values.
-    target = qAbs(target);
+    m_targetScaleX = qAbs(scaleX);
+    m_targetScaleY = qAbs(scaleY);
+
+    // Calculates the target scale.
+    if (m_targetScaleX <= m_scaleX) m_scaleDirX = ScaleDown;
+    else m_scaleDirX = ScaleUp;
+    if (m_targetScaleY <= m_scaleY) m_scaleDirY = ScaleDown;
+    else m_scaleDirY = ScaleUp;
+
+    m_isScalingX = true;
+    m_isScalingY = true;
+}
+
+
+void ITransformable::startFadingTo(float target)
+{
+    // Do not accept negative values.
+    target = (float)(uchar) qAbs(target);
 
     // Calculates the target opacity.
     if (target <= m_opacity) m_fadeDir = FadeOut;
@@ -467,7 +638,9 @@ void ITransformable::stopMoving()
 
 void ITransformable::stopRotating()
 {
-    m_isRotating = false;
+    m_isRotatingX = false;
+    m_isRotatingY = false;
+    m_isRotatingZ = false;
     m_emitter.emitStoppedRotating();
 }
 
@@ -489,10 +662,10 @@ void ITransformable::stopFading()
 
 void ITransformable::updateTransform(const GameTime& time)
 {
-    if (isMoving()) updateMove(time.deltaTime());
-    if (isRotating()) updateRotate(time.deltaTime());
-    if (isScaling()) updateScale(time.deltaTime());
-    if (isFading()) updateFade(time.deltaTime());
+    updateMove(time.deltaTime());
+    updateRotate(time.deltaTime());
+    updateScale(time.deltaTime());
+    updateFade(time.deltaTime());
 }
 
 
@@ -500,49 +673,79 @@ void ITransformable::setSize(float width, float height)
 {
     m_width = width;
     m_height = height;
+
+    m_emitter.emitSizeChanged();
+}
+
+
+void ITransformable::setSize(const QSizeF& size)
+{
+    setSize(size.width(), size.height());
+}
+
+
+QPointF ITransformable::visiblePos(float x, float y)
+{
+    QPainterPath path;
+    QTransform transform;
+
+    path.addRect(x * m_scaleX, y * m_scaleY, m_width, m_height);
+
+    transform.translate(m_originX, m_originY);
+    transform.scale(-m_scaleX, -m_scaleY);
+    transform.translate(-m_originX, -m_originY);
+
+    return transform.map(path).boundingRect().topLeft();
 }
 
 
 void ITransformable::updateMove(double delta)
 {
-    if ((m_moveDir & MoveEast) != 0 && (m_moveDir & MoveWest) == 0)
+    if (m_isMovingX)
     {
-        m_x += (m_speedMoveX * delta);
-        if (m_x >= m_targetMoveX)
+        if ((m_moveDir & MoveEast) != 0)
         {
-            m_x = m_targetMoveX;
-            m_isMovingX = false;
-            checkMove();
+            m_x += (m_speedMoveX * delta);
+            if (m_x >= m_targetMoveX)
+            {
+                m_x = m_targetMoveX;
+                m_isMovingX = false;
+                checkMove();
+            }
+        }
+        else if ((m_moveDir & MoveWest) != 0)
+        {
+            m_x -= (m_speedMoveX * delta);
+            if (m_x <= m_targetMoveX)
+            {
+                m_x = m_targetMoveX;
+                m_isMovingX = false;
+                checkMove();
+            }
         }
     }
-    else if ((m_moveDir & MoveEast) == 0 && (m_moveDir & MoveWest) != 0)
+
+    if (m_isMovingY)
     {
-        m_x -= (m_speedMoveX * delta);
-        if (m_x <= m_targetMoveX)
+        if ((m_moveDir & MoveSouth) != 0)
         {
-            m_x = m_targetMoveX;
-            m_isMovingX = false;
-            checkMove();
+            m_y += (m_speedMoveY * delta);
+            if (m_y >= m_targetMoveY)
+            {
+                m_y = m_targetMoveY;
+                m_isMovingY = false;
+                checkMove();
+            }
         }
-    }
-    if ((m_moveDir & MoveSouth) != 0 && (m_moveDir & MoveNorth) == 0)
-    {
-        m_y += (m_speedMoveY * delta);
-        if (m_y >= m_targetMoveY)
+        else if ((m_moveDir & MoveNorth) != 0)
         {
-            m_y = m_targetMoveY;
-            m_isMovingY = false;
-            checkMove();
-        }
-    }
-    else if ((m_moveDir & MoveSouth) == 0 && (m_moveDir & MoveNorth) != 0)
-    {
-        m_y -= (m_speedMoveY * delta);
-        if (m_y <= m_targetMoveY)
-        {
-            m_y = m_targetMoveY;
-            m_isMovingY = false;
-            checkMove();
+            m_y -= (m_speedMoveY * delta);
+            if (m_y <= m_targetMoveY)
+            {
+                m_y = m_targetMoveY;
+                m_isMovingY = false;
+                checkMove();
+            }
         }
     }
 }
@@ -550,7 +753,7 @@ void ITransformable::updateMove(double delta)
 
 void ITransformable::updateRotate(double delta)
 {
-    if ((m_rotateAxes & AxisX) != 0 && m_rotateDirX != RotateNone)
+    if (m_isRotatingX)
     {
         if (m_rotateDirX == RotateCW)
         {
@@ -571,7 +774,8 @@ void ITransformable::updateRotate(double delta)
             }
         }
     }
-    else if ((m_rotateAxes & AxisY) != 0 && m_rotateDirY != RotateNone)
+
+    if (m_isRotatingY)
     {
         if (m_rotateDirY == RotateCW)
         {
@@ -592,7 +796,8 @@ void ITransformable::updateRotate(double delta)
             }
         }
     }
-    else if ((m_rotateAxes & AxisZ) != 0 && m_rotateDirZ != RotateNone)
+
+    if (m_isRotatingZ)
     {
         if (m_rotateDirZ == RotateCW)
         {
@@ -618,45 +823,51 @@ void ITransformable::updateRotate(double delta)
 
 void ITransformable::updateScale(double delta)
 {
-    if (m_scaleDirX == ScaleUp)
+    if (m_isScalingX)
     {
-        m_scaleX += (m_speedScaleX * delta);
-        if (m_scaleX >= m_targetScaleX)
+        if (m_scaleDirX == ScaleUp)
         {
-            m_scaleX = m_targetScaleX;
-            m_isScalingX = false;
-            checkScale();
+            m_scaleX += (m_speedScaleX * delta);
+            if (m_scaleX >= m_targetScaleX)
+            {
+                m_scaleX = m_targetScaleX;
+                m_isScalingX = false;
+                checkScale();
+            }
         }
-    }
-    else
-    {
-        m_scaleX -= (m_speedScaleX * delta);
-        if (m_scaleX <= m_targetScaleX)
+        else
         {
-            m_scaleX = m_targetScaleX;
-            m_isScalingX = false;
-            checkScale();
+            m_scaleX -= (m_speedScaleX * delta);
+            if (m_scaleX <= m_targetScaleX)
+            {
+                m_scaleX = m_targetScaleX;
+                m_isScalingX = false;
+                checkScale();
+            }
         }
     }
 
-    if (m_scaleDirY == ScaleUp)
+    if (m_isScalingY)
     {
-        m_scaleY += (m_speedScaleY * delta);
-        if (m_scaleY >= m_targetScaleY)
+        if (m_scaleDirY == ScaleUp)
         {
-            m_scaleY = m_targetScaleY;
-            m_isScalingY = false;
-            checkScale();
+            m_scaleY += (m_speedScaleY * delta);
+            if (m_scaleY >= m_targetScaleY)
+            {
+                m_scaleY = m_targetScaleY;
+                m_isScalingY = false;
+                checkScale();
+            }
         }
-    }
-    else
-    {
-        m_scaleY -= (m_speedScaleY * delta);
-        if (m_scaleY <= m_targetScaleY)
+        else
         {
-            m_scaleY = m_targetScaleY;
-            m_isScalingY = false;
-            checkScale();
+            m_scaleY -= (m_speedScaleY * delta);
+            if (m_scaleY <= m_targetScaleY)
+            {
+                m_scaleY = m_targetScaleY;
+                m_isScalingY = false;
+                checkScale();
+            }
         }
     }
 }
@@ -664,22 +875,25 @@ void ITransformable::updateScale(double delta)
 
 void ITransformable::updateFade(double delta)
 {
-    if (m_fadeDir == FadeIn)
+    if (m_isFading)
     {
-        m_opacity += (m_speedFade * delta);
-        if (m_opacity >= m_targetOpacity)
+        if (m_fadeDir == FadeIn)
         {
-            m_opacity = m_targetOpacity;
-            stopFading();
+            m_opacity += (m_speedFade * delta);
+            if (m_opacity >= m_targetOpacity)
+            {
+                m_opacity = m_targetOpacity;
+                stopFading();
+            }
         }
-    }
-    else
-    {
-        m_opacity -= (m_speedFade * delta);
-        if (m_opacity <= m_targetOpacity)
+        else
         {
-            m_opacity = m_targetOpacity;
-            stopFading();
+            m_opacity -= (m_speedFade * delta);
+            if (m_opacity <= m_targetOpacity)
+            {
+                m_opacity = m_targetOpacity;
+                stopFading();
+            }
         }
     }
 }
@@ -694,4 +908,42 @@ void ITransformable::checkMove()
 void ITransformable::checkScale()
 {
     if (!m_isScalingX && !m_isScalingY) stopScaling();
+}
+
+
+ITransformable::operator QString() const
+{
+    QString s;
+    QRectF br = rect();
+    QString sx = " x=" + QString::number(m_x);
+    QString sy = " y=" + QString::number(m_y);
+    QString sw = " w=" + QString::number(m_width);
+    QString sh = " h=" + QString::number(m_height);
+    QString rx = " x=" + QString::number(br.x());
+    QString ry = " y=" + QString::number(br.y());
+    QString rw = " w=" + QString::number(br.width());
+    QString rh = " h=" + QString::number(br.height());
+    QString ax = " x=" + QString::number(m_angleX);
+    QString ay = " y=" + QString::number(m_angleY);
+    QString az = " z=" + QString::number(m_angleZ);
+    QString cx = " x=" + QString::number(m_scaleX);
+    QString cy = " y=" + QString::number(m_scaleY);
+    QString ox = " x=" + QString::number(m_originX);
+    QString oy = " y=" + QString::number(m_originY);
+
+    s.append("-- Transformable\n");
+    s.append(QString("Position:") + sx + sy + "\n");
+    s.append(QString("Size:") + sw + sh + "\n");
+    s.append(QString("Real position:") + rx + ry + "\n");
+    s.append(QString("Real size:") + rw + rh + "\n");
+    s.append(QString("Origin:") + ox + oy + "\n");
+    s.append(QString("Angle:") + ax + ay + az + "\n");
+    s.append(QString("Scale:") + cx + cy + "\n");
+    s.append(QString("Opacity: ") + QString::number(m_opacity) + "\n");
+    s.append(QString("Is moving: ") + ((isMoving())? "true\n" : "false\n"));
+    s.append(QString("Is rotating: ") + ((isRotating())? "true\n" : "false\n"));
+    s.append(QString("Is scaling: ") + ((isScaling())? "true\n" : "false\n"));
+    s.append(QString("Is fading: ") + ((isFading())? "true\n" : "false\n\n"));
+
+    return s;
 }

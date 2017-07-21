@@ -20,14 +20,20 @@
 
 
 // Cranberry headers
-#include <Cranberry/System/Debug.hpp>
-#include <Cranberry/Window/Window.hpp>
+#include <Cranberry/Gui/GuiManager.hpp>
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
+#include <Cranberry/System/Debug.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 // Qt headers
+#include <QApplication>
+#include <QQuickItem>
+#include <QQuickWindow>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QScreen>
 #include <QtEvents>
@@ -37,10 +43,9 @@ CRANBERRY_USING_NAMESPACE
 
 
 CRANBERRY_GLOBAL_VAR(Window*, g_window)
-CRANBERRY_CONST_VAR(QString, c_path, ":/cb/glsl/%0_%1.glsl")
-CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT|
-                                       GL_STENCIL_BUFFER_BIT|
-                                       GL_DEPTH_BUFFER_BIT)
+CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT   |
+                                       GL_STENCIL_BUFFER_BIT |
+                                       GL_DEPTH_BUFFER_BIT   )
 
 
 Window::Window(Window* parent)
@@ -49,17 +54,18 @@ Window::Window(Window* parent)
     , m_keyCount(0)
     , m_padCount(0)
     , m_btnCount(0)
+    , m_isMainWindow(false)
+    , m_fakeFocusOut(false)
 {
     QSurfaceFormat fmt = format();
-    fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
-    fmt.setSamples(8);
 
     // Determines between OpenGL and GLES API.
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL)
     {
         fmt.setVersion(3, 3);
+        fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
     }
     else
     {
@@ -79,8 +85,7 @@ Window::~Window()
 
 bool Window::isValid() const
 {
-    return context() != nullptr &&
-           m_gl != nullptr;
+    return context() != nullptr && m_gl != nullptr;
 }
 
 
@@ -108,6 +113,28 @@ QOpenGLFunctions* Window::functions() const
 }
 
 
+uint Window::vao() const
+{
+    return m_vao;
+}
+
+
+void Window::restoreOpenGLSettings()
+{
+    const QColor& cc = m_settings.clearColor();
+
+    glDebug(m_gl->glViewport(0, 0, width(), height()));
+    glDebug(m_gl->glClearColor(cc.redF(), cc.greenF(), cc.blueF(), cc.alphaF()));
+    glDebug(m_gl->glEnable(GL_BLEND));
+    glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    glDebug(m_gl->glEnable(GL_MULTISAMPLE));
+    glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
+    glDebug(m_gl->glDisable(GL_DEPTH_TEST));
+    glDebug(m_gl->glDepthMask(GL_FALSE));
+    glDebug(context()->extraFunctions()->glBindVertexArray(m_vao));
+}
+
+
 void Window::setSettings(const WindowSettings& settings)
 {
     m_settings = settings;
@@ -132,13 +159,6 @@ void Window::initializeGL()
     m_gl = context()->functions();
     m_gl->initializeOpenGLFunctions();
 
-    const QColor& cc = m_settings.clearColor();
-    glDebug(m_gl->glClearColor(cc.redF(), cc.greenF(), cc.blueF(), cc.alphaF()));
-    glDebug(m_gl->glEnable(GL_BLEND));
-    glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-    glDebug(m_gl->glEnable(GL_MULTISAMPLE));
-    glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
-
     // Create a single VAO which will be bound all the time.
     auto* vao = new QOpenGLVertexArrayObject(this);
     if (!vao->create())
@@ -148,10 +168,74 @@ void Window::initializeGL()
     else
     {
         vao->bind();
+        m_vao = vao->objectId();
     }
 
-    loadDefaultShaders();
+    restoreOpenGLSettings();
+
+    // Load shaders only once - for the main window.
+    if (m_isMainWindow)
+    {
+        OpenGLDefaultShaders::cranberryLoadDefaultShaders();
+        OpenGLDefaultShaders::cranberryInitDefaultShaders();
+        OpenGLDefaultShaders::cranberryResizeDefaultShaders(this);
+    }
+
     onInit();
+}
+
+
+void Window::registerQmlWindow(GuiManager* qw)
+{
+    m_guiWindows.append(qw);
+}
+
+
+void Window::unregisterQmlWindow(GuiManager* qw)
+{
+    m_guiWindows.removeOne(qw);
+}
+
+
+void Window::dispatchEvents(QEvent* event)
+{
+    auto localMousePos   = mapFromGlobal(QCursor::pos());
+    bool canReceiveFocus = event->type() == QEvent::MouseButtonPress   ||
+                           event->type() == QEvent::MouseButtonRelease ||
+                           event->type() == QEvent::MouseButtonDblClick;
+
+    for (GuiManager* w : m_guiWindows)
+    {
+        if (canReceiveFocus)
+        {
+            // Is current manager in range of the mouse cursor?
+            if (w->rect().contains(localMousePos.x(), localMousePos.y()))
+            {
+                m_activeGui = w;
+                m_fakeFocusOut = true;
+
+                if (!m_activeGui->window()->isActive())
+                {
+                    m_activeGui->window()->requestActivate();
+                }
+            }
+            else
+            {
+                if (m_activeGui == w)
+                {
+                    m_activeGui = nullptr;
+                    m_fakeFocusOut = false;
+                    requestActivate();
+                }
+            }
+        }
+
+        // Only receive events if in focus.
+        if (m_activeGui == w)
+        {
+            QCoreApplication::sendEvent(w->window(), event);
+        }
+    }
 }
 
 
@@ -163,7 +247,11 @@ void Window::parseSettings()
                        ? QSurfaceFormat::DoubleBuffer
                        : QSurfaceFormat::SingleBuffer
                        );
+
+    // Fix: Must recreate window after format change.
+    destroy();
     setFormat(sf);
+
     setTitle(m_settings.title());
     setPosition(m_settings.position());
     resize(m_settings.size());
@@ -177,36 +265,20 @@ void Window::parseSettings()
     {
         setWindowState(Qt::WindowFullScreen);
     }
-}
 
-
-void Window::loadDefaultShaders()
-{
-    OpenGLDefaultShaders::add("cb.glsl.texture", loadShader("texture"));
-    OpenGLDefaultShaders::add("cb.glsl.shape", loadShader("shape"));
+    create();
 }
 
 
 void Window::destroyGL()
 {
-    // Unloads all the default shader programs.
-    OpenGLDefaultShaders::remove("cb.glsl.texture");
-    OpenGLDefaultShaders::remove("cb.glsl.shape");
+    // Unloads all the default shader programs only once - for the main window.
+    if (m_isMainWindow)
+    {
+        OpenGLDefaultShaders::cranberryFreeDefaultShaders();
+    }
 
     onExit();
-}
-
-
-OpenGLShader* Window::loadShader(const char* name)
-{
-    QString vpath = c_path.arg(name, "vert");
-    QString fpath = c_path.arg(name, "frag");
-    OpenGLShader* s = new OpenGLShader;
-
-    s->setVertexShaderFromFile(vpath);
-    s->setFragmentShaderFromFile(fpath);
-
-    return s;
 }
 
 
@@ -221,9 +293,13 @@ void Window::paintGL()
 
     // Updating & rendering.
     m_time.update();
+
 #ifdef QT_DEBUG
     calculateFramerate();
 #endif
+
+    // Update shaders that require time for noise.
+    OpenGLDefaultShaders::cranberryUpdateDefaultShaders();
 
     onUpdate(m_time);
     glDebug(m_gl->glClear(c_clearMask));
@@ -237,6 +313,7 @@ void Window::mouseMoveEvent(QMouseEvent* event)
     MouseMoveEvent e(m_lastCursorPos, pos);
 
     onMouseMoved(e);
+    dispatchEvents(event);
     m_lastCursorPos = pos;
 }
 
@@ -247,6 +324,7 @@ void Window::mousePressEvent(QMouseEvent* event)
     m_btnCount++;
 
     onMouseButtonDown(m_mouseState);
+    dispatchEvents(event);
 }
 
 
@@ -256,12 +334,14 @@ void Window::mouseReleaseEvent(QMouseEvent* event)
     m_btnCount--;
 
     onMouseButtonReleased(MouseReleaseEvent(event->pos(), event->button()));
+    dispatchEvents(event);
 }
 
 
 void Window::mouseDoubleClickEvent(QMouseEvent* event)
 {
     onMouseDoubleClicked(MouseReleaseEvent(event->pos(), event->button()));
+    dispatchEvents(event);
 }
 
 
@@ -282,6 +362,7 @@ void Window::keyPressEvent(QKeyEvent* event)
     m_keyCount++;
 
     onKeyDown(m_keyState);
+    dispatchEvents(event);
 }
 
 
@@ -290,25 +371,33 @@ void Window::keyReleaseEvent(QKeyEvent* event)
     m_keyState.setKeyState(event->key(), false);
     m_keyCount--;
 
-    onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+    if (!event->isAutoRepeat())
+    {
+        onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+        dispatchEvents(event);
+    }
 }
 
 
 void Window::wheelEvent(QWheelEvent* event)
 {
     onScrolled(*event);
+    dispatchEvents(event);
 }
 
 
 void Window::touchEvent(QTouchEvent* event)
 {
     onTouched(*event);
+    dispatchEvents(event);
 }
 
 
 void Window::resizeEvent(QResizeEvent* event)
 {
     onWindowResized(event->oldSize());
+
+    OpenGLDefaultShaders::cranberryResizeDefaultShaders(this);
 }
 
 
@@ -326,9 +415,18 @@ void Window::focusInEvent(QFocusEvent*)
 
 void Window::focusOutEvent(QFocusEvent*)
 {
-    if (g_window == this) g_window = nullptr;
-    onWindowDeactivated();
-    disconnect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+    if (!m_fakeFocusOut)
+    {
+        if (g_window == this)
+        {
+            g_window = nullptr;
+        }
+
+        onWindowDeactivated();
+        disconnect(this, SIGNAL(frameSwapped()), this, SLOT(update()));
+    }
+
+    m_fakeFocusOut = false;
 }
 
 

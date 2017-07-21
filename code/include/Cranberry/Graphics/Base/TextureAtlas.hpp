@@ -57,9 +57,19 @@ public:
     /// textures on the current hardware.
     ///
     /// \param size Size of the texture, in pixels.
+    /// \param renderTarget Target to render atlas on.
     ///
     ////////////////////////////////////////////////////////////////////////////
     TextureAtlas(int size, Window* renderTarget = nullptr);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Initializes the texture atlas with an image.
+    ///
+    /// \param img Image that spans across the entire atlas.
+    /// \param renderTarget Target to render atlas on.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    TextureAtlas(const QImage& img, Window* renderTarget = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Frees all OpenGL textures allocated in this atlas.

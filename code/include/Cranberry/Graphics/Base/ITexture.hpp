@@ -51,8 +51,8 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT ITexture
-        : public IRenderable
-        , public ITransformable
+    : public IRenderable
+    , public ITransformable
 {
 public:
 
@@ -73,6 +73,14 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     virtual ~ITexture();
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the underlying QOpenGLTexture.
+    ///
+    /// \returns the underlying QOpenGLTexture.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QOpenGLTexture* texture() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Reimplements IRenderable::isNull(). Adds the condition that the
@@ -177,6 +185,14 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the maximum texture size on the current hardware. This is
     /// needed to pack multiple textures into a single one, while trying to
     /// create as big textures as possible.
@@ -191,7 +207,6 @@ public:
 protected:
 
     priv::QuadVertices& vertices();
-    QOpenGLTexture* texture() const;
     QOpenGLBuffer* buffer() const;
     void requestUpdate();
     virtual void initializeData();
@@ -204,7 +219,6 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     bool createBuffers();
     bool createTexture(const QImage& img);
-    auto buildMatrix() -> QMatrix4x4;
     void bindObjects();
     void releaseObjects();
     void writeVertices();

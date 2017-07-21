@@ -78,6 +78,30 @@ TextureAtlas::TextureAtlas(int size, Window* renderTarget)
 }
 
 
+TextureAtlas::TextureAtlas(const QImage& img, Window* renderTarget)
+    : m_size(img.size().width())
+    , m_usedSpace(0)
+    , m_occupancy(1.0)
+    , m_texture(new ITexture)
+{
+    if (renderTarget == nullptr)
+    {
+        if ((renderTarget = Window::activeWindow()) == nullptr)
+        {
+            cranError("TextureAtlas: Rendertarget is invalid.");
+            return;
+        }
+    }
+
+    if (QOpenGLContext::currentContext() != renderTarget->context())
+    {
+        renderTarget->makeCurrent();
+    }
+
+    m_texture->create(img, renderTarget);
+}
+
+
 TextureAtlas::~TextureAtlas()
 {
     m_texture->destroy();

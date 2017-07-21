@@ -243,3 +243,22 @@ void Background::updateUVs()
     vertices().at(2).uv(+uvW, +uvH);
     vertices().at(3).uv(-uvX, +uvH);
 }
+
+
+Background::operator QString() const
+{
+    QString s;
+    QString vx = " x=" + QString::number(m_view.x());
+    QString vy = " y=" + QString::number(m_view.y());
+    QString vw = " w=" + QString::number(m_view.width());
+    QString vh = " h=" + QString::number(m_view.height());
+    QString sx = " x=" + QString::number(m_scrollX);
+    QString sy = " y=" + QString::number(m_scrollY);
+
+    s.append(ITexture::operator QString());
+    s.append("-- Background\n");
+    s.append(QString("View:") + vx + vy + vw + vh + "\n");
+    s.append(QString("Scroll position:") + sx + sy + "\n\n");
+
+    return s;
+}

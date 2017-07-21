@@ -41,7 +41,7 @@ CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Index buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Texture creation failed.")
 CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Cannot render invalid object.")
-CRANBERRY_CONST_ARR(uint, 6, c_ibo, (0, 1, 2, 2, 3, 0))
+CRANBERRY_CONST_ARR(uint, 6, c_ibo, 0, 1, 2, 2, 3, 0)
 
 
 ITexture::ITexture()
@@ -69,6 +69,7 @@ bool ITexture::isNull() const
            m_texture == nullptr        ||
            m_vertexBuffer == nullptr   ||
            m_indexBuffer == nullptr    ||
+          !m_texture->isCreated()      ||
           !m_vertexBuffer->isCreated() ||
           !m_indexBuffer->isCreated();
 }
@@ -129,10 +130,13 @@ bool ITexture::createBuffers()
 bool ITexture::createTexture(const QImage& img)
 {
     m_texture = new QOpenGLTexture(img);
-    if (!m_texture->isCreated())
+    if (!m_texture->isCreated() || img.isNull())
     {
         return cranError(ERRARG(e_03));
     }
+
+    m_texture->setMinificationFilter(QOpenGLTexture::Linear);
+    m_texture->setMagnificationFilter(QOpenGLTexture::Linear);
 
     return true;
 }
@@ -183,15 +187,7 @@ void ITexture::update(const GameTime& time)
 
 void ITexture::render()
 {
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_04));
-        return;
-    }
-    else if (QOpenGLContext::currentContext() != renderTarget()->context())
-    {
-        renderTarget()->makeCurrent();
-    }
+    if (!prepareRendering()) return;
 
     bindObjects();
     writeVertices();
@@ -199,26 +195,6 @@ void ITexture::render()
     modifyAttribs();
     drawElements();
     releaseObjects();
-}
-
-
-QMatrix4x4 ITexture::buildMatrix()
-{
-    float fw = static_cast<float>(renderTarget()->width());
-    float fh = static_cast<float>(renderTarget()->height());
-
-    // TODO: Not cheap - maybe optimize this?!
-    QMatrix4x4 proj, tran, rot, scale, orig, norig;
-    proj.ortho(0.f, fw, fh, 0.f, -1.f, 1.f);
-    tran.translate(x(), y());
-    rot.rotate(angleX(), 1.f, 0.f, 0.f);
-    rot.rotate(angleY(), 0.f, 1.f, 0.f);
-    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
-    scale.scale(scaleX(), scaleY());
-    orig.translate(origin());
-    norig.translate(origin() * -1);
-
-    return proj * tran * orig * rot * norig * orig * scale * norig;
 }
 
 
@@ -264,7 +240,7 @@ void ITexture::modifyProgram()
     QOpenGLShaderProgram* program = shaderProgram()->program();
 
     glDebug(program->setUniformValue("u_tex", GL_ZERO));
-    glDebug(program->setUniformValue("u_mvp", buildMatrix()));
+    glDebug(program->setUniformValue("u_mvp", matrix(this)));
     glDebug(program->setUniformValue("u_opac", opacity()));
     glDebug(program->setUniformValue("u_mode", (uint) m_blendMode));
     glDebug(program->setUniformValue("u_effect", (uint) m_effect));
@@ -411,4 +387,17 @@ int ITexture::maxSize()
             ->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
 
     return texSize;
+}
+
+
+ITexture::operator QString() const
+{
+    QString s;
+
+    s.append(IRenderable::operator QString());
+    s.append(ITransformable::operator QString());
+    s.append("-- Texture\n");
+    s.append("OpenGL texture ID: " + QString::number(m_texture->textureId()) + "\n\n");
+
+    return s;
 }

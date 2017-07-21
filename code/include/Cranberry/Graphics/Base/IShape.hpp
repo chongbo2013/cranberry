@@ -50,8 +50,8 @@ CRANBERRY_BEGIN_NAMESPACE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 class CRANBERRY_GRAPHICS_EXPORT IShape
-        : public IRenderable
-        , public ITransformable
+    : public IRenderable
+    , public ITransformable
 {
 public:
 
@@ -149,6 +149,15 @@ public:
     void setColor(const QVector<QColor>& colors);
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
+
+
 protected:
 
     virtual uint renderModeWired() const = 0;
@@ -164,7 +173,6 @@ private:
     bool createBuffer();
     auto findCenter(const QVector<QVector2D>&) -> QVector2D;
     auto findSize(const QVector<QVector2D>&) -> QVector2D;
-    auto buildMatrix() -> QMatrix4x4;
     void bindObjects();
     void releaseObjects();
     void writeVertices();

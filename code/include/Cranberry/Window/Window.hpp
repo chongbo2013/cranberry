@@ -40,7 +40,9 @@
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
+CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
+CRANBERRY_ALIAS(QList<cran::GuiManager*>, GuiWindows)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -118,6 +120,20 @@ public:
     QOpenGLFunctions* functions() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Returns the default VAO for this render target.
+    ///
+    /// \returns this render target's VAO.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    uint vao() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Restores all OpenGL settings.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void restoreOpenGLSettings();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Specify the settings for this window. Call this before you call start().
     ///
     /// \param settings New window settings.
@@ -185,10 +201,12 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader* loadShader(const char* name);
+    void registerQmlWindow(GuiManager*);   // needed to simulate events
+    void unregisterQmlWindow(GuiManager*); // needed to simulate events
+    void dispatchEvents(QEvent*);
     void parseSettings();
-    void loadDefaultShaders();
     void destroyGL();
+
 #ifdef QT_DEBUG
     void calculateFramerate();
 #endif
@@ -197,6 +215,8 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLFunctions* m_gl;
+    GuiWindows        m_guiWindows;
+    GuiManager*       m_activeGui;
     WindowSettings    m_settings;
     GameTime          m_time;
     KeyboardState     m_keyState;
@@ -206,8 +226,12 @@ private:
     qint32            m_keyCount;
     qint32            m_padCount;
     qint32            m_btnCount;
+    uint              m_vao;
+    bool              m_isMainWindow;
+    bool              m_fakeFocusOut;
 
     friend class Game;
+    friend class GuiManager;
 };
 
 

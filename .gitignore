@@ -45,4 +45,6 @@ test/.qmake.cache
 test/.qmake.stash
 testenv/**
 examples/*/bin/**
+docs/*.md
+docs/*/*.md
 *.odg

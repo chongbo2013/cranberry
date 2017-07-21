@@ -26,6 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
+#include <Cranberry/Window/Window.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -51,10 +52,16 @@ public:
     ///
     /// \param name Key with which to store program.
     /// \param program Program to store.
+    /// \param update Update the u_time uniform at every frame?
+    /// \param resize Update the u_width and u_height uniform at window resize?
     /// \returns false if shader could not be added.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    static bool add(const QString& name, OpenGLShader* program);
+    static bool add(
+            const QString& name,
+            OpenGLShader* program,
+            bool update = false,
+            bool resize = false);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Removes the given program called \p name. Attention: The program added
@@ -76,10 +83,26 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     static OpenGLShader* get(const QString& name);
+
+
+private:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////
+    static OpenGLShader* cranberryGetShader(const char*);
+    static void cranberryLoadDefaultShaders();
+    static void cranberryFreeDefaultShaders();
+    static void cranberryInitDefaultShaders();
+    static void cranberryUpdateDefaultShaders();
+    static void cranberryResizeDefaultShaders(Window*);
+
+    friend class Window;
 };
 
 
 typedef QHash<QString, OpenGLShader*> ShaderMap;
+typedef QVector<OpenGLShader*> ShaderUpdateList;
 
 
 ////////////////////////////////////////////////////////////////////////////////

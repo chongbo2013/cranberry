@@ -27,6 +27,11 @@
 // Qt headers
 #include <QtGlobal>
 
+// Standard headers
+#if _MSC_VER
+    #include <string>
+#endif
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// These macroes export or import dynamic symbols. In order to export symbols,
@@ -84,8 +89,6 @@
 #define CRANBERRY_FORWARD_C(x)  CRANBERRY_BEGIN_NAMESPACE class x; CRANBERRY_END_NAMESPACE
 #define CRANBERRY_FORWARD_Q(x)  QT_BEGIN_NAMESPACE class x; QT_END_NAMESPACE
 
-#define TOLIST(...) { __VA_ARGS__ }
-
 ////////////////////////////////////////////////////////////////////////////////
 /// A macro for defining global and const variables. Ensures that there are no
 /// multiple definitions.
@@ -96,7 +99,15 @@
 #define CRANBERRY_GLOBAL_VAR(x, y) namespace { x y; }
 #define CRANBERRY_GLOBAL_VAR_A(x, y, z) namespace { x y = z; }
 #define CRANBERRY_CONST_VAR(x, y, z) namespace { const x y = z; }
-#define CRANBERRY_CONST_ARR(t, n, c, d) namespace { std::array<t, n> c(TOLIST d); }
+#define CRANBERRY_CONST_ARR(t, n, c, ...) namespace { std::array<t, n> c = { __VA_ARGS__ }; }
+
+////////////////////////////////////////////////////////////////////////////////
+/// A macro for creating aliases.
+///
+/// \def CRANBERRY_ALIAS
+///
+////////////////////////////////////////////////////////////////////////////////
+#define CRANBERRY_ALIAS(x, y) typedef x y;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// These macroes are to be used inside classes in order to declare the
@@ -111,9 +122,15 @@
 #define CRANBERRY_DEFAULT_CTOR(x) x() = default;
 #define CRANBERRY_DEFAULT_DTOR(x) virtual ~x() = default;
 #define CRANBERRY_DEFAULT_COPY(x) x(const x& other) = default; x& operator =(const x& other) = default;
-#define CRANBERRY_DEFAULT_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = default;
 #define CRANBERRY_DISABLE_COPY(x) x(const x& other) = delete; x& operator =(const x& other) = delete;
-#define CRANBERRY_DISABLE_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = delete;
+
+#ifndef _MSC_VER
+    #define CRANBERRY_DEFAULT_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = default;
+    #define CRANBERRY_DISABLE_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = delete;
+#else
+    #define CRANBERRY_DEFAULT_MOVE(x)
+    #define CRANBERRY_DISABLE_MOVE(x)
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Uses compiler-specific macroes to retrieve the function name.
@@ -194,12 +211,13 @@
 #define CRANBERRY_EXIT_UNHANDLED    2
 
 ////////////////////////////////////////////////////////////////////////////////
-/// MSVC 2013 and lower do not support noexcept.
+/// MSVC 2013 and lower do not support noexcept and constexpr.
 ///
-/// \def noexcept
+/// \def noexcept constexpr
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #if defined(_MSC_VER) && _MSC_VER <= 1800
+    #define constexpr const
     #define noexcept
 #endif
 
@@ -207,6 +225,25 @@
 #define ERRARG_1(x, y) x.arg(CRANBERRY_FUNC, name(), y)
 #define ERRARG_2(x, y, z) x.arg(CRANBERRY_FUNC, name(), y, z)
 #define ERRARG_3(x, y, z, w) x.arg(CRANBERRY_FUNC, name(), y, z, w)
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \defgroup System System
+/// All cranberry classes of module System.
+/// \defgroup OpenGL OpenGL
+/// All cranberry classes of module OpenGL.
+/// \defgroup Graphics Graphics
+/// All cranberry classes of module Graphics.
+/// \defgroup Input Input
+/// All cranberry classes of module Input.
+/// \defgroup Window Window
+/// All cranberry classes of module Window.
+/// \defgroup Game Game
+/// All cranberry classes of module Game.
+/// \defgroup Gui Gui
+/// All cranberry classes of module Gui.
+///
+////////////////////////////////////////////////////////////////////////////////
 
 
 ////////////////////////////////////////////////////////////////////////////////

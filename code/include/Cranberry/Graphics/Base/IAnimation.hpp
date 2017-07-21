@@ -96,18 +96,12 @@ public:
     bool isAnimating() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Creates a raw animation from a given set of frames and durations.
+    /// Retrieves the amount of frames.
     ///
-    /// \param frames Frames of the animation.
-    /// \param durations Duration of each frame.
-    /// \returns true if created successfully.
+    /// \returns the amount of frames.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool createRawAnimation(
-            const QVector<QImage>& frames,
-            const QVector<qreal>& durations,
-            Window* renderTarget = nullptr
-            );
+    int frameCount() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Creates a new animation by loading the file at the given path and
@@ -133,6 +127,19 @@ public:
     void startAnimation(AnimationMode mode);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Switches into idle mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startIdle();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Resumes the animation, while leaving the mode, current frame or elapsed
+    /// time unchanged.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void resumeAnimation();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Stops the animation.
     ///
     ////////////////////////////////////////////////////////////////////////////
@@ -151,6 +158,16 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void render() override;
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the idle frame (animation doing nothing).
+    ///
+    /// \param atlas Atlas in which the idle frame resides.
+    /// \param frame Source rectangle of the idle frame.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setIdleFrame(uint atlas, const QRectF& frame);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the blend color that will be applied on this object. Depends
@@ -203,6 +220,15 @@ public:
     AnimationEmitter* animationEmitter();
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
+
+
 protected:
 
     ////////////////////////////////////////////////////////////////////////////
@@ -210,12 +236,29 @@ protected:
     ///
     /// \param frames Frames to insert.
     /// \param durations Duration of each frame (in milliseconds).
+    /// \param renderTarget The target to show animation on.
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
     bool createInternal(
             const QVector<QImage>& frames,
             const QVector<qreal>& durations,
+            Window* renderTarget
+            );
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the texture atlases but skips packing the frames, since they are
+    /// already specified through the \p frames parameter.
+    ///
+    /// \param sheets The spritesheets to use.
+    /// \param frames The frames to use.
+    /// \param renderTarget The target to show animation on.
+    /// \returns true if created successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool createInternal(
+            const QVector<QImage>& sheets,
+            const QVector<Frame>& frames,
             Window* renderTarget
             );
 
@@ -234,6 +277,7 @@ private:
     QVector<Frame>         m_frames;
     QVector<TextureAtlas*> m_atlases;
     QString                m_name;
+    Frame                  m_idleFrame;
     Frame*                 m_currentFrame;
     qreal                  m_elapsedTime;
     bool                   m_isAnimating;
@@ -244,8 +288,7 @@ private:
 /// \class IAnimation
 /// \ingroup Graphics
 ///
-/// This class is the base for all animations. Use createRawAnimation() if you
-/// want to show an animation from a given set of frames and frame lengths.
+/// This class is the base for all animations.
 ///
 /// \code
 /// class GifAnimation : public IAnimation

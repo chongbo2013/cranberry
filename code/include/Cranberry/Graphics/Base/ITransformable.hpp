@@ -31,7 +31,12 @@
 
 // Qt headers
 #include <QPainterPath>
+#include <QMatrix4x4>
 #include <QVector2D>
+
+
+// Forward declarations
+CRANBERRY_FORWARD_C(IRenderable)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -187,6 +192,21 @@ public:
     float opacity() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the entire transformation matrix. Since ITransformable and
+    /// IRenderable are two independent classes, we need it here in order to
+    /// retrieve the render target's width and height.
+    ///
+    /// \note \p flipped is only false for frame buffers, because when they are
+    ///       rendered to, the objects are already flipped.
+    ///
+    /// \param obj Target to render to. Tip: Simply use 'this'.
+    /// \param flipped Flip the entire object?
+    /// \returns the transformation matrix.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QMatrix4x4 matrix(IRenderable* obj) const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the move direction of the object.
     ///
     /// \returns the move direction.
@@ -278,10 +298,23 @@ public:
     /// Retrieves the exact bounds of the object. Can be used for precise
     /// collision detection.
     ///
+    /// \note If you rotate your object and want to use this method to determine
+    ///       the target position for a ITransformable::startMovingTo() call,
+    ///       use ITransformable::rect() instead.
+    ///
     /// \returns the bounds.
     ///
     ////////////////////////////////////////////////////////////////////////////
     QPainterPath bounds() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the bounds of the object but does not include the rotation.
+    /// It is not recommended to use this method for collision detection.
+    ///
+    /// \returns the bounds, without rotation applied.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QRectF rect() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the emitter of this object.
@@ -301,14 +334,6 @@ public:
     void setMoveSpeed(float speedX, float speedY);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the move direction of the object.
-    ///
-    /// \param dir One or more move directions.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setMoveDirection(MoveDirections dir);
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Specifies the rotate speed of the object.
     ///
     /// \param speedX Speed of X-axis.
@@ -319,31 +344,10 @@ public:
     void setRotateSpeed(float speedX, float speedY, float speedZ);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the move direction of the object.
-    /// This is exclusive to 2-D objects.
+    /// Specifies the rotate axes of the object. Only needed when rotating the
+    /// object infinitely long through ITransformable::startRotating().
     ///
-    /// \param dir One or more move directions.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setRotateDirection(RotateDirection dir);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the move direction of the object.
-    /// This is exclusive to 3-D objects.
-    ///
-    /// \param dir One or more move directions.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setRotateDirection(
-            RotateDirection dirX,
-            RotateDirection dirY,
-            RotateDirection dirZ
-            );
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the rotate axes of the object.
-    ///
-    /// \param dir One or more axes.
+    /// \param axes Rotate axes to use.
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setRotateAxes(RotateAxes axes);
@@ -429,18 +433,53 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the position of the object.
     ///
+    /// \param x New X-position.
+    /// \param y New Y-position.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setPosition(float x, float y);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the position of the object.
+    ///
     /// \param pos New position.
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setPosition(const QVector2D& pos);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the rotate origin of the object.
+    /// Specifies the rotate/scale origin of the object.
+    ///
+    /// \param x New X-orgin.
+    /// \param y New Y-origin.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setOrigin(float x, float y);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the rotate/scale origin of the object.
     ///
     /// \param origin New rotate origin.
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setOrigin(const QVector2D& origin);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the size of the object.
+    ///
+    /// \param width New width.
+    /// \param height New height.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setSize(float width, float height);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the size of the object.
+    ///
+    /// \param size New size.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setSize(const QSizeF& size);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Moves the object by \p advanceX in the X-direction and by \p advanceY
@@ -450,21 +489,40 @@ public:
     /// \param advanceY Amount of units to move object vertically.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startMoving(float advanceX, float advanceY);
+    void startMovingBy(float advanceX, float advanceY);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Rotates the object by \p advance degrees. Use
-    /// std::numeric_limits<float>::infinity to rotate it infinitely.
+    /// Moves the object to \p targetX in the X-direction and to \p targetY
+    /// in the Y-direction. Note: If you scaled your object, you are required
+    /// to use ITransformable::rect() to calculate your target position!
+    ///
+    /// \param targetX Target X-position.
+    /// \param targetY Target Y-position.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startMovingTo(float targetX, float targetY);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Starts rotating the object, but only if rotate mode is RotateForever.
+    ///
+    /// \param cwX Clockwise rotation around X-axis?
+    /// \param cwY Clockwise rotation around Y-axis?
+    /// \param cwZ Clockwise rotation around Z-axis?
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startRotating(bool cwX = true, bool cwY = true, bool cwZ = true);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Rotates the object by \p advance degrees.
     /// This is exclusive to 2-D objects.
     ///
     /// \param advance Amount of degrees to rotate object by.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startRotating(float advance = 0);
+    void startRotatingBy(float advance);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Rotates the object by \p advance degrees. Use
-    /// std::numeric_limits<float>::infinity to rotate it infinitely.
+    /// Rotates the object by \p advance degrees.
     /// This is exclusive to 3-D objects.
     ///
     /// \param advanceX Amount of degrees to rotate object by around X-axis.
@@ -472,7 +530,27 @@ public:
     /// \param advanceZ Amount of degrees to rotate object by around Z-axis.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startRotating(float advanceX, float advanceY, float advanceZ);
+    void startRotatingBy(float advanceX, float advanceY, float advanceZ);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Rotates the object to \p target degrees.
+    /// This is exclusive to 2-D objects.
+    ///
+    /// \param target Angle (in degrees) to rotate object to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startRotatingTo(float target);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Rotates the object by \p targetX|targetY|targetZ degrees.
+    /// This is exclusive to 3-D objects.
+    ///
+    /// \param targetX Angle to rotate object to around X-axis.
+    /// \param targetY Angle to rotate object to around Y-axis.
+    /// \param targetZ Angle to rotate object to around Z-axis.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void startRotatingTo(float targetX, float targetY, float targetZ);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Scales the object by \p scaleX in the X-direction and by \p scaleY
@@ -482,7 +560,7 @@ public:
     /// \param scaleY Vertical target scale.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startScaling(float scaleX, float scaleY);
+    void startScalingTo(float targetX, float targetY);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Fades the object in or out until it reaches the target opacity. To
@@ -492,7 +570,7 @@ public:
     /// \param target Target opacity (0-1).
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startFading(float target);
+    void startFadingTo(float target);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Stops moving the object.
@@ -519,6 +597,15 @@ public:
     void stopFading();
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
+
+
 protected:
 
     ////////////////////////////////////////////////////////////////////////////
@@ -529,21 +616,13 @@ protected:
     ////////////////////////////////////////////////////////////////////////////
     void updateTransform(const GameTime& time);
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the size of the object.
-    ///
-    /// \param width New width.
-    /// \param height New height.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setSize(float width, float height);
-
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
+    auto visiblePos(float x, float y) -> QPointF;
     void updateMove(double delta);
     void updateRotate(double delta);
     void updateScale(double delta);
@@ -566,7 +645,9 @@ private:
     RotateMode           m_rotateMode;
     bool                 m_isMovingX;
     bool                 m_isMovingY;
-    bool                 m_isRotating;
+    bool                 m_isRotatingX;
+    bool                 m_isRotatingY;
+    bool                 m_isRotatingZ;
     bool                 m_isScalingX;
     bool                 m_isScalingY;
     bool                 m_isFading;
@@ -613,7 +694,7 @@ private:
 /// void start()
 /// {
 ///     connect(sprite->transformableEmitter(), SIGNAL(stoppedMoving()), this, SLOT(stop()));
-///     sprite->startMoving(100, 80);
+///     sprite->startMovingBy(100, 80);
 /// }
 ///
 /// void stop()

@@ -111,6 +111,23 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Provides a lightweight way to make the render target's context current.
+    /// Normally, you do not need to use this, only if Qt code interferes with
+    /// the context of the render target.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void makeCurrent();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Prepares the render process by making the target's context current or
+    /// by determining whether the object is null.
+    ///
+    /// \returns true if preparing was successful.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool prepareRendering();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves a pointer to the render target.
     ///
     /// \returns a pointer to the render target.
@@ -129,6 +146,14 @@ public:
     OpenGLShader* shaderProgram() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the object's offscreen renderer.
+    ///
+    /// \returns the handle of the OS renderer.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    uint offscreenRenderer() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the name of this object.
     ///
     /// \returns the name.
@@ -138,12 +163,21 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the shader program. If the given program is nullptr, the
-    /// default shader program will be used instead.
+    /// default shader program will be used instead. Will NOT take ownership
+    /// of \p program. You need to free it yourself.
     ///
     /// \param program Program to use. Nullptr yields default shader program.
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setShaderProgram(OpenGLShader* program);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the object's offscreen renderer.
+    ///
+    /// \param fbo Handle of the OS renderer.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setOffscreenRenderer(uint fbo);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Setting a name is not required, but recommended, since it can be easily
@@ -162,6 +196,15 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     RenderableEmitter* renderableEmitter();
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the string representation of this object.
+    ///
+    /// \returns the string representation.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    operator QString() const;
 
 
 protected:
@@ -190,7 +233,13 @@ private:
     OpenGLShader*     m_customProgram;  ///< Custom shader program
     QString           m_name;           ///< Name of the object
     RenderableEmitter m_emitter;        ///< Emits signals for this class
+    uint              m_osRenderer;     ///< Offscreen renderer, if any
+
+    friend class SpriteBatch;
 };
+
+
+extern QString cranResourcePath(const QString& src);
 
 
 ////////////////////////////////////////////////////////////////////////////////

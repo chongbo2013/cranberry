@@ -4,5 +4,23 @@
         <file>glsl/shape_vert.glsl</file>
         <file>glsl/texture_frag.glsl</file>
         <file>glsl/texture_vert.glsl</file>
+        <file>glsl/film_vert.glsl</file>
+        <file>glsl/film_frag.glsl</file>
+        <file>glsl/blur_vert.glsl</file>
+        <file>glsl/blur_frag.glsl</file>
+        <file>glsl/pixel_vert.glsl</file>
+        <file>glsl/pixel_frag.glsl</file>
+        <file>glsl/hatch_vert.glsl</file>
+        <file>glsl/hatch_frag.glsl</file>
+        <file>glsl/lens_vert.glsl</file>
+        <file>glsl/lens_frag.glsl</file>
+        <file>glsl/kaleido_vert.glsl</file>
+        <file>glsl/kaleido_frag.glsl</file>
+        <file>glsl/spiral_vert.glsl</file>
+        <file>glsl/spiral_frag.glsl</file>
+        <file>glsl/fisheye_vert.glsl</file>
+        <file>glsl/fisheye_frag.glsl</file>
+        <file>glsl/radialblur_vert.glsl</file>
+        <file>glsl/radialblur_frag.glsl</file>
     </qresource>
 </RCC>
