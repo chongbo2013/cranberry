@@ -20,6 +20,7 @@
 
 
 // Cranberry headers
+#include <Cranberry/System/Debug.hpp>
 #include <Cranberry/Game/Game.hpp>
 #include <Cranberry/Game/GamePrivate.hpp>
 
@@ -27,11 +28,22 @@
 #include <QDebug>
 #include <QMessageBox>
 
+// Platform headers
+#ifdef Q_OS_WIN
+    #include <Windows.h>
+    #include <Cranberry/System/StackWalkers/StackWalkerWin32.hpp>
+#endif
+
 // Standard headers
 #include <csignal>
 #include <exception>
 
-// Constants
+
+CRANBERRY_USING_NAMESPACE
+
+
+// Constants and globals
+CRANBERRY_GLOBAL_VAR_A(priv::StackWalker*, g_walker, nullptr)
 CRANBERRY_CONST_VAR(QString, e_01,
     "The operating system requested a termination "
     "of this program while the %0 signal was emitted. "
@@ -39,11 +51,13 @@ CRANBERRY_CONST_VAR(QString, e_01,
     "Cranberry tries to save any game data now.")
 
 
-CRANBERRY_USING_NAMESPACE
-
-
 priv::GamePrivate::GamePrivate()
 {
+    // Windows: Suppress message boxes.
+    #ifdef Q_OS_WIN
+        SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+    #endif
+
     // Registers the global signal handlers.
     std::signal(SIGABRT, &signalHandler);
     std::signal(SIGSEGV, &signalHandler);
@@ -51,8 +65,30 @@ priv::GamePrivate::GamePrivate()
     std::signal(SIGFPE, &signalHandler);
     std::signal(SIGILL, &signalHandler);
 
+    // Initializes the platform-dependent stack walker.
+    if (g_walker == nullptr)
+    {
+    #if defined(Q_OS_WIN)
+        g_walker = new StackWalkerWin32;
+    #elif defined(Q_OS_UNIX)
+        g_walker = new StackWalkerUnix;
+    #else
+        g_walker = new StackWalker;
+    #endif
+    }
+
     // Prints the cranberry logo.
     if_debug(printLogo());
+}
+
+
+priv::GamePrivate::~GamePrivate()
+{
+    if (g_walker != nullptr)
+    {
+        delete g_walker;
+        g_walker = nullptr;
+    }
 }
 
 
@@ -88,7 +124,7 @@ void priv::GamePrivate::signalHandler(int signal)
     box.setIcon(QMessageBox::Critical);
     box.setStandardButtons(QMessageBox::Close);
     box.setText(e_01.arg(QString(type)));
-    box.setDetailedText("Stacktrace Placeholder");
+    box.setDetailedText(g_walker->stackTrace());
     box.exec();
 
     // Exits the game.

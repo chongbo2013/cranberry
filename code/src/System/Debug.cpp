@@ -103,3 +103,9 @@ bool priv::Debug::showWarning(
 #endif
     return false;
 }
+
+
+QString priv::StackWalker::stackTrace()
+{
+    return "No stack trace available for this platform.";
+}

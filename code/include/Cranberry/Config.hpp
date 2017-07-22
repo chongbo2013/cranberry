@@ -113,7 +113,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef QT_DEBUG
-    #define if_debug(x) x
+    #define if_debug(x) x;
 #else
     #define if_debug(x)
 #endif

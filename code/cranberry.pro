@@ -37,6 +37,8 @@ win32 {
 ################################################################################
 gcc {
     QMAKE_LFLAGS        +=      -static-libgcc -static-libstdc++
+} win32 {
+    LIBS                +=      -lDbgHelp
 }
 
 
@@ -86,17 +88,21 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/RawAnimation.hpp \
                     include/Cranberry/Game/Game.hpp \
                     include/Cranberry/Gui/GuiManager.hpp \
-    include/Cranberry/Graphics/Base/AnimationFrame.hpp \
-    include/Cranberry/Graphics/Base/AnimationBase.hpp \
-    include/Cranberry/Graphics/Base/RenderBase.hpp \
-    include/Cranberry/Graphics/Base/ShapeBase.hpp \
-    include/Cranberry/Graphics/Base/TextureBase.hpp \
-    include/Cranberry/Graphics/Base/TransformBase.hpp \
-    include/Cranberry/Graphics/Base/SpriteMovement.hpp \
-    include/Cranberry/System/Emitters/RenderBaseEmitter.hpp \
-    include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
-    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
-    include/Cranberry/Game/GamePrivate.hpp
+                    include/Cranberry/Graphics/Base/AnimationFrame.hpp \
+                    include/Cranberry/Graphics/Base/AnimationBase.hpp \
+                    include/Cranberry/Graphics/Base/RenderBase.hpp \
+                    include/Cranberry/Graphics/Base/ShapeBase.hpp \
+                    include/Cranberry/Graphics/Base/TextureBase.hpp \
+                    include/Cranberry/Graphics/Base/TransformBase.hpp \
+                    include/Cranberry/Graphics/Base/SpriteMovement.hpp \
+                    include/Cranberry/System/Emitters/RenderBaseEmitter.hpp \
+                    include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
+                    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
+                    include/Cranberry/Game/GamePrivate.hpp \
+
+win32 {
+HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
+}
 
 
 ################################################################################
@@ -133,14 +139,18 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/RawAnimation.cpp \
                     src/Game/Game.cpp \
                     src/Gui/GuiManager.cpp \
-    src/Graphics/Base/AnimationFrame.cpp \
-    src/Graphics/Base/AnimationBase.cpp \
-    src/Graphics/Base/RenderBase.cpp \
-    src/Graphics/Base/ShapeBase.cpp \
-    src/Graphics/Base/TextureBase.cpp \
-    src/Graphics/Base/TransformBase.cpp \
-    src/Graphics/Base/SpriteMovement.cpp \
-    src/Game/GamePrivate.cpp
+                    src/Graphics/Base/AnimationFrame.cpp \
+                    src/Graphics/Base/AnimationBase.cpp \
+                    src/Graphics/Base/RenderBase.cpp \
+                    src/Graphics/Base/ShapeBase.cpp \
+                    src/Graphics/Base/TextureBase.cpp \
+                    src/Graphics/Base/TransformBase.cpp \
+                    src/Graphics/Base/SpriteMovement.cpp \
+                    src/Game/GamePrivate.cpp \
+
+win32 {
+SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp
+}
 
 ################################################################################
 ## OUTPUT

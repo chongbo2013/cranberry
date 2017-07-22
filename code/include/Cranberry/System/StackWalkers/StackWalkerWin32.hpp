@@ -20,44 +20,56 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GAME_GAMEPRIVATE_HPP
-#define CRANBERRY_GAME_GAMEPRIVATE_HPP
+#ifndef CRANBERRY_SYSTEM_STACKWALKERS_STACKWALKERWIN32_HPP
+#define CRANBERRY_SYSTEM_STACKWALKERS_STACKWALKERWIN32_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/System/Debug.hpp>
 
 
 CRANBERRY_BEGIN_PRIV_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Registers the signal handlers and builds the stack trace.
+/// Walks the stack on the windows platform.
 ///
-/// \class GamePrivate
+/// \class StackWalkerWin32
 /// \author Nicolas Kogler
 /// \date July 22, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class GamePrivate
+class CRANBERRY_SYSTEM_EXPORT StackWalkerWin32 : public StackWalker
 {
 public:
 
-    CRANBERRY_DEFAULT_COPY(GamePrivate)
-    CRANBERRY_DEFAULT_MOVE(GamePrivate)
+    CRANBERRY_DEFAULT_CTOR(StackWalkerWin32)
+    CRANBERRY_DEFAULT_DTOR(StackWalkerWin32)
+    CRANBERRY_DEFAULT_COPY(StackWalkerWin32)
+    CRANBERRY_DEFAULT_MOVE(StackWalkerWin32)
 
-    GamePrivate();
-   ~GamePrivate();
-
-
-private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Helpers
+    /// Retrieves the stack trace at this point of execution.
+    ///
+    /// \returns a string representing the stack trace.
+    ///
     ////////////////////////////////////////////////////////////////////////////
-    static void signalHandler(int signal);
-    if_debug(static void printLogo())
+    QString stackTrace() override;
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \class StackWalkerWin32
+/// \ingroup System
+///
+/// More detailed description, code examples.
+///
+/// \code
+/// ...
+/// \endcode
+///
+////////////////////////////////////////////////////////////////////////////////
 
 
 CRANBERRY_END_PRIV_NAMESPACE
