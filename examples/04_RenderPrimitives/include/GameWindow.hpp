@@ -53,7 +53,7 @@ protected:
     void onRender(); // render objects
 
 
-private slots:
+private Q_SLOTS:
 
     void stoppedScaling();
     void stoppedMoving();

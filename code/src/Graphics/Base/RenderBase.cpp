@@ -75,8 +75,8 @@ bool RenderBase::create(Window* renderTarget)
 
     gl = renderTarget->context()->functions();
     m_renderTarget = renderTarget;
-    m_emitter.emitCreated();
 
+    signals()->emitCreated();
     return makeCurrent();
 }
 
@@ -85,7 +85,14 @@ void RenderBase::destroy()
 {
     m_customProgram = nullptr;
     m_renderTarget = nullptr;
-    m_emitter.emitDestroyed();
+
+    signals()->emitDestroyed();
+}
+
+
+RenderBaseEmitter* RenderBase::signals()
+{
+    return &m_emitter;
 }
 
 
@@ -165,12 +172,6 @@ void RenderBase::setOffscreenRenderer(uint fbo)
 void RenderBase::setName(const QString& name)
 {
     m_name = name;
-}
-
-
-RenderableEmitter* RenderBase::renderableEmitter()
-{
-    return &m_emitter;
 }
 
 

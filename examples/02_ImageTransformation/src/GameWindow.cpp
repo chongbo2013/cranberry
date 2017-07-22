@@ -80,15 +80,15 @@ void GameWindow::onInit()
 
     // signals & slots
     QObject::connect(
-            m_texture->transformableEmitter(),
-            &TransformableEmitter::stoppedMoving,
+            m_texture->signals(),
+            &TransformBaseEmitter::stoppedMoving,
             this,
             &GameWindow::stoppedMoving
             );
 
     QObject::connect(
-            m_texture->transformableEmitter(),
-            &TransformableEmitter::stoppedScaling,
+            m_texture->signals(),
+            &TransformBaseEmitter::stoppedScaling,
             this,
             &GameWindow::stoppedScaling
             );

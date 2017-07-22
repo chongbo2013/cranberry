@@ -27,7 +27,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/System/GameTime.hpp>
-#include <Cranberry/System/Emitters/TransformableEmitter.hpp>
+#include <Cranberry/System/Emitters/TransformBaseEmitter.hpp>
 
 // Qt headers
 #include <QPainterPath>
@@ -316,12 +316,13 @@ public:
     QRectF rect() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the emitter of this object.
+    /// Retrieves the signals for this object.
     ///
-    /// \returns a pointer to the emitter of this object.
+    /// \returns the signals.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TransformableEmitter* transformableEmitter();
+    virtual TransformBaseEmitter* signals();
+
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the move speed of the object.
@@ -633,7 +634,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    TransformableEmitter m_emitter;
+    TransformBaseEmitter m_emitter;
     MoveDirections       m_moveDir;
     RotateDirection      m_rotateDirX;
     RotateDirection      m_rotateDirY;

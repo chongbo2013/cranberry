@@ -148,15 +148,15 @@ void GameWindow::onInit()
 
     // signals & slots
     QObject::connect(
-            m_hexagon->transformableEmitter(),
-            &TransformableEmitter::stoppedScaling,
+            m_hexagon->signals(),
+            &TransformBaseEmitter::stoppedScaling,
             this,
             &GameWindow::stoppedScaling
             );
 
     QObject::connect(
-            m_decagon->transformableEmitter(),
-            &TransformableEmitter::stoppedMoving,
+            m_hexagon->signals(),
+            &TransformBaseEmitter::stoppedMoving,
             this,
             &GameWindow::stoppedMoving
             );

@@ -45,7 +45,7 @@ Background::Background()
 }
 
 
-BackgroundEmitter* Background::backgroundEmitter()
+BackgroundEmitter* Background::signals()
 {
     return &m_emitter;
 }
@@ -149,6 +149,8 @@ void Background::update(const GameTime& time)
             {
                 m_scrollX = m_targetScrollX;
                 m_isScrolling = false;
+
+                signals()->emitStoppedScrolling();
             }
 
             // Makes sure that the primary image does not leave the window.
@@ -164,6 +166,8 @@ void Background::update(const GameTime& time)
             {
                 m_scrollX = m_targetScrollX;
                 m_isScrolling = false;
+
+                signals()->emitStoppedScrolling();
             }
 
             // Makes sure that the primary image does not leave the window.
@@ -179,6 +183,8 @@ void Background::update(const GameTime& time)
             {
                 m_scrollY = m_targetScrollY;
                 m_isScrolling = false;
+
+                signals()->emitStoppedScrolling();
             }
 
             // Makes sure that the primary image does not leave the window.
@@ -194,6 +200,8 @@ void Background::update(const GameTime& time)
             {
                 m_scrollY = m_targetScrollX;
                 m_isScrolling = false;
+
+                signals()->emitStoppedScrolling();
             }
 
             // Makes sure that the primary image does not leave the window.
