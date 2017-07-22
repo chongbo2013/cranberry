@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_SYSTEM_EMITTERS_RENDERABLEEMITTER_HPP
-#define CRANBERRY_SYSTEM_EMITTERS_RENDERABLEEMITTER_HPP
+#ifndef CRANBERRY_SYSTEM_EMITTERS_TRANSFORMBASEEMITTER_HPP
+#define CRANBERRY_SYSTEM_EMITTERS_TRANSFORMBASEEMITTER_HPP
 
 
 // Cranberry headers
@@ -35,31 +35,39 @@ CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Emits signals for IRenderable objects.
+/// Emits signals for TransformBase objects.
 ///
-/// \class RenderableEmitter
+/// \class TransformbaseEmitter
 /// \author Nicolas Kogler
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT RenderableEmitter : public QObject
+class CRANBERRY_SYSTEM_EXPORT TransformBaseEmitter : public QObject
 {
 public:
 
-    CRANBERRY_DEFAULT_CTOR(RenderableEmitter)
-    CRANBERRY_DEFAULT_DTOR(RenderableEmitter)
-    CRANBERRY_DEFAULT_COPY(RenderableEmitter)
-    CRANBERRY_DEFAULT_MOVE(RenderableEmitter)
+    CRANBERRY_DEFAULT_CTOR(TransformBaseEmitter)
+    CRANBERRY_DEFAULT_DTOR(TransformBaseEmitter)
+    CRANBERRY_DEFAULT_COPY(TransformBaseEmitter)
+    CRANBERRY_DEFAULT_MOVE(TransformBaseEmitter)
 
 
-    inline void emitCreated() { Q_EMIT created(); }
-    inline void emitDestroyed() { Q_EMIT destroyed(); }
+    inline void emitStoppedMoving() { Q_EMIT stoppedMoving(); }
+    inline void emitStoppedRotating() { Q_EMIT stoppedRotating(); }
+    inline void emitStoppedScaling() { Q_EMIT stoppedScaling(); }
+    inline void emitStoppedFading() { Q_EMIT stoppedFading(); }
+    inline void emitPositionChanged() { Q_EMIT positionChanged(); }
+    inline void emitSizeChanged() { Q_EMIT sizeChanged(); }
 
 
 Q_SIGNALS:
 
-    void created();
-    void destroyed();
+    void stoppedMoving();
+    void stoppedRotating();
+    void stoppedScaling();
+    void stoppedFading();
+    void positionChanged();
+    void sizeChanged();
 
 
 private:

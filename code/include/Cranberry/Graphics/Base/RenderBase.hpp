@@ -27,7 +27,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/System/GameTime.hpp>
-#include <Cranberry/System/Emitters/RenderableEmitter.hpp>
+#include <Cranberry/System/Emitters/RenderBaseEmitter.hpp>
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
@@ -95,6 +95,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     virtual void render() = 0;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the signals for this object.
+    ///
+    /// \returns the signals.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual RenderBaseEmitter* signals() override;
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -176,14 +184,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void setName(const QString& name);
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Returns the emitter for this object.
-    ///
-    /// \returns a pointer to the emitter.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    RenderableEmitter* renderableEmitter();
-
 
 protected:
 
@@ -206,11 +206,11 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
+    RenderBaseEmitter m_emitter;        ///< Emits signals for this class
     Window*           m_renderTarget;   ///< Target to render object on
     OpenGLShader*     m_defaultProgram; ///< Default shader program
     OpenGLShader*     m_customProgram;  ///< Custom shader program
     QString           m_name;           ///< Name of the object
-    RenderableEmitter m_emitter;        ///< Emits signals for this class
     uint              m_osRenderer;     ///< Offscreen renderer, if any
 };
 

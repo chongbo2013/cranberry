@@ -29,7 +29,7 @@
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/TextureAtlas.hpp>
-#include <Cranberry/System/Emitters/AnimationEmitter.hpp>
+#include <Cranberry/System/Emitters/AnimationBaseEmitter.hpp>
 
 // Qt headers
 #include <QVector>
@@ -138,6 +138,14 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void render() override;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the signals for this object.
+    ///
+    /// \returns the signals.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    AnimationBaseEmitter* signals() override;
+
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the idle frame (animation doing nothing).
@@ -190,14 +198,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void setEffect(Effect effect);
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the emitter object for this instance.
-    ///
-    /// \returns a pointer to the emitter.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    AnimationEmitter* animationEmitter();
-
 
 protected:
 
@@ -242,8 +242,8 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
+    AnimationBaseEmitter    m_emitter;
     AnimationMode           m_mode;
-    AnimationEmitter        m_emitter;
     QVector<AnimationFrame> m_frames;
     QVector<TextureAtlas*>  m_atlases;
     QString                 m_name;

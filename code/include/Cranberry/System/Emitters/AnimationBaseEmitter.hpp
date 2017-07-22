@@ -20,12 +20,12 @@
 
 
 #pragma once
-#ifndef CRANBERRY_SYSTEM_EMITTERS_ANIMATIONEMITTER_HPP
-#define CRANBERRY_SYSTEM_EMITTERS_ANIMATIONEMITTER_HPP
+#ifndef CRANBERRY_SYSTEM_EMITTERS_ANIMATIONBASEEMITTER_HPP
+#define CRANBERRY_SYSTEM_EMITTERS_ANIMATIONBASEEMITTER_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/System/Emitters/RenderBaseEmitter.hpp>
 
 // Qt headers
 #include <QObject>
@@ -35,21 +35,21 @@ CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Emits signals for IAnimation objects.
+/// Emits signals for AnimationBase objects.
 ///
-/// \class AnimationEmitter
+/// \class AnimationBaseEmitter
 /// \author Nicolas Kogler
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT AnimationEmitter : public QObject
+class CRANBERRY_SYSTEM_EXPORT AnimationBaseEmitter : public RenderBaseEmitter
 {
 public:
 
-    CRANBERRY_DEFAULT_CTOR(AnimationEmitter)
-    CRANBERRY_DEFAULT_DTOR(AnimationEmitter)
-    CRANBERRY_DEFAULT_COPY(AnimationEmitter)
-    CRANBERRY_DEFAULT_MOVE(AnimationEmitter)
+    CRANBERRY_DEFAULT_CTOR(AnimationBaseEmitter)
+    CRANBERRY_DEFAULT_DTOR(AnimationBaseEmitter)
+    CRANBERRY_DEFAULT_COPY(AnimationBaseEmitter)
+    CRANBERRY_DEFAULT_MOVE(AnimationBaseEmitter)
 
 
     inline void emitStoppedAnimating() { Q_EMIT stoppedAnimating(); }

@@ -11,7 +11,7 @@
 ##
 ###############################################################################
 QT             +=       core gui widgets
-CONFIG         +=       c++11 exceptions
+CONFIG         +=       c++11 exceptions no_keywords
 TEMPLATE        =       app
 TARGET          =       06_PostProcessing
 

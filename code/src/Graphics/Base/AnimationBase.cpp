@@ -165,6 +165,12 @@ void AnimationBase::render()
 }
 
 
+AnimationBaseEmitter* AnimationBase::signals()
+{
+    return &m_emitter;
+}
+
+
 void AnimationBase::setIdleFrame(uint atlas, const QRectF& frame)
 {
     m_idleFrame.setAtlasId(atlas);
@@ -210,12 +216,6 @@ void AnimationBase::setEffect(Effect effect)
     {
         atlas->texture()->setEffect(effect);
     }
-}
-
-
-AnimationEmitter* AnimationBase::animationEmitter()
-{
-    return &m_emitter;
 }
 
 

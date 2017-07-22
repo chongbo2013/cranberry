@@ -56,10 +56,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Debug.hpp \
                     include/Cranberry/System/GameTime.hpp \
                     include/Cranberry/System/Random.hpp \
-                    include/Cranberry/System/Emitters/RenderableEmitter.hpp \
-                    include/Cranberry/System/Emitters/TransformableEmitter.hpp \
                     include/Cranberry/System/Emitters/BackgroundEmitter.hpp \
-                    include/Cranberry/System/Emitters/AnimationEmitter.hpp \
                     include/Cranberry/System/Receivers/SpriteReceiver.hpp \
                     include/Cranberry/System/Receivers/GuiManagerReceiver.hpp \
                     include/Cranberry/OpenGL/OpenGLDebug.hpp \
@@ -95,7 +92,10 @@ HEADERS     +=      include/Cranberry/Config.hpp \
     include/Cranberry/Graphics/Base/ShapeBase.hpp \
     include/Cranberry/Graphics/Base/TextureBase.hpp \
     include/Cranberry/Graphics/Base/TransformBase.hpp \
-    include/Cranberry/Graphics/Base/SpriteMovement.hpp
+    include/Cranberry/Graphics/Base/SpriteMovement.hpp \
+    include/Cranberry/System/Emitters/RenderBaseEmitter.hpp \
+    include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
+    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp
 
 
 ################################################################################

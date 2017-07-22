@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/System/Emitters/RenderBaseEmitter.hpp>
 
 // Qt headers
 #include <QObject>
@@ -42,7 +42,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT BackgroundEmitter : public QObject
+class CRANBERRY_SYSTEM_EXPORT BackgroundEmitter : public RenderBaseEmitter
 {
 public:
 

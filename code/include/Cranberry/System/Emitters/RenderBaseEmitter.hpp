@@ -20,12 +20,12 @@
 
 
 #pragma once
-#ifndef CRANBERRY_SYSTEM_EMITTERS_TRANSFORMABLEEMITTER_HPP
-#define CRANBERRY_SYSTEM_EMITTERS_TRANSFORMABLEEMITTER_HPP
+#ifndef CRANBERRY_SYSTEM_EMITTERS_RENDERBASEEMITTER_HPP
+#define CRANBERRY_SYSTEM_EMITTERS_RENDERBASEEMITTER_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/System/Emitters/TransformBaseEmitter.hpp>
 
 // Qt headers
 #include <QObject>
@@ -35,39 +35,31 @@ CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Emits signals for ITransformable objects.
+/// Emits signals for RenderBase objects.
 ///
-/// \class TransformableEmitter
+/// \class RenderBaseEmitter
 /// \author Nicolas Kogler
 /// \date June 4, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT TransformableEmitter : public QObject
+class CRANBERRY_SYSTEM_EXPORT RenderBaseEmitter : public TransformBaseEmitter
 {
 public:
 
-    CRANBERRY_DEFAULT_CTOR(TransformableEmitter)
-    CRANBERRY_DEFAULT_DTOR(TransformableEmitter)
-    CRANBERRY_DEFAULT_COPY(TransformableEmitter)
-    CRANBERRY_DEFAULT_MOVE(TransformableEmitter)
+    CRANBERRY_DEFAULT_CTOR(RenderBaseEmitter)
+    CRANBERRY_DEFAULT_DTOR(RenderBaseEmitter)
+    CRANBERRY_DEFAULT_COPY(RenderBaseEmitter)
+    CRANBERRY_DEFAULT_MOVE(RenderBaseEmitter)
 
 
-    inline void emitStoppedMoving() { Q_EMIT stoppedMoving(); }
-    inline void emitStoppedRotating() { Q_EMIT stoppedRotating(); }
-    inline void emitStoppedScaling() { Q_EMIT stoppedScaling(); }
-    inline void emitStoppedFading() { Q_EMIT stoppedFading(); }
-    inline void emitPositionChanged() { Q_EMIT positionChanged(); }
-    inline void emitSizeChanged() { Q_EMIT sizeChanged(); }
+    inline void emitCreated() { Q_EMIT created(); }
+    inline void emitDestroyed() { Q_EMIT destroyed(); }
 
 
 Q_SIGNALS:
 
-    void stoppedMoving();
-    void stoppedRotating();
-    void stoppedScaling();
-    void stoppedFading();
-    void positionChanged();
-    void sizeChanged();
+    void created();
+    void destroyed();
 
 
 private:

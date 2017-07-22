@@ -298,7 +298,7 @@ QRectF TransformBase::rect() const
 }
 
 
-TransformableEmitter* TransformBase::transformableEmitter()
+TransformBaseEmitter* TransformBase::signals()
 {
     return &m_emitter;
 }
@@ -632,7 +632,8 @@ void TransformBase::stopMoving()
 {
     m_isMovingX = false;
     m_isMovingY = false;
-    m_emitter.emitStoppedMoving();
+
+    signals()->emitStoppedMoving();
 }
 
 
@@ -641,7 +642,8 @@ void TransformBase::stopRotating()
     m_isRotatingX = false;
     m_isRotatingY = false;
     m_isRotatingZ = false;
-    m_emitter.emitStoppedRotating();
+
+    signals()->emitStoppedRotating();
 }
 
 
@@ -649,14 +651,16 @@ void TransformBase::stopScaling()
 {
     m_isScalingX = false;
     m_isScalingY = false;
-    m_emitter.emitStoppedScaling();
+
+    signals()->emitStoppedScaling();
 }
 
 
 void TransformBase::stopFading()
 {
     m_isFading = false;
-    m_emitter.emitStoppedFading();
+
+    signals()->emitStoppedFading();
 }
 
 
@@ -674,7 +678,7 @@ void TransformBase::setSize(float width, float height)
     m_width = width;
     m_height = height;
 
-    m_emitter.emitSizeChanged();
+    signals()->emitSizeChanged();
 }
 
 
