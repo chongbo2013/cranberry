@@ -39,19 +39,23 @@ CRANBERRY_USING_NAMESPACE
 CRANBERRY_CONST_VAR(QString, c_path, ":/cb/glsl/%0_%1.glsl")
 CRANBERRY_GLOBAL_VAR(ShaderMap, g_programs)
 CRANBERRY_GLOBAL_VAR(ShaderUpdateList, g_updateList)
-CRANBERRY_GLOBAL_VAR(ShaderUpdateList, g_resizeList)
 CRANBERRY_GLOBAL_VAR(QMutex, g_mutex)
 
 
 bool OpenGLDefaultShaders::add(
         const QString& name,
         OpenGLShader* program,
-        bool update,
-        bool resize)
+        bool update
+        )
 {
-    if (g_programs.contains(name)) return false;
-    if (update) g_updateList.append(program);
-    if (resize) g_resizeList.append(program);
+    if (g_programs.contains(name))
+    {
+        return false;
+    }
+    else if (update)
+    {
+        g_updateList.append(program);
+    }
 
     g_programs.insert(name, program);
 
@@ -61,7 +65,11 @@ bool OpenGLDefaultShaders::add(
 
 bool OpenGLDefaultShaders::remove(const QString& name)
 {
-    if (!g_programs.contains(name)) return false;
+    if (!g_programs.contains(name))
+    {
+        return false;
+    }
+
     auto* program = g_programs.take(name);
     delete program;
     return true;
@@ -104,20 +112,17 @@ void OpenGLDefaultShaders::cranberryLoadDefaultShaders()
     add("cb.glsl.spiral", cranberryGetShader("spiral"));
     add("cb.glsl.fisheye", cranberryGetShader("fisheye"));
     add("cb.glsl.radialblur", cranberryGetShader("radialblur"));
+    add("cb.glsl.blur", cranberryGetShader("blur"));
+    add("cb.glsl.pixel", cranberryGetShader("pixel"));
 
     // Updatable shaders
     add("cb.glsl.film", cranberryGetShader("film"), true);
-
-    // Resizable shaders
-    add("cb.glsl.blur", cranberryGetShader("blur"), false, true);
-    add("cb.glsl.pixel", cranberryGetShader("pixel"), false, true);
 }
 
 
 void OpenGLDefaultShaders::cranberryFreeDefaultShaders()
 {
     g_updateList.clear();
-    g_resizeList.clear();
 
     remove("cb.glsl.texture");
     remove("cb.glsl.shape");
@@ -220,23 +225,10 @@ void OpenGLDefaultShaders::cranberryInitDefaultShaders()
 
 void OpenGLDefaultShaders::cranberryUpdateDefaultShaders()
 {
-    float t = static_cast<float>(clock() % 10000);
+    int t = static_cast<int>(clock());
     for (OpenGLShader* s : g_updateList)
     {
         glDebug(s->program()->bind());
         glDebug(s->program()->setUniformValue("u_time", t));
-    }
-}
-
-
-void OpenGLDefaultShaders::cranberryResizeDefaultShaders(Window* rt)
-{
-    float w = static_cast<float>(rt->width());
-    float h = static_cast<float>(rt->height());
-    for (OpenGLShader* s : g_resizeList)
-    {
-        glDebug(s->program()->bind());
-        glDebug(s->program()->setUniformValue("u_width", w));
-        glDebug(s->program()->setUniformValue("u_height", h));
     }
 }

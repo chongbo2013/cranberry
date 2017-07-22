@@ -60,8 +60,8 @@ public:
     static bool add(
             const QString& name,
             OpenGLShader* program,
-            bool update = false,
-            bool resize = false);
+            bool update = false
+            );
 
     ////////////////////////////////////////////////////////////////////////////
     /// Removes the given program called \p name. Attention: The program added
@@ -95,7 +95,6 @@ private:
     static void cranberryFreeDefaultShaders();
     static void cranberryInitDefaultShaders();
     static void cranberryUpdateDefaultShaders();
-    static void cranberryResizeDefaultShaders(Window*);
 
     friend class Window;
 };
