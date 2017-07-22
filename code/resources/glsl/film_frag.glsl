@@ -33,9 +33,10 @@ uniform sampler2D u_tex;
 uniform float u_opac;
 uniform int u_mode; // unused
 uniform int u_effect; // unused
+uniform vec2 u_winSize; // unused
 
 // Film uniform variables
-uniform float u_time; // default: 0
+uniform int u_time; // default: 0
 uniform float u_noise; // default: 0.5
 uniform float u_lines; // default: 0.05
 uniform float u_count; // default: 4096
@@ -47,9 +48,10 @@ float rand(vec2 coord);
 void main()
 {
     vec4 vecPixel = texture(u_tex, o_uv);
+    float t = float(u_time % 1000);
 
     // Creates noise and adds it to the pixel.
-    float noise = rand(o_uv + u_time);
+    float noise = rand(o_uv + t);
     float clmpd = clamp(0.1 + noise, 0.0, 1.0);
     vec3 result = vecPixel.rgb + vecPixel.rgb * clmpd;
     vec2 scanln = vec2(sin(o_uv.y * u_count), cos(o_uv.y * u_count));

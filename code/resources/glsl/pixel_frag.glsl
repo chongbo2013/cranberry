@@ -33,6 +33,7 @@ uniform sampler2D u_tex;
 uniform float u_opac;
 uniform int u_mode; // unused
 uniform int u_effect; // unused
+uniform vec2 u_winSize;
 
 // Blur uniform variables
 uniform float u_pixelW; // pixel width
@@ -45,8 +46,8 @@ void main()
 {
     // Finds new coordinate position.
     vec4 vecOpac = vec4(1.0, 1.0, 1.0, u_opac);
-    float ratioX = u_pixelW * (1.0 / u_width);
-    float ratioY = u_pixelH * (1.0 / u_height);
+    float ratioX = u_pixelW * (1.0 / u_winSize.x);
+    float ratioY = u_pixelH * (1.0 / u_winSize.y);
     vec2 newUV = vec2(
             ratioX * floor(o_uv.x / ratioX),
             ratioY * floor(o_uv.y / ratioY)

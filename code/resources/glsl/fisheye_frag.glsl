@@ -34,6 +34,7 @@ uniform sampler2D u_tex;
 uniform float u_opac;
 uniform int u_mode; // unused
 uniform int u_effect; // unused
+uniform vec2 u_winSize; // unused
 
 // Fisheye uniform variables
 uniform float u_radius; // radius of fisheye

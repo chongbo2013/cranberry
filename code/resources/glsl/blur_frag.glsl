@@ -33,19 +33,18 @@ uniform sampler2D u_tex;
 uniform float u_opac;
 uniform int u_mode; // unused
 uniform int u_effect; // unused
+uniform vec2 u_winSize;
 
 // Blur uniform variables
 uniform float u_blurH;  // blur factor (horizontal)
 uniform float u_blurV;  // blur factor (vertical)
-uniform float u_width;  // render target width
-uniform float u_height; // render target height
 
 
 void main()
 {
     vec4 final = vec4(0.0, 0.0, 0.0, 0.0);
-    float factorH = u_blurH / u_width;
-    float factorV = u_blurV / u_height;
+    float factorH = u_blurH / u_winSize.x;
+    float factorV = u_blurV / u_winSize.y;
 
     // Horizontal blur
     if (u_blurH != 0.0)
