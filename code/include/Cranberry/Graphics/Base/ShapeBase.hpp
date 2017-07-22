@@ -29,7 +29,7 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
-// Qt headers
+// Qt headers (TODO: remove dependency)
 #include <QMatrix4x4>
 
 // Forward declarations

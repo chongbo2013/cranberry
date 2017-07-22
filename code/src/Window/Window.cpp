@@ -179,7 +179,6 @@ void Window::initializeGL()
     {
         OpenGLDefaultShaders::cranberryLoadDefaultShaders();
         OpenGLDefaultShaders::cranberryInitDefaultShaders();
-        OpenGLDefaultShaders::cranberryResizeDefaultShaders(this);
     }
 
     onInit();
@@ -409,8 +408,6 @@ void Window::touchEvent(QTouchEvent* event)
 void Window::resizeEvent(QResizeEvent* event)
 {
     onWindowResized(event->oldSize());
-
-    OpenGLDefaultShaders::cranberryResizeDefaultShaders(this);
 }
 
 

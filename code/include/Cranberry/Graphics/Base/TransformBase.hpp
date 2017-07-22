@@ -29,7 +29,7 @@
 #include <Cranberry/System/GameTime.hpp>
 #include <Cranberry/System/Emitters/TransformBaseEmitter.hpp>
 
-// Qt headers
+// Qt headers (TODO: remove dependency)
 #include <QPainterPath>
 #include <QMatrix4x4>
 #include <QVector2D>

@@ -278,7 +278,8 @@ void ShapeBase::writeVertices()
 
         // Uploads the vertex data.
         glDebug(m_vertexBuffer->write(
-                0, m_vertices.data(),
+                GL_ZERO,
+                m_vertices.data(),
                 priv::Vertex::size() * vertexCount())
                 );
 
@@ -290,17 +291,19 @@ void ShapeBase::writeVertices()
 
 void ShapeBase::modifyProgram()
 {
-    QOpenGLShaderProgram* program = shaderProgram()->program();
+    OpenGLShader* program = shaderProgram();
 
-    glDebug(program->setUniformValue("u_mvp", matrix(this)));
-    glDebug(program->setUniformValue("u_opac", opacity()));
-    glDebug(program->enableAttributeArray(priv::Vertex::xyzAttrib()));
-    glDebug(program->enableAttributeArray(priv::Vertex::rgbaAttrib()));
+    glDebug(program->setMvpMatrix(&matrix(this)));
+    glDebug(program->setOpacity(opacity()));
+    glDebug(program->setWindowSize(renderTarget()->size()));
 }
 
 
 void ShapeBase::modifyAttribs()
 {
+    glDebug(gl->glEnableVertexAttribArray(priv::Vertex::xyzAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::Vertex::rgbaAttrib()));
+
     glDebug(gl->glVertexAttribPointer(
                 priv::Vertex::xyzAttrib(),
                 priv::Vertex::xyzLength(),

@@ -29,9 +29,6 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
-// Qt headers
-#include <QMatrix4x4>
-
 // Forward declarations and aliases
 CRANBERRY_FORWARD_Q(QOpenGLBuffer)
 CRANBERRY_FORWARD_Q(QOpenGLTexture)

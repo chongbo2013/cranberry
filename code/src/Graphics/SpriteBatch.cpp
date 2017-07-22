@@ -591,7 +591,7 @@ void SpriteBatch::renderBatch()
 
 void SpriteBatch::setupFrame()
 {
-    QOpenGLShaderProgram* program = shaderProgram()->program();
+    OpenGLShader* program = shaderProgram();
 
     // Blit MSAA fbo to normal fbo.
     glDebug(egl->glBindFramebuffer(GL_READ_FRAMEBUFFER, m_msFrameBuffer));
@@ -608,21 +608,23 @@ void SpriteBatch::setupFrame()
     glDebug(egl->glBindVertexArray(m_vertexArray));
     glDebug(egl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer));
     glDebug(egl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBuffer));
-    glDebug(egl->glUseProgram(program->programId()));
+
+    // Activates unit 0 and binds our target texture to it.
     glDebug(egl->glActiveTexture(GL_TEXTURE0));
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, m_frameTexture));
 
     // Modify the states of the program.
-    glDebug(program->setUniformValue("u_tex", GL_ZERO));
-    glDebug(program->setUniformValue("u_mvp", matrix(this)));
-    glDebug(program->setUniformValue("u_opac", opacity()));
-    glDebug(program->setUniformValue("u_effect", (uint) m_effect));
-    glDebug(program->setUniformValue("u_mode", GL_ZERO));
+    glDebug(program->bind());
+    glDebug(program->setSampler(GL_TEXTURE0));
+    glDebug(program->setMvpMatrix(&matrix(this)));
+    glDebug(program->setOpacity(opacity()));
+    glDebug(program->setEffect(m_effect));
+    glDebug(program->setBlendMode(BlendNone));
 
     // Enables the vertex attributes.
-    glDebug(program->enableAttributeArray(priv::TextureVertex::xyzAttrib()));
-    glDebug(program->enableAttributeArray(priv::TextureVertex::uvAttrib()));
-    glDebug(program->enableAttributeArray(priv::TextureVertex::rgbaAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::TextureVertex::xyzAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::TextureVertex::uvAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::TextureVertex::rgbaAttrib()));
 
     // Modifies the vertex attributes.
     glDebug(gl->glVertexAttribPointer(
@@ -669,7 +671,7 @@ void SpriteBatch::releaseFrame()
 {
     // Bind previous OpenGL objects.
     glDebug(egl->glBindTexture(GL_TEXTURE_2D, 0));
-    glDebug(egl->glUseProgram(0));
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, offscreenRenderer()));
+    shaderProgram()->release();
 }

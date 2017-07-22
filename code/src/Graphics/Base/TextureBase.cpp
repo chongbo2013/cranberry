@@ -210,7 +210,7 @@ void TextureBase::bindObjects()
 
     glDebug(m_vertexBuffer->bind());
     glDebug(m_indexBuffer->bind());
-    glDebug(shaderProgram()->program()->bind());
+    glDebug(shaderProgram()->bind());
 }
 
 
@@ -219,7 +219,7 @@ void TextureBase::releaseObjects()
     glDebug(m_texture->release());
     glDebug(m_vertexBuffer->release());
     glDebug(m_indexBuffer->release());
-    glDebug(shaderProgram()->program()->release());
+    glDebug(shaderProgram()->release());
 }
 
 
@@ -229,7 +229,8 @@ void TextureBase::writeVertices()
     if (m_update)
     {
         glDebug(m_vertexBuffer->write(
-                0, m_vertices.data(),
+                GL_ZERO,
+                m_vertices.data(),
                 priv::TextureVertex::size() * 4)
                 );
 
@@ -240,22 +241,23 @@ void TextureBase::writeVertices()
 
 void TextureBase::modifyProgram()
 {
-    QOpenGLShaderProgram* program = shaderProgram()->program();
+    OpenGLShader* program = shaderProgram();
 
-    glDebug(program->setUniformValue("u_tex", GL_ZERO));
-    glDebug(program->setUniformValue("u_mvp", matrix(this)));
-    glDebug(program->setUniformValue("u_opac", opacity()));
-    glDebug(program->setUniformValue("u_mode", (uint) m_blendMode));
-    glDebug(program->setUniformValue("u_effect", (uint) m_effect));
-
-    glDebug(program->enableAttributeArray(priv::TextureVertex::xyzAttrib()));
-    glDebug(program->enableAttributeArray(priv::TextureVertex::uvAttrib()));
-    glDebug(program->enableAttributeArray(priv::TextureVertex::rgbaAttrib()));
+    glDebug(program->setSampler(GL_TEXTURE0));
+    glDebug(program->setMvpMatrix(&matrix(this)));
+    glDebug(program->setOpacity(opacity()));
+    glDebug(program->setBlendMode(m_blendMode));
+    glDebug(program->setEffect(m_effect));
+    glDebug(program->setWindowSize(renderTarget()->size()));
 }
 
 
 void TextureBase::modifyAttribs()
 {
+    glDebug(gl->glEnableVertexAttribArray(priv::TextureVertex::xyzAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::TextureVertex::uvAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::TextureVertex::rgbaAttrib()));
+
     glDebug(gl->glVertexAttribPointer(
                 priv::TextureVertex::xyzAttrib(),
                 priv::TextureVertex::xyzLength(),
