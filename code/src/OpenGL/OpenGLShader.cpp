@@ -21,13 +21,28 @@
 
 // Cranberry headers
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 
 // Qt headers
 #include <QFile>
+#include <QMatrix4x4>
 #include <QOpenGLContext>
 #include <QOpenGLShader>
 #include <QOpenGLShaderProgram>
+
+// Macroes
+#define ensure_bound(x) { bool b = m_isBound; if(!b) bind(); x; if (!b) release(); }
+#define set_uniform(loc, val) { ensure_bound(m_program->setUniformValue(loc, val)); }
+
+// Constants
+CRANBERRY_CONST_VAR(QString, e_01, "OpenGLShader: Shader file does not exist.")
+CRANBERRY_CONST_VAR(QString, e_02, "OpenGLShader: Program could not be created.")
+CRANBERRY_CONST_VAR(QString, e_03, "OpenGLShader: Shader could not be added. ")
+CRANBERRY_CONST_VAR(QString, e_04, "OpenGLShader: Program could not be linked. Log: ")
+CRANBERRY_CONST_VAR(QString, e_05, "OpenGLShader::setSampler(): ID is not valid.")
+CRANBERRY_CONST_VAR(QString, e_06, "OpenGLShader: Shader not compatible with cranberry. "
+                                   "One of the uniform attributes is missing.")
 
 
 CRANBERRY_USING_NAMESPACE
@@ -38,68 +53,25 @@ OpenGLShader::OpenGLShader()
     , m_vertex(nullptr)
     , m_fragment(nullptr)
     , m_refCount(new uint(1))
+    , m_isBound(false)
+    , m_locTex(-1)
+    , m_locMvp(-1)
+    , m_locOpac(-1)
+    , m_locMode(-1)
+    , m_locEffect(-1)
+    , m_locSize(-1)
 {
-}
-
-
-OpenGLShader::OpenGLShader(const OpenGLShader& other)
-    : m_program(other.m_program)
-    , m_vertex(other.m_vertex)
-    , m_fragment(other.m_fragment)
-    , m_refCount(other.m_refCount)
-{
-    *m_refCount += 1;
-}
-
-
-OpenGLShader::OpenGLShader(OpenGLShader&& other)
-    : m_program(std::move(other.m_program))
-    , m_vertex(std::move(other.m_vertex))
-    , m_fragment(std::move(other.m_fragment))
-    , m_refCount(std::move(other.m_refCount))
-{
-    *m_refCount += 1;
 }
 
 
 OpenGLShader::~OpenGLShader()
 {
-    auto& ref = *m_refCount;
-    if (--ref == 0)
+    if (m_program != nullptr)
     {
-        if (m_program != nullptr)
-        {
-            m_program->removeAllShaders();
-        }
-
-        delete m_program;
+        m_program->removeAllShaders();
     }
-}
 
-
-OpenGLShader& OpenGLShader::operator =(const OpenGLShader& other)
-{
-    m_program = other.m_program;
-    m_vertex = other.m_vertex;
-    m_fragment = other.m_fragment;
-    m_refCount = other.m_refCount;
-
-    *m_refCount += 1;
-
-    return *this;
-}
-
-
-OpenGLShader& OpenGLShader::operator =(OpenGLShader&& other)
-{
-    m_program = std::move(other.m_program);
-    m_vertex = std::move(other.m_vertex);
-    m_fragment = std::move(other.m_fragment);
-    m_refCount = std::move(other.m_refCount);
-
-    *m_refCount += 1;
-
-    return *this;
+    delete m_program;
 }
 
 
@@ -145,6 +117,131 @@ bool OpenGLShader::setFragmentShaderFromFile(const QString& file)
 }
 
 
+void OpenGLShader::bind()
+{
+    if (m_isBound)
+    {
+        return;
+    }
+
+    glDebug(m_program->bind());
+
+    m_isBound = true;
+}
+
+
+void OpenGLShader::release()
+{
+    m_isBound = false;
+}
+
+
+void OpenGLShader::setSampler(int samplerId)
+{
+    if (samplerId < GL_TEXTURE0 || samplerId > GL_TEXTURE31)
+    {
+        cranError(e_05);
+        return;
+    }
+
+    int mapped = samplerId - GL_TEXTURE0;
+    ensure_bound(glDebug(m_program->setUniformValue(m_locTex, mapped)));
+}
+
+
+void OpenGLShader::setMvpMatrix(QMatrix4x4* mvp)
+{
+    ensure_bound(glDebug(m_program->setUniformValue(m_locMvp, *mvp)));
+}
+
+
+void OpenGLShader::setOpacity(float opacity)
+{
+    ensure_bound(glDebug(m_program->setUniformValue(m_locOpac, opacity)));
+}
+
+
+void OpenGLShader::setBlendMode(BlendModes blendMode)
+{
+    ensure_bound(glDebug(m_program->setUniformValue(m_locMode, (int) blendMode)));
+}
+
+
+void OpenGLShader::setEffect(Effect effect)
+{
+    ensure_bound(glDebug(m_program->setUniformValue(m_locEffect, (int) effect)));
+}
+
+
+void OpenGLShader::setWindowSize(const QSize& size)
+{
+    ensure_bound(glDebug(m_program->setUniformValue(m_locSize, QSizeF(size))));
+}
+
+
+void OpenGLShader::setUniformValue(int location, int value)
+{
+    set_uniform(location, value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, uint value)
+{
+    set_uniform(location, value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, bool value)
+{
+    set_uniform(location, value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, float value)
+{
+    set_uniform(location, value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, const QPointF& value)
+{
+    set_uniform(location, value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, const QSizeF& value)
+{
+    set_uniform(location, value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, QMatrix4x4* value)
+{
+    set_uniform(location, *value);
+}
+
+
+void OpenGLShader::setUniformValue(int location, float x, float y)
+{
+    QVector2D vec2(x, y);
+    set_uniform(location, vec2);
+}
+
+
+void OpenGLShader::setUniformValue(int location, float x, float y, float z)
+{
+    QVector3D vec3(x, y, z);
+    set_uniform(location, vec3);
+}
+
+
+void OpenGLShader::setUniformValue(int location, float x, float y, float z, float w)
+{
+    QVector4D vec4(x, y, z, w);
+    set_uniform(location, vec4);
+}
+
+
 QString OpenGLShader::getFileContents(const QString& path)
 {
     QString code;
@@ -153,7 +250,7 @@ QString OpenGLShader::getFileContents(const QString& path)
 
     if (!file.open(QFile::ReadOnly))
     {
-        cranError("OpenGLShader: Shader file does not exist.");
+        cranError(e_01);
     }
     else
     {
@@ -174,7 +271,7 @@ bool OpenGLShader::loadShaderPrivate(int type, QString code)
         m_program = new QOpenGLShaderProgram;
         if (!m_program->create())
         {
-            return cranError("OpenGLShader: Program could not be created.");
+            return glDebug(cranError(e_02));
         }
     }
 
@@ -191,8 +288,7 @@ bool OpenGLShader::loadShaderPrivate(int type, QString code)
     // Adds the shader to the program and links it if required.
     if (!m_program->addShaderFromSourceCode(shaderType, code))
     {
-        QString msg("OpenGLShader: Shader could not be added. ");
-        return cranError(msg.append(m_program->log()));
+        return glDebug(cranError(e_03 + m_program->log()));
     }
 
     if (shaderType == QOpenGLShader::Vertex)
@@ -206,11 +302,41 @@ bool OpenGLShader::loadShaderPrivate(int type, QString code)
 
     if (m_vertex != nullptr && m_fragment != nullptr)
     {
-        if (!m_program->link())
+        if (!link())
         {
-            QString msg("OpenGLShader: Program could not be linked. ");
-            return cranError(msg.append(m_program->log()));
+            return false;
         }
+
+        glDebug(afterLink());
+    }
+
+    return true;
+}
+
+
+bool OpenGLShader::link()
+{
+    if (!m_program->link() || !m_program->bind())
+    {
+        return glDebug(cranError(e_04 + m_program->log()));
+    }
+
+    // Loads common cranberry uniforms.
+    glDebug(m_locTex = m_program->uniformLocation("u_tex"));
+    glDebug(m_locMvp = m_program->uniformLocation("u_mvp"));
+    glDebug(m_locOpac = m_program->uniformLocation("u_opac"));
+    glDebug(m_locMode = m_program->uniformLocation("u_mode"));
+    glDebug(m_locEffect = m_program->uniformLocation("u_effect"));
+    glDebug(m_locSize = m_program->uniformLocation("u_winSize"));
+
+    if (m_locTex == -1  ||
+        m_locMvp == -1  ||
+        m_locOpac == -1 ||
+        m_locMode == -1 ||
+        m_locSize == -1 ||
+        m_locEffect == -1)
+    {
+        return cranWarning(e_06);
     }
 
     return true;

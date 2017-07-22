@@ -24,10 +24,14 @@
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/Graphics/Base/Enumerations.hpp>
 
+// Qt headers
+#include <QPointF>
+#include <QSizeF>
 
 // Forward declarations
+CRANBERRY_FORWARD_Q(QMatrix4x4)
 CRANBERRY_FORWARD_Q(QOpenGLShaderProgram)
 CRANBERRY_FORWARD_Q(QOpenGLShader)
 
@@ -51,58 +55,11 @@ class CRANBERRY_OPENGL_EXPORT OpenGLShader
 {
 public:
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of OpenGLShader. Creates a new reference
-    /// counter for this instance and initializes it with one.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
+    CRANBERRY_DISABLE_COPY(OpenGLShader)
+    CRANBERRY_DISABLE_MOVE(OpenGLShader)
+
     OpenGLShader();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Copies the given instance into another instance while incrementing the
-    /// reference counter by one.
-    ///
-    /// \param other Shader to shallow copy.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader(const OpenGLShader& other);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Moves the given instance into another instance while incrementing the
-    /// reference counter by one.
-    ///
-    /// \param other Shader to shallow copy.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader(OpenGLShader&& other);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destructs this instance and decrements the reference counter by one.
-    /// If the reference counter now equals zero, all the underlying data is
-    /// being destroyed.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
     virtual ~OpenGLShader();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Copies the given instance into another instance while incrementing the
-    /// reference counter by one.
-    ///
-    /// \param other Shader to shallow copy.
-    /// \returns a reference to the assigned object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader& operator =(const OpenGLShader& other);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Moves the given instance into another instance while incrementing the
-    /// reference counter by one.
-    ///
-    /// \param other Shader to shallow copy.
-    /// \returns a reference to the assigned object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    OpenGLShader& operator =(OpenGLShader&& other);
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -131,6 +88,13 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLShader* fragmentShader();
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Determines whether the program has been linked yet.
+    ///
+    /// \returns true if linked already.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isLinked() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the code of the vertex shader. If you want to load the
@@ -170,6 +134,215 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     bool setFragmentShaderFromFile(const QString& file);
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Binds this shader program. Note: In order to optimize, as little calls
+    /// as possible to glUseProgram(id) are issued. This can be achieved using
+    /// a boolean member variable. Therefore make sure to _always_ call
+    /// OpenGLShader::release() after you are done!
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void bind();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Releases this shader program.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void release();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the sampler for uniform u_tex. This function will fail if the
+    /// shader program has not yet been linked. Will call bind() automatically.
+    ///
+    /// \param samplerId GL_TEXTURE0, GL_TEXTURE1, ...
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setSampler(int samplerId);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the model-view-projection matrix for uniform u_mvp. This
+    /// function will fail if the shader program has not yet been linked.
+    /// Will call bind() automatically.
+    ///
+    /// \param mvp Pointer to the MVP matrix.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setMvpMatrix(QMatrix4x4* mvp);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the opacity for the uniform u_opac. This function will fail
+    /// if the shader program has not yet been linked. Will call bind()
+    /// automatically.
+    ///
+    /// \param opacity The opacity ranging from 0 to 1.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setOpacity(float opacity);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the blend mode for uniform u_mode. This function will fail
+    /// if the shader program has not yet been linked. Will call bind()
+    /// automatically.
+    ///
+    /// \param blendMode The blend modes to use.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBlendMode(BlendModes blendMode);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the effect for uniform u_effect. This function will fail if
+    /// the shader program has not yet been linked. Will call bind()
+    /// automatically.
+    ///
+    /// \param effect The effect to use.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setEffect(Effect effect);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the size for uniform u_winSize. This function will fail if
+    /// the shader program has not yet been linked. Will call bind()
+    /// automatically.
+    ///
+    /// \param size Size of the render target.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setWindowSize(const QSize& size);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Gets the layout location of the uniform called \p name.
+    ///
+    /// \param name Name of the uniform.
+    /// \returns >0 if successful and -1 if failed.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int uniformLocation(const char* name);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Integer value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, int value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Unsigned integer value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, uint value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Boolean value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, bool value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Floating-point number value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, float value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Point (vec2) value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, const QPointF& value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Size (vec2) value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, const QSizeF& value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param value Pointer to matrix (mat4) value to store.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, QMatrix4x4* value);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param x First component of vec2.
+    /// \param y Second component of vec2.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, float x, float y);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param x First component of vec3.
+    /// \param y Second component of vec3.
+    /// \param z Third component of vec3.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, float x, float y, float z);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Sets the uniform value at \p location to \p value. To optimize these
+    /// calls, a call to OpenGLShader::uniformLocation() should be issued. The
+    /// return value of that method can then be used for this method.
+    ///
+    /// \param location Layout location of the uniform.
+    /// \param x First component of vec4.
+    /// \param y Second component of vec4.
+    /// \param z Third component of vec4.
+    /// \param w Fourth component of vec4.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setUniformValue(int location, float x, float y, float z, float w);
+
+
+protected:
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// This virtual method is called after the program has been successfully
+    /// linked. Use it to load custom uniform locations.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void afterLink() { }
+
 
 private:
 
@@ -178,14 +351,22 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     QString getFileContents(const QString& path);
     bool loadShaderPrivate(int type, QString code);
+    bool link();
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLShaderProgram* m_program;  ///< The program containing all shaders
-    QOpenGLShader*        m_vertex;   ///< The vertex shader.
-    QOpenGLShader*        m_fragment; ///< The fragment shader.
-    uint*                 m_refCount; ///< Counts the "copies" of this instance
+    QOpenGLShaderProgram* m_program;   ///< The program containing all shaders
+    QOpenGLShader*        m_vertex;    ///< The vertex shader.
+    QOpenGLShader*        m_fragment;  ///< The fragment shader.
+    uint*                 m_refCount;  ///< Counts the "copies" of this instance
+    bool                  m_isBound;   ///< Is currently bound?
+    int                   m_locTex;    ///< Uniform location of u_tex
+    int                   m_locMvp;    ///< Uniform location of u_mvp
+    int                   m_locOpac;   ///< Uniform location of u_opac
+    int                   m_locMode;   ///< Uniform location of u_mode
+    int                   m_locEffect; ///< Uniform location of u_effect
+    int                   m_locSize;   ///< Uniform location of u_winSize
 };
 
 
@@ -201,6 +382,17 @@ private:
 /// shader.setVertexShaderFromFile(":/shaders/myshader.vert");
 /// shader.setFragmentShaderFromFile(":/shaders/myshader.frag");
 /// object.setShaderProgram(shader);
+/// \endcode
+///
+/// You can also set common cranberry uniform values and misc uniform values
+/// without needing the dependency to QtOpenGL:
+///
+/// \code
+/// shader->bind(); // optimize by binding/releasing ourselves
+/// shader->setSampler(GL_TEXTURE0); // Will modify u_tex in cranberry shaders
+/// int ownUniform = shader->uniformLocation("u_myUniform");
+/// shader->setUniformValue(ownUniform, 1, 1, 1, 1);
+/// shader->release();
 /// \endcode
 ///
 /// The program will automatically be linked as soon as both shader types have
