@@ -95,7 +95,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
     include/Cranberry/Graphics/Base/SpriteMovement.hpp \
     include/Cranberry/System/Emitters/RenderBaseEmitter.hpp \
     include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
-    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp
+    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
+    include/Cranberry/Game/GamePrivate.hpp
 
 
 ################################################################################
@@ -138,7 +139,8 @@ SOURCES     +=      src/System/Debug.cpp \
     src/Graphics/Base/ShapeBase.cpp \
     src/Graphics/Base/TextureBase.cpp \
     src/Graphics/Base/TransformBase.cpp \
-    src/Graphics/Base/SpriteMovement.cpp
+    src/Graphics/Base/SpriteMovement.cpp \
+    src/Game/GamePrivate.cpp
 
 ################################################################################
 ## OUTPUT
