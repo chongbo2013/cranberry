@@ -43,6 +43,7 @@ bool priv::Debug::showError(
     QString fiStr = QString(file.c_str());
     QString fuStr = QString(func.c_str());
     QString liStr = QString::number(line);
+    QString msgStr = QString(msg).replace("\n", "\n    ");
 
 #ifdef QT_DEBUG
     qDebug() << "\n---";
@@ -50,7 +51,7 @@ bool priv::Debug::showError(
     qDebug() << "in file" << fiStr;
     qDebug() << "in func" << fuStr;
     qDebug() << "in line" << liStr;
-    qDebug().noquote() << "\n    " << msg;
+    qDebug().noquote() << "\n   " << msgStr;
     qDebug() << "---\n\n";
 #else
     // Prepares the strings.
@@ -85,6 +86,7 @@ bool priv::Debug::showWarning(
     QString fiStr = QString(file.c_str());
     QString fuStr = QString(func.c_str());
     QString liStr = QString::number(line);
+    QString msgStr = QString(msg).replace("\n", "\n    ");
 
 #ifdef QT_DEBUG
     qDebug() << "\n---";
@@ -92,7 +94,7 @@ bool priv::Debug::showWarning(
     qDebug() << "in file" << fiStr;
     qDebug() << "in func" << fuStr;
     qDebug() << "in line" << liStr;
-    qDebug().noquote() << "\n    " << msg;
+    qDebug().noquote() << "\n   " << msgStr;
     qDebug() << "---\n\n";
 #else
     // Simply ignore warnings in release mode.
