@@ -200,9 +200,7 @@ void Window::unregisterQmlWindow(GuiManager* qw)
 void Window::dispatchEvents(QEvent* event)
 {
     auto localMousePos   = mapFromGlobal(QCursor::pos());
-    bool canReceiveFocus = event->type() == QEvent::MouseButtonPress   ||
-                           event->type() == QEvent::MouseButtonRelease ||
-                           event->type() == QEvent::MouseButtonDblClick;
+    bool canReceiveFocus = event->type() == QEvent::MouseButtonPress;
 
     for (GuiManager* w : m_guiWindows)
     {
@@ -216,11 +214,9 @@ void Window::dispatchEvents(QEvent* event)
             {
                 m_activeGui = w;
                 m_fakeFocusOut = true;
+                m_activeGui->window()->requestActivate();
 
-                if (!m_activeGui->window()->isActive())
-                {
-                    m_activeGui->window()->requestActivate();
-                }
+                setFlags(flags() | Qt::WindowDoesNotAcceptFocus);
             }
             else
             {
@@ -228,8 +224,9 @@ void Window::dispatchEvents(QEvent* event)
                 {
                     m_activeGui = nullptr;
                     m_fakeFocusOut = false;
-                    requestActivate();
 
+                    setFlags(flags() & ~Qt::WindowDoesNotAcceptFocus);
+                    requestActivate();
                 }
             }
         }
