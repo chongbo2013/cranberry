@@ -56,7 +56,7 @@ void GameWindow::onInit()
 {
     // m_texture
     m_texture = new TextureBase;
-    m_texture->create(QImage(":/femalecodertocat.png"), this);
+    m_texture->create(":/femalecodertocat.png", this);
     m_texture->setName("m_texture");
     m_texture->setMoveSpeed(100.f, 100.f);
     m_texture->setPosition(CENTER(m_texture->width(), m_texture->height()));

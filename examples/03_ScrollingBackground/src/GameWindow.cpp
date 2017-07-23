@@ -85,7 +85,7 @@ void GameWindow::onInit()
     for (int i = 0; i < 4; i++)
     {
         m_background[i] = new Background;
-        m_background[i]->create(QImage(":/sakura.png"), this);
+        m_background[i]->create(":/sakura.png", this);
         m_background[i]->setScrollDirection(MoveEast | MoveSouth);
         m_background[i]->setScrollMode(ScrollInfinite);
         m_background[i]->setScrollView(getView(i));

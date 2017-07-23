@@ -29,6 +29,9 @@
 #include <Cranberry/Graphics/Text.hpp>
 #include <Cranberry/Window/Window.hpp>
 
+// Qt headers
+#include <QVector>
+
 
 CRANBERRY_USING_NAMESPACE
 
