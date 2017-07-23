@@ -26,7 +26,10 @@
 
 // Qt headers
 #include <QTransform>
-#include <QVector3D>
+#include <QMatrix4x4>
+
+// Standard headers
+#include <tuple>
 
 
 CRANBERRY_USING_NAMESPACE
@@ -42,6 +45,7 @@ TransformBase::TransformBase()
     , m_fadeDir(FadeNone)
     , m_rotateAxes(AxisZ)
     , m_rotateMode(RotateOnce)
+    , m_matrix(new QMatrix4x4)
     , m_isMovingX(false)
     , m_isMovingY(false)
     , m_isRotatingX(false)
@@ -79,6 +83,12 @@ TransformBase::TransformBase()
     , m_originX(0.f)
     , m_originY(0.f)
 {
+}
+
+
+TransformBase::~TransformBase()
+{
+    delete m_matrix;
 }
 
 
@@ -173,22 +183,24 @@ float TransformBase::opacity() const
 }
 
 
-QMatrix4x4 TransformBase::matrix(RenderBase* obj) const
+QMatrix4x4* TransformBase::matrix(RenderBase* obj) const
 {
     QMatrix4x4 proj, tran, rot, scale, orig, norig;
     qreal fw = static_cast<qreal>(obj->renderTarget()->width());
     qreal fh = static_cast<qreal>(obj->renderTarget()->height());
 
     proj.ortho(0.f, fw, fh, 0.f, -1, 1);
-    tran.translate(x(), y());
-    rot.rotate(angleX(), 1.f, 0.f, 0.f);
-    rot.rotate(angleY(), 0.f, 1.f, 0.f);
-    rot.rotate(angleZ(), 0.f, 0.f, 1.f);
-    scale.scale(scaleX(), scaleY());
-    orig.translate(origin());
-    norig.translate(origin() * -1);
+    tran.translate(m_x, m_y);
+    rot.rotate(m_angleX, 1.f, 0.f, 0.f);
+    rot.rotate(m_angleY, 0.f, 1.f, 0.f);
+    rot.rotate(m_angleZ, 0.f, 0.f, 1.f);
+    scale.scale(m_scaleX, m_scaleY);
+    orig.translate(m_originX, m_originY);
+    norig.translate(m_originX * -1, m_originY * -1);
 
-    return proj * tran * orig * rot * norig * orig * scale * norig;
+    *m_matrix = proj * tran * orig * rot * norig * orig * scale * norig;
+
+    return m_matrix;
 }
 
 
@@ -240,31 +252,29 @@ FadeDirection TransformBase::fadeDirection() const
 }
 
 
-QVector2D TransformBase::pos() const
+QPointF TransformBase::pos() const
 {
-    return QVector2D(m_x, m_y);
+    return QPointF(m_x, m_y);
 }
 
 
-QVector3D TransformBase::origin() const
+QPointF TransformBase::origin() const
 {
-    return QVector3D(m_originX, m_originY, 0);
+    return QPointF(m_originX, m_originY);
 }
 
 
-QVector3D TransformBase::rotateAxes() const
+std::tuple<float, float, float> TransformBase::rotateAxes() const
 {
-    QVector3D axes;
-
-    if (m_angleX != 0.f) axes.setX(1);
-    if (m_angleY != 0.f) axes.setY(1);
-    if (m_angleZ != 0.f) axes.setZ(1);
-
-    return axes;
+    return std::make_tuple(
+                m_angleX != 0 ? 1 : 0,
+                m_angleY != 0 ? 1 : 0,
+                m_angleZ != 0 ? 1 : 0
+                );
 }
 
 
-QPainterPath TransformBase::bounds() const
+const Hitbox& TransformBase::hitbox()
 {
     QPainterPath path;
     QTransform transform;
@@ -279,7 +289,9 @@ QPainterPath TransformBase::bounds() const
     transform.scale(m_scaleX, m_scaleY);
     transform.translate(-m_originX, -m_originY);
 
-    return transform.map(path);
+    m_hitbox.setHitbox(new QPainterPath(transform.map(path)));
+
+    return m_hitbox;
 }
 
 
@@ -394,7 +406,7 @@ void TransformBase::setPosition(float x, float y)
 }
 
 
-void TransformBase::setPosition(const QVector2D& pos)
+void TransformBase::setPosition(const QPointF& pos)
 {
     setPosition(pos.x(), pos.y());
 }
@@ -407,7 +419,7 @@ void TransformBase::setOrigin(float x, float y)
 }
 
 
-void TransformBase::setOrigin(const QVector2D& origin)
+void TransformBase::setOrigin(const QPointF& origin)
 {
     setOrigin(origin.x(), origin.y());
 }

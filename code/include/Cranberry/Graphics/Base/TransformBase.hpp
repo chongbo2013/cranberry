@@ -26,15 +26,16 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
+#include <Cranberry/Graphics/Base/Hitbox.hpp>
 #include <Cranberry/System/GameTime.hpp>
 #include <Cranberry/System/Emitters/TransformBaseEmitter.hpp>
 
-// Qt headers (TODO: remove dependency)
-#include <QPainterPath>
-#include <QMatrix4x4>
-#include <QVector2D>
+// Qt headers
+#include <QPointF>
+#include <QSizeF>
 
 // Forward declarations
+CRANBERRY_FORWARD_Q(QMatrix4x4)
 CRANBERRY_FORWARD_C(RenderBase)
 
 
@@ -53,16 +54,11 @@ class CRANBERRY_GRAPHICS_EXPORT TransformBase
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(TransformBase)
     CRANBERRY_DISABLE_COPY(TransformBase)
     CRANBERRY_DISABLE_MOVE(TransformBase)
 
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes a new instance of the TransformBase class and resets the
-    /// members to their logical default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
     TransformBase();
+    virtual ~TransformBase();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -166,7 +162,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the absolute width, in pixels. To get the visible width, issue
-    /// a call to ITransformable::bounds().boundingRect().width().
+    /// a call to TransformBase::bounds().boundingRect().width().
     ///
     /// \returns the width.
     ///
@@ -175,7 +171,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the absolute height, in pixels. To get the visible height,
-    /// issue a call to ITransformable::bounds().boundingRect().height().
+    /// issue a call to TransformBase::bounds().boundingRect().height().
     ///
     /// \returns the height.
     ///
@@ -191,19 +187,16 @@ public:
     float opacity() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the entire transformation matrix. Since ITransformable and
+    /// Retrieves the entire transformation matrix. Since TransformBase and
     /// IRenderable are two independent classes, we need it here in order to
-    /// retrieve the render target's width and height.
+    /// retrieve the render target's width and height. Do not delete the
+    /// returned matrix object.
     ///
-    /// \note \p flipped is only false for frame buffers, because when they are
-    ///       rendered to, the objects are already flipped.
-    ///
-    /// \param obj Target to render to. Tip: Simply use 'this'.
-    /// \param flipped Flip the entire object?
-    /// \returns the transformation matrix.
+    /// \param obj Target to render to. Tip: Simply use 'this' for RenderBases.
+    /// \returns a pointer to the transformation matrix.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QMatrix4x4 matrix(RenderBase* obj) const;
+    QMatrix4x4* matrix(RenderBase* obj) const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the move direction of the object.
@@ -275,7 +268,7 @@ public:
     /// \returns the position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QVector2D pos() const;
+     QPointF pos() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the origin of the object.
@@ -283,7 +276,7 @@ public:
     /// \returns the origin.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QVector3D origin() const;
+    QPointF origin() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the rotate axes of the object.
@@ -291,24 +284,25 @@ public:
     /// \returns the rotate axes.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QVector3D rotateAxes() const;
+    std::tuple<float, float, float> rotateAxes() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the exact bounds of the object. Can be used for precise
+    /// Retrieves the exact hitbox of the object. Can be used for precise
     /// collision detection.
     ///
     /// \note If you rotate your object and want to use this method to determine
-    ///       the target position for a ITransformable::startMovingTo() call,
-    ///       use ITransformable::rect() instead.
+    ///       the target position for a e.g. TransformBase::startMovingTo() call,
+    ///       use TransformBase::rect() instead.
     ///
     /// \returns the bounds.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QPainterPath bounds() const;
+    const Hitbox& hitbox();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the bounds of the object but does not include the rotation.
-    /// It is not recommended to use this method for collision detection.
+    /// It is not recommended to use this method for collision detection. Use it
+    /// to calculate target positions.
     ///
     /// \returns the bounds, without rotation applied.
     ///
@@ -345,7 +339,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the rotate axes of the object. Only needed when rotating the
-    /// object infinitely long through ITransformable::startRotating().
+    /// object infinitely long through TransformBase::startRotating().
     ///
     /// \param axes Rotate axes to use.
     ///
@@ -445,7 +439,7 @@ public:
     /// \param pos New position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setPosition(const QVector2D& pos);
+    void setPosition(const QPointF& pos);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the rotate/scale origin of the object.
@@ -462,7 +456,7 @@ public:
     /// \param origin New rotate origin.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setOrigin(const QVector2D& origin);
+    void setOrigin(const QPointF& origin);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the size of the object.
@@ -504,7 +498,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     /// Moves the object to \p targetX in the X-direction and to \p targetY
     /// in the Y-direction. Note: If you scaled your object, you are required
-    /// to use ITransformable::rect() to calculate your target position!
+    /// to use TransformBase::rect() to calculate your target position!
     ///
     /// \param targetX Target X-position.
     /// \param targetY Target Y-position.
@@ -575,7 +569,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     /// Fades the object in or out until it reaches the target opacity. To
     /// determine whether the object is now fading in or out, issue a call to
-    /// ITransformable::fadeDirection().
+    /// TransformBase::fadeDirection().
     ///
     /// \param target Target opacity (0-1).
     ///
@@ -644,6 +638,8 @@ private:
     FadeDirection        m_fadeDir;
     RotateAxes           m_rotateAxes;
     RotateMode           m_rotateMode;
+    QMatrix4x4*          m_matrix;
+    Hitbox               m_hitbox;
     bool                 m_isMovingX;
     bool                 m_isMovingY;
     bool                 m_isRotatingX;

@@ -99,6 +99,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
                     include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
                     include/Cranberry/Game/GamePrivate.hpp \
+    include/Cranberry/Graphics/Base/Hitbox.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -147,6 +148,7 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/TransformBase.cpp \
                     src/Graphics/Base/SpriteMovement.cpp \
                     src/Game/GamePrivate.cpp \
+    src/Graphics/Base/Hitbox.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp
