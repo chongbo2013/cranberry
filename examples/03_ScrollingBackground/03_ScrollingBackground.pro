@@ -10,7 +10,7 @@
 ## GENERAL SETTINGS
 ##
 ###############################################################################
-QT             +=       core gui widgets
+QT             +=       core
 CONFIG         +=       c++11 exceptions no_keywords
 TEMPLATE        =       app
 TARGET          =       03_ScrollingBackground

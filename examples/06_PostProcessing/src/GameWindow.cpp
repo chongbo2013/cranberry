@@ -28,7 +28,7 @@
 #define WINDOW_SIZE   QSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 #define CENTER_X(w)   (WINDOW_WIDTH / 2 - w / 2)
 #define CENTER_Y(h)   (WINDOW_HEIGHT / 2 - h / 2)
-#define CENTER(w, h)  (QVector2D(CENTER_X(w), CENTER_Y(h)))
+#define CENTER(w, h)  (QPointF(CENTER_X(w), CENTER_Y(h)))
 
 
 GameWindow::GameWindow()

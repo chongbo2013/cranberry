@@ -57,9 +57,9 @@ void GameWindow::onInit()
     // Sets origin to (0, 0) in order to precisely position the scaled object!
     m_gifAnim = new GifAnimation;
     m_gifAnim->create(":/earth.gif", this);
-    m_gifAnim->setPosition(QVector2D(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 200));
+    m_gifAnim->setPosition(QPointF(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 200));
     m_gifAnim->setScale(200 / m_gifAnim->width(), 200 / m_gifAnim->height());
-    m_gifAnim->setOrigin(QVector2D(0, 0));
+    m_gifAnim->setOrigin(QPointF(0, 0));
     m_gifAnim->startAnimation(AnimateForever);
 
     // m_cranAnim

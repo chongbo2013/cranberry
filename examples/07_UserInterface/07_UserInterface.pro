@@ -10,7 +10,7 @@
 ## GENERAL SETTINGS
 ##
 ###############################################################################
-QT             +=       core gui widgets qml quick
+QT             +=       core qml quick
 CONFIG         +=       c++11 exceptions no_keywords
 TEMPLATE        =       app
 TARGET          =       07_UserInterface

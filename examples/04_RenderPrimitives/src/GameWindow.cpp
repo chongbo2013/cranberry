@@ -29,7 +29,7 @@
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 #define WINDOW_SIZE   QSize(WINDOW_WIDTH, WINDOW_HEIGHT)
-#define WINDOW_POS    QVector2D(0.75 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
+#define WINDOW_POS    QPointF(0.75 * WINDOW_WIDTH, 0.25 * WINDOW_HEIGHT)
 #define CENTER_X(w)   (WINDOW_WIDTH / 2 - w / 2)
 #define CENTER_Y(h)   (WINDOW_HEIGHT / 2 - h / 2)
 
@@ -85,9 +85,9 @@ QVector<QColor> colorGenerator(ShapeBase* e, uint f)
 }
 
 
-QVector<QVector2D> pointsGenerator()
+QVector<QPointF> pointsGenerator()
 {
-    QVector<QVector2D> p;
+    QVector<QPointF> p;
 
     Random random, xRand, yRand;
     random.setMinMax(10, 20);
@@ -100,7 +100,7 @@ QVector<QVector2D> pointsGenerator()
         int x = xRand.nextNumber();
         int y = yRand.nextNumber();
 
-        p.append(QVector2D(x, y));
+        p.append(QPointF(x, y));
     }
 
     return p;
@@ -121,7 +121,7 @@ void GameWindow::onInit()
     m_hexagon->create(100, 6, this);
     m_hexagon->setColor(QColor(Qt::white));
     m_hexagon->setShapeFilled(true);
-    m_hexagon->setPosition(QVector2D(
+    m_hexagon->setPosition(QPointF(
                 CENTER_X(m_hexagon->width()),
                 CENTER_Y(m_hexagon->height())
                 ));
@@ -131,7 +131,7 @@ void GameWindow::onInit()
     m_decagon->create(150, 10, this);
     m_decagon->setColor(colorGenerator(m_decagon, 1));
     m_decagon->setShapeFilled(true);
-    m_decagon->setPosition(QVector2D(100, 300));
+    m_decagon->setPosition(QPointF(100, 300));
 
     // m_polygon
     m_polygon = new Polygon;
