@@ -1,0 +1,142 @@
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
+// Copyright (C) 2017 Nicolas Kogler
+//
+// Cranberry is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Cranberry is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Cranberry. If not, see <http://www.gnu.org/licenses/>.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+#pragma once
+#ifndef CRANBERRY_SYSTEM_MODELS_TREEMODELITEM_HPP
+#define CRANBERRY_SYSTEM_MODELS_TREEMODELITEM_HPP
+
+
+// Cranberry headers
+#include <Cranberry/Config.hpp>
+
+// Qt headers
+#include <QVariant>
+
+
+CRANBERRY_BEGIN_NAMESPACE
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Defines one tree item in the tree model.
+///
+/// \class TreeModelItem
+/// \author Nicolas Kogler
+/// \date July 23, 2017
+///
+////////////////////////////////////////////////////////////////////////////////
+class CRANBERRY_SYSTEM_EXPORT TreeModelItem
+{
+public:
+
+    CRANBERRY_DEFAULT_COPY(TreeModelItem)
+    CRANBERRY_DEFAULT_MOVE(TreeModelItem)
+
+    TreeModelItem(QVariant member, QVariant value, TreeModelItem* parent = 0);
+   ~TreeModelItem();
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Appends one child to the tree item.
+    ///
+    /// \param child Valid child item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void appendChild(TreeModelItem* child);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the amount of children.
+    ///
+    /// \returns the child count.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int childCount() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the row of this tree item.
+    ///
+    /// \returns the row within the parent item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int row() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the child at \p row.
+    ///
+    /// \param row If out of bounds, yields nullptr.
+    /// \returns the child or nullptr.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem* childAt(int row) const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the parent of this item.
+    ///
+    /// \returns the parent item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem* parentItem() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Returns the value describing the class member.
+    ///
+    /// \returns the class member value.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QVariant member() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Returns the value describing the member value.
+    ///
+    /// \returns the member value value.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QVariant value() const;
+
+
+private:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Members
+    ////////////////////////////////////////////////////////////////////////////
+    QList<TreeModelItem*> m_items;
+    QVariant              m_member;
+    QVariant              m_value;
+    TreeModelItem*        m_parent;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \class TreeModelItem
+/// \ingroup System
+///
+/// More detailed description, code examples.
+///
+/// \code
+/// ...
+/// \endcode
+///
+////////////////////////////////////////////////////////////////////////////////
+
+
+CRANBERRY_END_NAMESPACE
+
+
+#endif

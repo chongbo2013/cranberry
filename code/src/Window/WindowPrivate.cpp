@@ -25,11 +25,14 @@
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
+#include <Cranberry/System/Models/TreeModelPrivate.hpp>
 #include <Cranberry/Window/Window.hpp>
 #include <Cranberry/Window/WindowPrivate.hpp>
 
 // Qt headers
 #include <QApplication>
+#include <QQmlContext>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QOpenGLExtraFunctions>
@@ -48,11 +51,14 @@ CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT   |
                                        GL_STENCIL_BUFFER_BIT |
                                        GL_DEPTH_BUFFER_BIT   )
 
+#include <Cranberry/Gui/Components/QmlTreeModelItem.hpp>
 
 priv::WindowPrivate::WindowPrivate(cran::Window* w)
     : QOpenGLWindow(QOpenGLWindow::NoPartialUpdate)
     , m_gl(nullptr)
     , m_window(w)
+    , m_dbgOverlay(nullptr)
+    , m_guiOverlay(new GuiManager)
     , m_activeGui(nullptr)
     , m_keyCount(0)
     , m_padCount(0)
@@ -60,6 +66,8 @@ priv::WindowPrivate::WindowPrivate(cran::Window* w)
     , m_isMainWindow(false)
     , m_fakeFocusOut(false)
 {
+    qmlRegisterType<QmlTreeModelItem>("kgl.cb.treemodel", 1, 0, "TreeModel");
+
     QSurfaceFormat fmt = format();
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
@@ -145,6 +153,31 @@ void priv::WindowPrivate::setSettings(const WindowSettings& settings)
 }
 
 
+void priv::WindowPrivate::showDebugOverlay(RenderBase* obj)
+{
+    m_dbgOverlay = obj;
+
+    if (obj != nullptr)
+    {
+        QScopedPointer<TreeModel> m(new TreeModel);
+        obj->parseProperties(m.data());
+
+        m_guiOverlay->context()->setContextProperty("memberModel", QVariant::fromValue<priv::TreeModelPrivate*>(m->model()));
+    }
+    else
+    {
+        hideDebugOverlay();
+    }
+}
+
+
+void priv::WindowPrivate::hideDebugOverlay()
+{
+    m_dbgOverlay = nullptr;
+    m_guiOverlay->context()->setContextProperty("memberModel", QVariant());
+}
+
+
 QPixmap priv::WindowPrivate::takeScreenshot()
 {
     return screen()->grabWindow(winId());
@@ -184,6 +217,11 @@ void priv::WindowPrivate::initializeGL()
     }
 
     m_window->onInit();
+
+    // Load the debug overlay Gui.
+    m_guiOverlay->create("qrc:/cb/qml/debug_overlay.qml", m_window);
+    m_guiOverlay->rootItem()->setSize(QSizeF(width(), height()));
+    m_guiOverlay->context()->setContextProperty("memberModel", QVariant());
 }
 
 
@@ -238,6 +276,15 @@ void priv::WindowPrivate::dispatchEvents(QEvent* event)
         {
             QCoreApplication::sendEvent(w->window(), event);
         }
+    }
+}
+
+
+void priv::WindowPrivate::renderDebugOverlay()
+{
+    if (m_dbgOverlay != nullptr)
+    {
+        m_guiOverlay->render();
     }
 }
 
@@ -307,6 +354,7 @@ void priv::WindowPrivate::paintGL()
     m_window->onUpdate(m_time);
     glDebug(m_gl->glClear(c_clearMask));
     m_window->onRender();
+    renderDebugOverlay();
 }
 
 

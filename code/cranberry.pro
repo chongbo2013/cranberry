@@ -47,7 +47,8 @@ gcc {
 ##
 ################################################################################
 INCLUDEPATH         +=      include
-RESOURCES           +=      resources/glsl.qrc
+RESOURCES           +=      resources/glsl.qrc \
+                            resources/qml.qrc
 
 
 ################################################################################
@@ -100,7 +101,11 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Game/GamePrivate.hpp \
     include/Cranberry/Graphics/Base/Hitbox.hpp \
     include/Cranberry/Window/WindowPrivate.hpp \
-    include/Cranberry/Window/Window.hpp
+    include/Cranberry/Window/Window.hpp \
+    include/Cranberry/System/Models/TreeModelItem.hpp \
+    include/Cranberry/System/Models/TreeModelPrivate.hpp \
+    include/Cranberry/System/Models/TreeModel.hpp \
+    include/Cranberry/Gui/Components/QmlTreeModelItem.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -150,7 +155,11 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Game/GamePrivate.cpp \
     src/Graphics/Base/Hitbox.cpp \
     src/Window/WindowPrivate.cpp \
-    src/Window/Window.cpp
+    src/Window/Window.cpp \
+    src/System/Models/TreeModelItem.cpp \
+    src/System/Models/TreeModelPrivate.cpp \
+    src/System/Models/TreeModel.cpp \
+    src/Gui/Components/QmlTreeModelItem.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

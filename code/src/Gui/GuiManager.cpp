@@ -216,6 +216,12 @@ QQuickItem* GuiManager::rootItem() const
 }
 
 
+QQmlContext* GuiManager::context() const
+{
+    return m_qmlEngine->rootContext();
+}
+
+
 QPointF GuiManager::topLeft() const
 {
     return m_rootItem->position();

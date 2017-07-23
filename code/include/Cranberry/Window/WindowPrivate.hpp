@@ -42,6 +42,7 @@
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
+CRANBERRY_FORWARD_C(RenderBase)
 CRANBERRY_FORWARD_C(Window)
 CRANBERRY_ALIAS(QList<cran::GuiManager*>, GuiWindows)
 
@@ -49,14 +50,6 @@ CRANBERRY_ALIAS(QList<cran::GuiManager*>, GuiWindows)
 CRANBERRY_BEGIN_PRIV_NAMESPACE
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// Private implementation of the Window class. Hides QOpenGLWindow.
-///
-/// \class WindowPrivate
-/// \author Nicolas Kogler
-/// \date July 23, 2017
-///
-////////////////////////////////////////////////////////////////////////////////
 class WindowPrivate final : public QOpenGLWindow
 {
 public:
@@ -76,6 +69,8 @@ public:
     uint vao() const;
     void restoreOpenGLSettings();
     void setSettings(const WindowSettings& settings);
+    void showDebugOverlay(RenderBase* obj);
+    void hideDebugOverlay();
     QPixmap takeScreenshot();
     static WindowPrivate* activeWindow();
 
@@ -106,18 +101,18 @@ private:
     void registerQmlWindow(GuiManager*);
     void unregisterQmlWindow(GuiManager*);
     void dispatchEvents(QEvent*);
+    void renderDebugOverlay();
     void parseSettings();
     void destroyGL();
-
-#ifdef QT_DEBUG
-    void calculateFramerate();
-#endif
+    if_debug(void calculateFramerate())
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLFunctions* m_gl;
     cran::Window*     m_window;
+    cran::RenderBase* m_dbgOverlay;
+    GuiManager*       m_guiOverlay;
     GuiWindows        m_guiWindows;
     GuiManager*       m_activeGui;
     WindowSettings    m_settings;

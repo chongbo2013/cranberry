@@ -22,11 +22,12 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/TransformBase.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
-#include <QTransform>
 #include <QMatrix4x4>
+#include <QTransform>
 
 // Standard headers
 #include <tuple>
@@ -307,12 +308,6 @@ QRectF TransformBase::rect() const
     transform.translate(-m_originX, -m_originY);
 
     return transform.map(path).boundingRect();
-}
-
-
-TransformBaseEmitter* TransformBase::signals()
-{
-    return &m_emitter;
 }
 
 
@@ -945,4 +940,17 @@ void TransformBase::checkMove()
 void TransformBase::checkScale()
 {
     if (!m_isScalingX && !m_isScalingY) stopScaling();
+}
+
+
+TransformBaseEmitter* TransformBase::signals()
+{
+    return &m_emitter;
+}
+
+
+void TransformBase::parseProperties(TreeModel* model)
+{
+    TreeModelItem* item = new TreeModelItem("TransformBase", "");
+    TreeModelItem* mem1;
 }

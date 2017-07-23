@@ -31,6 +31,7 @@
 
 // Forward declarations
 CRANBERRY_FORWARD_C(SpriteBatch)
+CRANBERRY_FORWARD_Q(QQmlContext)
 CRANBERRY_FORWARD_Q(QQmlComponent)
 CRANBERRY_FORWARD_Q(QQmlEngine)
 CRANBERRY_FORWARD_Q(QQuickItem)
@@ -132,6 +133,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     QQuickItem* rootItem() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root Qml context.
+    ///
+    /// \returns the root context.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    QQmlContext* context() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the top-left position of the root item.
