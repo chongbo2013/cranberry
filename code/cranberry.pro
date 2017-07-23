@@ -74,7 +74,6 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadState.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
-                    include/Cranberry/Window/Window.hpp \
                     include/Cranberry/Graphics/Base/Enumerations.hpp \
                     include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Graphics/Base/TextureAtlas.hpp \
@@ -99,7 +98,9 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
                     include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
                     include/Cranberry/Game/GamePrivate.hpp \
-    include/Cranberry/Graphics/Base/Hitbox.hpp
+    include/Cranberry/Graphics/Base/Hitbox.hpp \
+    include/Cranberry/Window/WindowPrivate.hpp \
+    include/Cranberry/Window/Window.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -127,7 +128,6 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadState.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
-                    src/Window/Window.cpp \
                     src/Graphics/Background.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
                     src/Graphics/GifAnimation.cpp \
@@ -148,7 +148,9 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/TransformBase.cpp \
                     src/Graphics/Base/SpriteMovement.cpp \
                     src/Game/GamePrivate.cpp \
-    src/Graphics/Base/Hitbox.cpp
+    src/Graphics/Base/Hitbox.cpp \
+    src/Window/WindowPrivate.cpp \
+    src/Window/Window.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

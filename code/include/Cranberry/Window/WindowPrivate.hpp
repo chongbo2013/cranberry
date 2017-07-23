@@ -20,8 +20,8 @@
 
 
 #pragma once
-#ifndef CRANBERRY_WINDOW_WINDOW_HPP
-#define CRANBERRY_WINDOW_WINDOW_HPP
+#ifndef CRANBERRY_WINDOW_WINDOWPRIVATE_HPP
+#define CRANBERRY_WINDOW_WINDOWPRIVATE_HPP
 
 
 // Cranberry headers
@@ -36,37 +36,36 @@
 #include <Cranberry/Window/WindowSettings.hpp>
 
 // Qt headers
-#include <QObject>
+#include <QOpenGLWindow>
 
 // Forward declarations
-CRANBERRY_FORWARD_Q(QSurface)
-CRANBERRY_FORWARD_Q(QOpenGLContext)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
-CRANBERRY_FORWARD_P(WindowPrivate)
+CRANBERRY_FORWARD_C(Window)
+CRANBERRY_ALIAS(QList<cran::GuiManager*>, GuiWindows)
 
 
-CRANBERRY_BEGIN_NAMESPACE
+CRANBERRY_BEGIN_PRIV_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Defines a game window with useful functions to override.
+/// Private implementation of the Window class. Hides QOpenGLWindow.
 ///
-/// \class Window
+/// \class WindowPrivate
 /// \author Nicolas Kogler
-/// \date June 23, 2017
+/// \date July 23, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_WINDOW_EXPORT Window : public QObject
+class WindowPrivate final : public QOpenGLWindow
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(Window)
-    CRANBERRY_DISABLE_MOVE(Window)
+    CRANBERRY_DISABLE_COPY(WindowPrivate)
+    CRANBERRY_DISABLE_MOVE(WindowPrivate)
 
-    Window();
-    virtual ~Window();
+    WindowPrivate(cran::Window*);
+   ~WindowPrivate();
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -102,52 +101,12 @@ public:
     const GameTime& currentTime() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the width of this window.
-    ///
-    /// \returns the width.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    float width() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the height of this window.
-    ///
-    /// \returns the height.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    float height() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the size of this window.
-    ///
-    /// \returns the size.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    const QSize size() const;
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Returns the OpenGL functions of the window's context.
     ///
     /// \returns the OpenGL functions.
     ///
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLFunctions* functions() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Returns the window's OpenGL context.
-    ///
-    /// \returns the OpenGL context.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    QOpenGLContext* context() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Returns the window's surface.
-    ///
-    /// \returns the surface.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    QSurface* surface() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Returns the default VAO for this render target.
@@ -164,12 +123,6 @@ public:
     void restoreOpenGLSettings();
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Makes this context current.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void makeCurrent();
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Specify the settings for this window. Call this before you call start().
     ///
     /// \param settings New window settings.
@@ -178,12 +131,12 @@ public:
     void setSettings(const WindowSettings& settings);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Takes a screenshot of this window and saves it to \p path.
+    /// Takes a screenshot of this window and returns it as pixmap.
     ///
-    /// \param path Path to save screenshot to.
+    /// \returns the current contents of the window.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void saveScreenshot(const QString& path);
+    QPixmap takeScreenshot();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the currently active window.
@@ -191,30 +144,25 @@ public:
     /// \returns the active window.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    static Window* activeWindow();
+    static WindowPrivate* activeWindow();
 
 
 protected:
 
-    virtual void onInit() { }
-    virtual void onExit() { }
-    virtual void onCrash() { }
-    virtual void onUpdate(const GameTime&) { }
-    virtual void onRender() { }
-    virtual void onMouseMoved(const MouseMoveEvent&) { }
-    virtual void onMouseButtonDown(const MouseState&) { }
-    virtual void onMouseButtonReleased(const MouseReleaseEvent&) { }
-    virtual void onMouseDoubleClicked(const MouseReleaseEvent&) { }
-    virtual void onKeyDown(const KeyboardState&) { }
-    virtual void onKeyReleased(const KeyReleaseEvent&) { }
-    virtual void onKeyCharacter(const QString&) { }
-    virtual void onGamepadButtonDown(const GamepadState&) { }
-    virtual void onGamepadButtonReleased(const GamepadReleaseEvent&) { }
-    //virtual void onScrolled(const QWheelEvent&) { }
-    //virtual void onTouched(const QTouchEvent&) { }
-    virtual void onWindowResized(const QSize&) { }
-    virtual void onWindowActivated() { }
-    virtual void onWindowDeactivated() { }
+    void initializeGL() override;
+    void paintGL() override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+    void touchEvent(QTouchEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+    bool event(QEvent* event) override;
 
 
 private:
@@ -224,42 +172,41 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     void registerQmlWindow(GuiManager*);
     void unregisterQmlWindow(GuiManager*);
+    void dispatchEvents(QEvent*);
+    void parseSettings();
+    void destroyGL();
+
+#ifdef QT_DEBUG
+    void calculateFramerate();
+#endif
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    priv::WindowPrivate* m_priv;
+    QOpenGLFunctions* m_gl;
+    cran::Window*     m_window;
+    GuiWindows        m_guiWindows;
+    GuiManager*       m_activeGui;
+    WindowSettings    m_settings;
+    GameTime          m_time;
+    KeyboardState     m_keyState;
+    GamepadState      m_padState;
+    MouseState        m_mouseState;
+    QPoint            m_lastCursorPos;
+    qint32            m_keyCount;
+    qint32            m_padCount;
+    qint32            m_btnCount;
+    uint              m_vao;
+    bool              m_isMainWindow;
+    bool              m_fakeFocusOut;
 
     friend class Game;
     friend class GuiManager;
-    friend class priv::WindowPrivate;
+    friend class Window;
 };
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \class Window
-/// \ingroup Window
-///
-/// This class is the base for all custom game windows. Override all the methods
-/// you need for your game and put your game logic inside them.
-///
-/// \code
-/// class MyWindow final : public cran::Window
-/// {
-/// protected:
-///
-///     void onInit() override;
-///     void onExit() override;
-///     void onRender() override;
-///
-///     ...
-/// };
-/// \endcode
-///
-////////////////////////////////////////////////////////////////////////////////
-
-
-CRANBERRY_END_NAMESPACE
+CRANBERRY_END_PRIV_NAMESPACE
 
 
 #endif
