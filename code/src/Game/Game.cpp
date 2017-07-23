@@ -41,7 +41,9 @@ Game::Game(int& argc, char* argv[])
     // Creates the GUI application, if not already.
     if (g_application == nullptr)
     {
+        QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
         QApplication::setAttribute(Qt::AA_Use96Dpi);
+
         g_application = new QApplication(argc, argv);
     }
 

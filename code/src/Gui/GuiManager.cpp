@@ -278,6 +278,9 @@ void GuiManager::loadComponents()
             createFbo();
             makeCurrent();
 
+            // Hilarious hack to trick QSGRenderContext xD
+            renderTarget()->context()->setProperty("_q_sgrendercontext", QVariant());
+
             m_renderControl->initialize(renderTarget()->context());
             m_isInitialized = true;
 
