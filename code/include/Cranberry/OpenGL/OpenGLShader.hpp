@@ -29,6 +29,7 @@
 // Qt headers
 #include <QPointF>
 #include <QSizeF>
+#include <QString>
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QMatrix4x4)
@@ -357,8 +358,10 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLShaderProgram* m_program;   ///< The program containing all shaders
-    QOpenGLShader*        m_vertex;    ///< The vertex shader.
-    QOpenGLShader*        m_fragment;  ///< The fragment shader.
+    QOpenGLShader*        m_vertex;    ///< The vertex shader
+    QOpenGLShader*        m_fragment;  ///< The fragment shader
+    QString               m_vertName;  ///< Vertex shader name
+    QString               m_fragName;  ///< Fragment shader name
     uint*                 m_refCount;  ///< Counts the "copies" of this instance
     bool                  m_isBound;   ///< Is currently bound?
     int                   m_locTex;    ///< Uniform location of u_tex

@@ -26,6 +26,7 @@
 
 // Qt headers
 #include <QFile>
+#include <QFileInfo>
 #include <QMatrix4x4>
 #include <QOpenGLContext>
 #include <QOpenGLShader>
@@ -36,13 +37,15 @@
 #define set_uniform(loc, val) { ensure_bound(m_program->setUniformValue(loc, val)); }
 
 // Constants
-CRANBERRY_CONST_VAR(QString, e_01, "OpenGLShader: Shader file does not exist.")
+CRANBERRY_CONST_VAR(QString, e_01, "OpenGLShader: Shader file %0 does not exist.")
 CRANBERRY_CONST_VAR(QString, e_02, "OpenGLShader: Program could not be created.")
 CRANBERRY_CONST_VAR(QString, e_03, "OpenGLShader: Shader could not be added. ")
-CRANBERRY_CONST_VAR(QString, e_04, "OpenGLShader: Program could not be linked. Log: ")
+CRANBERRY_CONST_VAR(QString, e_04, "OpenGLShader (%0,%1): Program could not be linked. Log: ")
 CRANBERRY_CONST_VAR(QString, e_05, "OpenGLShader::setSampler(): ID is not valid.")
-CRANBERRY_CONST_VAR(QString, e_06, "OpenGLShader: Shader not compatible with cranberry. "
-                                   "One of the uniform attributes is missing.")
+CRANBERRY_CONST_VAR(QString, e_06, "OpenGLShader (%0,%1): OpenGL could not find "
+                                   "the following attributes:\n\"%2\"\nIgnore "
+                                   "this message if these attributes are unused "
+                                   "in your shader program.")
 
 
 CRANBERRY_USING_NAMESPACE
@@ -101,6 +104,8 @@ bool OpenGLShader::setVertexShaderFromCode(const QString& code)
 
 bool OpenGLShader::setVertexShaderFromFile(const QString& file)
 {
+    m_vertName = QFileInfo(file).baseName();
+
     return loadShaderPrivate(QOpenGLShader::Vertex, getFileContents(file));
 }
 
@@ -113,6 +118,8 @@ bool OpenGLShader::setFragmentShaderFromCode(const QString& code)
 
 bool OpenGLShader::setFragmentShaderFromFile(const QString& file)
 {
+    m_fragName = QFileInfo(file).baseName();
+
     return loadShaderPrivate(QOpenGLShader::Fragment, getFileContents(file));
 }
 
@@ -250,7 +257,7 @@ QString OpenGLShader::getFileContents(const QString& path)
 
     if (!file.open(QFile::ReadOnly))
     {
-        cranError(e_01);
+        cranError(e_01.arg(path));
     }
     else
     {
@@ -271,7 +278,7 @@ bool OpenGLShader::loadShaderPrivate(int type, QString code)
         m_program = new QOpenGLShaderProgram;
         if (!m_program->create())
         {
-            return glDebug(cranError(e_02));
+            return cranError(e_02);
         }
     }
 
@@ -288,7 +295,7 @@ bool OpenGLShader::loadShaderPrivate(int type, QString code)
     // Adds the shader to the program and links it if required.
     if (!m_program->addShaderFromSourceCode(shaderType, code))
     {
-        return glDebug(cranError(e_03 + m_program->log()));
+        return cranError(e_03 + m_program->log());
     }
 
     if (shaderType == QOpenGLShader::Vertex)
@@ -318,7 +325,7 @@ bool OpenGLShader::link()
 {
     if (!m_program->link() || !m_program->bind())
     {
-        return glDebug(cranError(e_04 + m_program->log()));
+        return cranError(e_04.arg(m_vertName, m_fragName) + m_program->log());
     }
 
     // Loads common cranberry uniforms.
@@ -329,14 +336,18 @@ bool OpenGLShader::link()
     glDebug(m_locEffect = m_program->uniformLocation("u_effect"));
     glDebug(m_locSize = m_program->uniformLocation("u_winSize"));
 
-    if (m_locTex == -1  ||
-        m_locMvp == -1  ||
-        m_locOpac == -1 ||
-        m_locMode == -1 ||
-        m_locSize == -1 ||
-        m_locEffect == -1)
+    // Stores all invalid attributes in a list.
+    QStringList attr;
+    if (m_locTex == -1) attr << "u_tex";
+    if (m_locMvp == -1) attr << "u_mvp";
+    if (m_locOpac == -1) attr << "u_opac";
+    if (m_locMode == -1) attr << "u_mode";
+    if (m_locSize == -1) attr << "u_winSize";
+    if (m_locEffect == -1) attr << "u_effect";
+
+    if (!attr.isEmpty())
     {
-        return cranWarning(e_06);
+        return cranWarning(e_06.arg(m_vertName, m_fragName, attr.join(", ")));
     }
 
     return true;
