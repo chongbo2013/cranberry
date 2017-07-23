@@ -74,7 +74,7 @@ bool TextureBase::isNull() const
 }
 
 
-bool TextureBase::create(const QImage& img, Window* renderTarget)
+bool TextureBase::create(const QString& img, Window* renderTarget)
 {
     if (!RenderBase::create(renderTarget))
     {
@@ -84,7 +84,7 @@ bool TextureBase::create(const QImage& img, Window* renderTarget)
     {
         return false;
     }
-    else if (!createTexture(img))
+    else if (!createTexture(QImage(img)))
     {
         return false;
     }

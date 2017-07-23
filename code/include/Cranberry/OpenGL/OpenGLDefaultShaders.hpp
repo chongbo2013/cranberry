@@ -26,7 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
-#include <Cranberry/Window/Window.hpp>
+#include <Cranberry/Window/WindowPrivate.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -96,7 +96,7 @@ private:
     static void cranberryInitDefaultShaders();
     static void cranberryUpdateDefaultShaders();
 
-    friend class Window;
+    friend class priv::WindowPrivate;
 };
 
 

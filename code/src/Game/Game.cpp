@@ -22,6 +22,7 @@
 // Cranberry headers
 #include <Cranberry/Game/Game.hpp>
 #include <Cranberry/Window/Window.hpp>
+#include <Cranberry/Window/WindowPrivate.hpp>
 
 // Qt headers
 #include <QApplication>
@@ -67,7 +68,7 @@ bool Game::addWindow(Window* window)
         if (!m_windows.contains(window))
         {
             m_windows.append(window);
-            window->show();
+            window->m_priv->show();
             return true;
         }
     }
@@ -83,7 +84,7 @@ bool Game::removeWindow(Window* window)
         if (m_windows.contains(window))
         {
             m_windows.removeOne(window);
-            window->hide();
+            window->m_priv->hide();
             return true;
         }
     }
@@ -95,7 +96,7 @@ bool Game::removeWindow(Window* window)
 int Game::run(Window* mainWindow)
 {
     addWindow(mainWindow);
-    mainWindow->m_isMainWindow = true;
+    mainWindow->m_priv->m_isMainWindow = true;
     m_isRunning = true;
 
     return g_application->exec();

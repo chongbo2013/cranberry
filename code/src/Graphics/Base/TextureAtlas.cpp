@@ -98,7 +98,7 @@ TextureAtlas::TextureAtlas(const QImage& img, Window* renderTarget)
         renderTarget->makeCurrent();
     }
 
-    m_texture->create(img, renderTarget);
+    m_texture->create(new QOpenGLTexture(img), renderTarget);
 }
 
 

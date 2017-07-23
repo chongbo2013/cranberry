@@ -85,6 +85,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #define CRANBERRY_FORWARD_C(x)  CRANBERRY_BEGIN_NAMESPACE class x; CRANBERRY_END_NAMESPACE
+#define CRANBERRY_FORWARD_P(x)  CRANBERRY_BEGIN_PRIV_NAMESPACE class x; CRANBERRY_END_PRIV_NAMESPACE
 #define CRANBERRY_FORWARD_Q(x)  QT_BEGIN_NAMESPACE class x; QT_END_NAMESPACE
 
 ////////////////////////////////////////////////////////////////////////////////

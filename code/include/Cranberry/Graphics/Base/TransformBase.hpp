@@ -31,8 +31,7 @@
 #include <Cranberry/System/Emitters/TransformBaseEmitter.hpp>
 
 // Qt headers
-#include <QPointF>
-#include <QSizeF>
+#include <QRectF>
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QMatrix4x4)

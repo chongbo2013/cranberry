@@ -99,7 +99,7 @@ RenderBaseEmitter* RenderBase::signals()
 bool RenderBase::makeCurrent()
 {
     auto* cc = QOpenGLContext::currentContext();
-    if (cc != renderTarget()->context() || cc->surface() != renderTarget())
+    if (cc != renderTarget()->context() || cc->surface() != renderTarget()->surface())
     {
         renderTarget()->makeCurrent();
     }

@@ -78,11 +78,11 @@ public:
     /// In addition to creating IRenderable, creates the texture and the vertex
     /// buffer.
     ///
-    /// \param img The QImage to load the pixel data from.
+    /// \param imgPath Holds the path to the image to load.
     /// \param renderTarget Target to render texture on.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual bool create(const QImage& img, Window* renderTarget);
+    virtual bool create(const QString& imgPath, Window* renderTarget);
 
     ////////////////////////////////////////////////////////////////////////////
     /// In addition to creating IRenderable, stores the texture and creates
