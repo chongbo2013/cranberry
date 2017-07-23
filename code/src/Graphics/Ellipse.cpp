@@ -37,7 +37,7 @@ bool Ellipse::create(
         Window *renderTarget
         )
 {
-    QVector<QVector2D> points;
+    QVector<QPointF> points;
 
     qreal advance = endAngle - beginAngle;
     qreal radii = radius1 + radius2;
@@ -59,7 +59,7 @@ bool Ellipse::create(
         qreal x = currentX * radius1 + radius1;
         qreal y = currentY * radius2 + radius2;
 
-        points.push_back(QVector2D(x, y));
+        points.push_back(QPointF(x, y));
         preTan = currentX;
         currentX = ((preCos * currentX) - (preSin * currentY));
         currentY = ((preSin * preTan) + (preCos * currentY));

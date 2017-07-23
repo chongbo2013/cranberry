@@ -616,7 +616,7 @@ void SpriteBatch::setupFrame()
     // Modify the states of the program.
     glDebug(program->bind());
     glDebug(program->setSampler(GL_TEXTURE0));
-    glDebug(program->setMvpMatrix(&matrix(this)));
+    glDebug(program->setMvpMatrix(matrix(this)));
     glDebug(program->setOpacity(opacity()));
     glDebug(program->setEffect(m_effect));
     glDebug(program->setBlendMode(BlendNone));

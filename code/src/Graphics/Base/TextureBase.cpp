@@ -244,7 +244,7 @@ void TextureBase::modifyProgram()
     OpenGLShader* program = shaderProgram();
 
     glDebug(program->setSampler(GL_TEXTURE0));
-    glDebug(program->setMvpMatrix(&matrix(this)));
+    glDebug(program->setMvpMatrix(matrix(this)));
     glDebug(program->setOpacity(opacity()));
     glDebug(program->setBlendMode(m_blendMode));
     glDebug(program->setEffect(m_effect));

@@ -29,7 +29,7 @@
 CRANBERRY_USING_NAMESPACE
 
 
-bool Polygon::create(const QVector<QVector2D>& points, Window* renderTarget)
+bool Polygon::create(const QVector<QPointF>& points, Window* renderTarget)
 {
     return createInternal(points, renderTarget);
 }
@@ -37,7 +37,7 @@ bool Polygon::create(const QVector<QVector2D>& points, Window* renderTarget)
 
 bool Polygon::create(float radius, uint sides, Window* renderTarget)
 {
-    QVector<QVector2D> points;
+    QVector<QPointF> points;
     qreal cX = radius, cY = radius;
     qreal spi = M_PI / sides;
 
@@ -47,7 +47,7 @@ bool Polygon::create(float radius, uint sides, Window* renderTarget)
         qreal c = cX + radius * qCos(2 * i * spi);
         qreal s = cY + radius * qSin(2 * i * spi);
 
-        points.append(QVector2D(c, s));
+        points.append(QPointF(c, s));
     }
 
     return createInternal(points, renderTarget);

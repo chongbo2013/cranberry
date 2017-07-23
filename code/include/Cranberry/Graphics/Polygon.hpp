@@ -57,7 +57,7 @@ public:
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool create(const QVector<QVector2D>& points, Window* renderTarget = nullptr);
+    bool create(const QVector<QPointF>& points, Window* renderTarget = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Generates a new polygon with the given \p radius and the given amount

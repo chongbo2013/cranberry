@@ -138,7 +138,7 @@ void ShapeBase::setColor(const QVector<QColor>& colors)
 }
 
 
-bool ShapeBase::createInternal(const QVector<QVector2D>& points, Window* rt)
+bool ShapeBase::createInternal(const QVector<QPointF>& points, Window* rt)
 {
     if (!RenderBase::create(rt))
     {
@@ -156,7 +156,7 @@ bool ShapeBase::createInternal(const QVector<QVector2D>& points, Window* rt)
     m_update = true;
 
     auto size = findSize(points);
-    for (const QVector2D& p : points)
+    for (const QPointF& p : points)
     {
         priv::Vertex v;
         v.xyz(p.x(), p.y(), 0);
@@ -185,9 +185,9 @@ bool ShapeBase::createBuffer()
 }
 
 
-QVector2D ShapeBase::findCenter(const QVector<QVector2D>& points)
+QPointF ShapeBase::findCenter(const QVector<QPointF>& points)
 {
-    QVector2D center;
+    QPointF center;
     qreal signedArea = 0.0, x0 = 0.0, y0 = 0.0, x1 = 0.0, y1 = 0.0, a = 0.0;
 
     // Computes the centroid for each vertex except the last.
@@ -224,22 +224,22 @@ QVector2D ShapeBase::findCenter(const QVector<QVector2D>& points)
 }
 
 
-QVector2D ShapeBase::findSize(const QVector<QVector2D>& points)
+QPointF ShapeBase::findSize(const QVector<QPointF>& points)
 {
     auto extremeX = std::minmax_element(
             points.begin(), points.end(),
-            [] (const QVector2D& l, const QVector2D& r) {
+            [] (const QPointF& l, const QPointF& r) {
                 return l.x() < r.x();
             });
 
     auto extremeY = std::minmax_element(
             points.begin(), points.end(),
-            [] (const QVector2D& l, const QVector2D& r) {
+            [] (const QPointF& l, const QPointF& r) {
                 return l.y() < r.y();
             });
 
-    QVector2D upperLeft(extremeX.first->x(), extremeY.first->y());
-    QVector2D lowerRight(extremeX.second->x(), extremeY.second->y());
+    QPointF upperLeft(extremeX.first->x(), extremeY.first->y());
+    QPointF lowerRight(extremeX.second->x(), extremeY.second->y());
 
     return lowerRight - upperLeft;
 }
@@ -293,7 +293,7 @@ void ShapeBase::modifyProgram()
 {
     OpenGLShader* program = shaderProgram();
 
-    glDebug(program->setMvpMatrix(&matrix(this)));
+    glDebug(program->setMvpMatrix(matrix(this)));
     glDebug(program->setOpacity(opacity()));
     glDebug(program->setWindowSize(renderTarget()->size()));
 }

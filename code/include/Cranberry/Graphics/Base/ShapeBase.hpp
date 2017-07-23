@@ -29,8 +29,8 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
-// Qt headers (TODO: remove dependency)
-#include <QMatrix4x4>
+// Qt headers
+#include <QVector>
 
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLBuffer)
@@ -138,7 +138,7 @@ protected:
 
     virtual uint renderModeWired() const = 0;
     virtual uint renderModeFilled() const = 0;
-    bool createInternal(const QVector<QVector2D>& points, Window* renderTarget);
+    bool createInternal(const QVector<QPointF>& points, Window* renderTarget);
 
 
 private:
@@ -147,8 +147,8 @@ private:
     // Helpers
     ////////////////////////////////////////////////////////////////////////////
     bool createBuffer();
-    auto findCenter(const QVector<QVector2D>&) -> QVector2D;
-    auto findSize(const QVector<QVector2D>&) -> QVector2D;
+    auto findCenter(const QVector<QPointF>&) -> QPointF;
+    auto findSize(const QVector<QPointF>&) -> QPointF;
     void bindObjects();
     void releaseObjects();
     void writeVertices();

@@ -28,6 +28,9 @@
 #include <Cranberry/Graphics/Base/TextureBase.hpp>
 #include <Cranberry/System/Emitters/BackgroundEmitter.hpp>
 
+// Qt headers
+#include <QRectF>
+
 
 CRANBERRY_BEGIN_NAMESPACE
 
