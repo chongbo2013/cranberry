@@ -29,7 +29,6 @@ out vec4 o_pixel;
 
 // Uniform variables
 uniform float u_opac;
-uniform vec2 u_winSize; // unused
 
 
 void main()

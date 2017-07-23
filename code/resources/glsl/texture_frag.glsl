@@ -33,7 +33,6 @@ uniform sampler2D u_tex;
 uniform float u_opac;
 uniform int u_mode;
 uniform int u_effect;
-uniform vec2 u_winSize; // unused
 
 // Functions
 vec4 applyBlending(vec4);

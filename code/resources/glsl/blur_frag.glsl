@@ -31,8 +31,6 @@ out vec4 o_pixel;
 // Cranberry uniform variables
 uniform sampler2D u_tex;
 uniform float u_opac;
-uniform int u_mode; // unused
-uniform int u_effect; // unused
 uniform vec2 u_winSize;
 
 // Blur uniform variables
