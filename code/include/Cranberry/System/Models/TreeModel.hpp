@@ -64,6 +64,12 @@ public:
     void addItem(TreeModelItem* item);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Removes all items from this model.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void removeAllItems();
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the underlying model. Note that using this function requires
     /// the dependency QtGui. In reality you would never need this, since only
     /// cranberry needs to call this function.

@@ -29,6 +29,7 @@
 
 // Qt headers
 #include <QAbstractItemModel>
+#include <QHash>
 #include <QModelIndex>
 #include <QVariant>
 
@@ -43,13 +44,14 @@ class TreeModelPrivate : public QAbstractItemModel
 {
 public:
 
-    CRANBERRY_DISABLE_COPY(TreeModelPrivate)
     CRANBERRY_DISABLE_MOVE(TreeModelPrivate)
 
     TreeModelPrivate();
+    TreeModelPrivate(const TreeModelPrivate& other);
    ~TreeModelPrivate();
 
 
+    void appendChild(TreeModelItem* item);
     QVariant data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QVariant headerData(int section, Qt::Orientation orientation,
@@ -59,6 +61,7 @@ public:
     QModelIndex parent(const QModelIndex& index) const override;
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    QHash<int, QByteArray> roleNames() const;
 
 
 private:
@@ -75,6 +78,9 @@ private:
 
 
 CRANBERRY_END_PRIV_NAMESPACE
+
+
+Q_DECLARE_METATYPE(cran::priv::TreeModelPrivate*)
 
 
 #endif

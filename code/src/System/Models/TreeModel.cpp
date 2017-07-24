@@ -41,7 +41,13 @@ TreeModel::~TreeModel()
 
 void TreeModel::addItem(TreeModelItem* item)
 {
-    m_priv->m_rootItem->appendChild(item);
+    m_priv->appendChild(item);
+}
+
+
+void TreeModel::removeAllItems()
+{
+    m_priv->m_rootItem->removeAllChildren();
 }
 
 

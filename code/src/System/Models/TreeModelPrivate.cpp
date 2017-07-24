@@ -40,24 +40,38 @@ priv::TreeModelPrivate::~TreeModelPrivate()
 }
 
 
+priv::TreeModelPrivate::TreeModelPrivate(const TreeModelPrivate& other)
+    : m_rootItem(other.m_rootItem)
+{
+}
+
+
 int priv::TreeModelPrivate::columnCount(const QModelIndex&) const
 {
     return 2;
 }
 
 
+void priv::TreeModelPrivate::appendChild(TreeModelItem* item)
+{
+    beginInsertRows(index(m_rootItem->row(), 0), m_rootItem->childCount(), m_rootItem->childCount());
+    m_rootItem->appendChild(item);
+    endInsertRows();
+}
+
+
 QVariant priv::TreeModelPrivate::data(const QModelIndex& index, int role) const
 {
-    if (!index.isValid() || role != Qt::DisplayRole)
+    if (!index.isValid())
     {
         return QVariant();
     }
 
-    if (index.column() == 0)
+    if (role == Qt::UserRole)
     {
         return static_cast<TreeModelItem*>(index.internalPointer())->member();
     }
-    else if (index.column() == 1)
+    else if (role == Qt::UserRole + 1)
     {
         return static_cast<TreeModelItem*>(index.internalPointer())->value();
     }
@@ -172,4 +186,13 @@ int priv::TreeModelPrivate::rowCount(const QModelIndex& parent) const
     }
 
     return parentItem->childCount();
+}
+
+
+QHash<int, QByteArray> priv::TreeModelPrivate::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[Qt::UserRole] = "member";
+    roles[Qt::UserRole + 1] = "value";
+    return roles;
 }

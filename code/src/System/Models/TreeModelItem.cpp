@@ -34,6 +34,15 @@ TreeModelItem::TreeModelItem(QVariant member, QVariant value, TreeModelItem* par
 }
 
 
+TreeModelItem::TreeModelItem(const TreeModelItem& other)
+    : m_items(other.m_items)
+    , m_member(other.m_member)
+    , m_value(other.m_value)
+    , m_parent(other.m_parent)
+{
+}
+
+
 TreeModelItem::~TreeModelItem()
 {
     qDeleteAll(m_items);
@@ -43,6 +52,14 @@ TreeModelItem::~TreeModelItem()
 void TreeModelItem::appendChild(TreeModelItem* child)
 {
     m_items.append(child);
+    child->m_parent = this;
+}
+
+
+void TreeModelItem::removeAllChildren()
+{
+    qDeleteAll(m_items);
+    m_items.clear();
 }
 
 
@@ -84,4 +101,16 @@ QVariant TreeModelItem::member() const
 QVariant TreeModelItem::value() const
 {
     return m_value;
+}
+
+
+void TreeModelItem::setMember(const QVariant& m)
+{
+    m_member = m;
+}
+
+
+void TreeModelItem::setValue(const QVariant& v)
+{
+    m_value = v;
 }
