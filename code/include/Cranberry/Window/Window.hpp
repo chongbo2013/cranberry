@@ -44,6 +44,7 @@ CRANBERRY_FORWARD_Q(QOpenGLContext)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
+CRANBERRY_FORWARD_C(RenderBase)
 CRANBERRY_FORWARD_P(WindowPrivate)
 
 
@@ -168,6 +169,21 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void makeCurrent();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Shows the debug overlay for the given RenderBase object.
+    ///
+    /// \param obj Object to show debug information from.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void showDebugOverlay(RenderBase* obj);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Hides any currently active debug overlay. Equivalent to calling
+    /// Window::showDebugOverlay(nullptr).
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void hideDebugOverlay();
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specify the settings for this window. Call this before you call start().

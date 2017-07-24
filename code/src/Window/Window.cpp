@@ -117,6 +117,18 @@ void Window::makeCurrent()
 }
 
 
+void Window::showDebugOverlay(RenderBase* obj)
+{
+    m_priv->showDebugOverlay(obj);
+}
+
+
+void Window::hideDebugOverlay()
+{
+    m_priv->hideDebugOverlay();
+}
+
+
 void Window::setSettings(const WindowSettings& settings)
 {
     m_priv->setSettings(settings);

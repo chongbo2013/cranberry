@@ -1,13 +1,12 @@
 ﻿import QtQuick 2.7
 import QtQuick.Controls 1.4
-import kgl.cb.treemodel 1.0
 
 Item {
     width: 320
-    height: 200
+    height: 240
 
     Rectangle {
-        color: Qt.rgba(1, 1, 1, 0.7)
+        color: Qt.rgba(1, 1, 1, 0.9)
         radius: 10
         border.width: 2
         border.color: "white"
@@ -15,19 +14,52 @@ Item {
         anchors.margins: -10
     }
 
-    TreeModel {
-        id: treemodel
-        Component.onCompleted: console.log(this.myint)
-    }
-
     TreeView {
         id: members
-        //model: treemodel.model
+        objectName: "members"
+        model: debugModel
         backgroundVisible: false
         anchors.right: parent.right
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.margins: 20
+        anchors.bottom: parent.bottom
+        anchors.margins: 2
+
+        // Each column gets half of the tree view.
+        onWidthChanged: {
+            firstcol.width = width / 2
+            secondcol.width = width / 2
+        }
+
+        TableViewColumn {
+            id: firstcol
+            title: "Property name"
+            role: "member"
+            resizable: false
+        }
+
+        TableViewColumn {
+            id: secondcol
+            title: "Property value"
+            role: "value"
+            resizable: true
+        }
+
+        headerDelegate: Rectangle {
+            // Alters the header styling.
+            color: "transparent"
+            height: 20
+            anchors.topMargin: -20
+
+            Text {
+                x: styleData.value === "Property name" ? 5 : 0
+                y: 2
+                id: htext
+                font: monospace
+                color: "black"
+                text: styleData.value
+            }
+        }
 
         rowDelegate: Rectangle {
             // Sets the background color to transparent.
@@ -35,12 +67,11 @@ Item {
         }
 
         itemDelegate: Item {
-            // Alters the font of each item.
+            // Alters the font and text color of each item.
             Text {
-                //font: "Monospace"
-                //font.pixelSize: 12
-                text: styleData.value
-                color: styleData.color
+                font: monospace
+                color: "black"
+                text: styleData.value === undefined ? "" : styleData.value
                 elide: styleData.elideMode
             }
         }

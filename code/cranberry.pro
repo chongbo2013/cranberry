@@ -104,8 +104,7 @@ HEADERS     +=      include/Cranberry/Config.hpp \
     include/Cranberry/Window/Window.hpp \
     include/Cranberry/System/Models/TreeModelItem.hpp \
     include/Cranberry/System/Models/TreeModelPrivate.hpp \
-    include/Cranberry/System/Models/TreeModel.hpp \
-    include/Cranberry/Gui/Components/QmlTreeModelItem.hpp
+    include/Cranberry/System/Models/TreeModel.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -158,8 +157,7 @@ SOURCES     +=      src/System/Debug.cpp \
     src/Window/Window.cpp \
     src/System/Models/TreeModelItem.cpp \
     src/System/Models/TreeModelPrivate.cpp \
-    src/System/Models/TreeModel.cpp \
-    src/Gui/Components/QmlTreeModelItem.cpp
+    src/System/Models/TreeModel.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

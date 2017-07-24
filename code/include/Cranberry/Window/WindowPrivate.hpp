@@ -43,6 +43,7 @@ CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
 CRANBERRY_FORWARD_C(RenderBase)
+CRANBERRY_FORWARD_C(TreeModel)
 CRANBERRY_FORWARD_C(Window)
 CRANBERRY_ALIAS(QList<cran::GuiManager*>, GuiWindows)
 
@@ -113,6 +114,7 @@ private:
     cran::Window*     m_window;
     cran::RenderBase* m_dbgOverlay;
     GuiManager*       m_guiOverlay;
+    TreeModel*        m_debugModel;
     GuiWindows        m_guiWindows;
     GuiManager*       m_activeGui;
     WindowSettings    m_settings;

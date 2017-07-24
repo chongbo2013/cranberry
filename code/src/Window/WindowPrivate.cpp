@@ -33,6 +33,7 @@
 // Qt headers
 #include <QApplication>
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QOpenGLExtraFunctions>
@@ -51,7 +52,6 @@ CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT   |
                                        GL_STENCIL_BUFFER_BIT |
                                        GL_DEPTH_BUFFER_BIT   )
 
-#include <Cranberry/Gui/Components/QmlTreeModelItem.hpp>
 
 priv::WindowPrivate::WindowPrivate(cran::Window* w)
     : QOpenGLWindow(QOpenGLWindow::NoPartialUpdate)
@@ -59,6 +59,7 @@ priv::WindowPrivate::WindowPrivate(cran::Window* w)
     , m_window(w)
     , m_dbgOverlay(nullptr)
     , m_guiOverlay(new GuiManager)
+    , m_debugModel(new TreeModel)
     , m_activeGui(nullptr)
     , m_keyCount(0)
     , m_padCount(0)
@@ -66,7 +67,7 @@ priv::WindowPrivate::WindowPrivate(cran::Window* w)
     , m_isMainWindow(false)
     , m_fakeFocusOut(false)
 {
-    qmlRegisterType<QmlTreeModelItem>("kgl.cb.treemodel", 1, 0, "TreeModel");
+    qRegisterMetaType<cran::priv::TreeModelPrivate*>();
 
     QSurfaceFormat fmt = format();
     fmt.setDepthBufferSize(24);
@@ -91,6 +92,7 @@ priv::WindowPrivate::WindowPrivate(cran::Window* w)
 
 priv::WindowPrivate::~WindowPrivate()
 {
+    delete m_debugModel;
 }
 
 
@@ -156,8 +158,9 @@ void priv::WindowPrivate::setSettings(const WindowSettings& settings)
 void priv::WindowPrivate::showDebugOverlay(RenderBase* obj)
 {
     m_dbgOverlay = obj;
+    m_debugModel->addItem(new TreeModelItem("TEST", ""));
 
-    if (obj != nullptr)
+    /*if (obj != nullptr)
     {
         QScopedPointer<TreeModel> m(new TreeModel);
         obj->parseProperties(m.data());
@@ -167,14 +170,13 @@ void priv::WindowPrivate::showDebugOverlay(RenderBase* obj)
     else
     {
         hideDebugOverlay();
-    }
+    }*/
 }
 
 
 void priv::WindowPrivate::hideDebugOverlay()
 {
     m_dbgOverlay = nullptr;
-    m_guiOverlay->context()->setContextProperty("memberModel", QVariant());
 }
 
 
@@ -218,10 +220,20 @@ void priv::WindowPrivate::initializeGL()
 
     m_window->onInit();
 
+    // Tries to find a monospace font for our overlay.
+    QFont font;
+    font.setStyleHint(QFont::TypeWriter, QFont::PreferAntialias);
+    font.setLetterSpacing(QFont::PercentageSpacing, 125);
+    font.setPointSizeF(11.5);
+
     // Load the debug overlay Gui.
+    m_guiOverlay->context()->setContextProperty("monospace", font);
+    m_guiOverlay->context()->setContextProperty("debugModel", m_debugModel->model());
     m_guiOverlay->create("qrc:/cb/qml/debug_overlay.qml", m_window);
+    m_guiOverlay->setSize(width(), height());
+    m_guiOverlay->window()->setGeometry(0, 0, width(), height());
+    m_guiOverlay->window()->contentItem()->setSize(QSizeF(width(), height()));
     m_guiOverlay->rootItem()->setSize(QSizeF(width(), height()));
-    m_guiOverlay->context()->setContextProperty("memberModel", QVariant());
 }
 
 
