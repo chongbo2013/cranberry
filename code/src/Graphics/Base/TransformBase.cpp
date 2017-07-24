@@ -1002,41 +1002,24 @@ void TransformBase::updateProperties()
     TreeModelItem* tmiOrig = m_rootModelItem->childAt(3);
     TreeModelItem* tmiStat = m_rootModelItem->childAt(4);
 
-    TreeModelItem* tmiRecX = tmiRect->childAt(0);
-    TreeModelItem* tmiRecY = tmiRect->childAt(1);
-    TreeModelItem* tmiRecW = tmiRect->childAt(2);
-    TreeModelItem* tmiRecH = tmiRect->childAt(3);
+    tmiRect->childAt(0)->setValue(bounds.x());
+    tmiRect->childAt(1)->setValue(bounds.y());
+    tmiRect->childAt(2)->setValue(bounds.width());
+    tmiRect->childAt(3)->setValue(bounds.height());
 
-    TreeModelItem* tmiRotX = tmiRota->childAt(0);
-    TreeModelItem* tmiRotY = tmiRota->childAt(1);
-    TreeModelItem* tmiRotZ = tmiRota->childAt(2);
+    tmiRota->childAt(0)->setValue(m_angleX);
+    tmiRota->childAt(1)->setValue(m_angleY);
+    tmiRota->childAt(2)->setValue(m_angleZ);
 
-    TreeModelItem* tmiScaX = tmiScal->childAt(0);
-    TreeModelItem* tmiScaY = tmiScal->childAt(1);
+    tmiScal->childAt(0)->setValue(m_scaleX);
+    tmiScal->childAt(1)->setValue(m_scaleY);
 
-    TreeModelItem* tmiOriX = tmiOrig->childAt(0);
-    TreeModelItem* tmiOriY = tmiOrig->childAt(1);
+    tmiOrig->childAt(0)->setValue(m_originX);
+    tmiOrig->childAt(1)->setValue(m_originY);
 
-    TreeModelItem* tmiStaO = tmiStat->childAt(0);
-    TreeModelItem* tmiStaM = tmiStat->childAt(1);
-    TreeModelItem* tmiStaR = tmiStat->childAt(2);
-    TreeModelItem* tmiStaS = tmiStat->childAt(3);
-    TreeModelItem* tmiStaF = tmiStat->childAt(4);
-
-    tmiRecX->setValue(bounds.x());
-    tmiRecY->setValue(bounds.y());
-    tmiRecW->setValue(bounds.width());
-    tmiRecH->setValue(bounds.height());
-    tmiRotX->setValue(m_angleX);
-    tmiRotY->setValue(m_angleY);
-    tmiRotZ->setValue(m_angleZ);
-    tmiScaX->setValue(m_scaleX);
-    tmiScaY->setValue(m_scaleY);
-    tmiOriX->setValue(m_originX);
-    tmiOriY->setValue(m_originY);
-    tmiStaO->setValue(m_opacity);
-    tmiStaM->setValue(isMoving());
-    tmiStaR->setValue(isScaling());
-    tmiStaS->setValue(isScaling());
-    tmiStaF->setValue(isFading());
+    tmiStat->childAt(0)->setValue(m_opacity);
+    tmiStat->childAt(1)->setValue(isMoving());
+    tmiStat->childAt(2)->setValue(isScaling());
+    tmiStat->childAt(3)->setValue(isScaling());
+    tmiStat->childAt(4)->setValue(isFading());
 }

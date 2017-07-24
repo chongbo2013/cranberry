@@ -177,6 +177,24 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void setEffect(Effect effect);
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the property items and appends them to the model. Any items
+    /// appended to the model are owned by it - no custom deletion required.
+    ///
+    /// \param model Model to append property items to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void createProperties(TreeModel* model) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the property items. Make sure to have at least an instance of the
+    /// root item stored somewhere in the class. If you reimplement this method,
+    /// you are able to see your objects change live.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void updateProperties() override;
+
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the maximum texture size on the current hardware. This is
     /// needed to pack multiple textures into a single one, while trying to
@@ -214,6 +232,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem*     m_rootModelItem;
     priv::QuadVertices m_vertices;
     BlendModes         m_blendMode;
     Effect             m_effect;

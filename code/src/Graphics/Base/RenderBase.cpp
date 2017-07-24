@@ -24,6 +24,7 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -172,6 +173,30 @@ void RenderBase::setOffscreenRenderer(uint fbo)
 void RenderBase::setName(const QString& name)
 {
     m_name = name;
+}
+
+
+void RenderBase::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiName = new TreeModelItem("Name", m_name);
+    TreeModelItem* tmiOffs = new TreeModelItem("Framebuffer", m_osRenderer);
+
+    m_rootModelItem = new TreeModelItem("RenderBase");
+    m_rootModelItem->appendChild(tmiName);
+    m_rootModelItem->appendChild(tmiOffs);
+
+    model->addItem(m_rootModelItem);
+
+    TransformBase::createProperties(model);
+}
+
+
+void RenderBase::updateProperties()
+{
+    m_rootModelItem->childAt(0)->setValue(m_name);
+    m_rootModelItem->childAt(1)->setValue(m_osRenderer);
+
+    TransformBase::updateProperties();
 }
 
 
