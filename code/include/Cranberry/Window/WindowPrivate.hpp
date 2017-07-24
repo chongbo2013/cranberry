@@ -131,6 +131,7 @@ private:
     qint32            m_padCount;
     qint32            m_btnCount;
     uint              m_vao;
+    uint              m_dbgFrames;
     bool              m_isMainWindow;
     bool              m_fakeFocusOut;
 

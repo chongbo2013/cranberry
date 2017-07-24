@@ -31,6 +31,7 @@ Item {
             secondcol.width = width / 2
         }
 
+
         TableViewColumn {
             id: firstcol
             title: "Property name"

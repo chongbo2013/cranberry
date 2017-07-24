@@ -62,12 +62,15 @@ void priv::TreeModelPrivate::appendChild(TreeModelItem* item)
 
 void priv::TreeModelPrivate::update()
 {
+    layoutAboutToBeChanged();
+
     QModelIndex first = index(m_rootItem->row(), 0);
     QModelIndex last = m_rootItem->childCount() != 0
-            ? index(m_rootItem->childAt(m_rootItem->childCount() - 1)->row(), 2)
-            : index(m_rootItem->row(), 2);
+            ? index(m_rootItem->childAt(m_rootItem->childCount() - 1)->row(), 1)
+            : index(m_rootItem->row(), 1);
 
     Q_EMIT dataChanged(first, last, { Qt::UserRole, Qt::UserRole + 1 });
+    Q_EMIT layoutChanged();
 }
 
 

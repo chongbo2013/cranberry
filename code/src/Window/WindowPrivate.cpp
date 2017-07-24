@@ -48,6 +48,7 @@ CRANBERRY_USING_NAMESPACE
 
 
 CRANBERRY_GLOBAL_VAR(priv::WindowPrivate*, g_window)
+CRANBERRY_CONST_VAR(uint, c_dbgInterval, 16)
 CRANBERRY_CONST_VAR(uint, c_clearMask, GL_COLOR_BUFFER_BIT   |
                                        GL_STENCIL_BUFFER_BIT |
                                        GL_DEPTH_BUFFER_BIT   )
@@ -64,6 +65,7 @@ priv::WindowPrivate::WindowPrivate(cran::Window* w)
     , m_keyCount(0)
     , m_padCount(0)
     , m_btnCount(0)
+    , m_dbgFrames(0)
     , m_isMainWindow(false)
     , m_fakeFocusOut(false)
 {
@@ -409,9 +411,16 @@ void priv::WindowPrivate::paintGL()
 
     if (m_dbgOverlay != nullptr)
     {
-        m_dbgOverlay->updateProperties();
-        m_debugModel->update();
-        m_guiOverlay->requestUpdate();
+        if (m_dbgFrames >= c_dbgInterval)
+        {
+            m_dbgFrames = 0;
+            m_dbgOverlay->updateProperties();
+            m_debugModel->update();
+        }
+        else
+        {
+            m_dbgFrames++;
+        }
 
         renderDebugOverlay();
     }
