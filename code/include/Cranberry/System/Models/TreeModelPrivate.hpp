@@ -52,6 +52,7 @@ public:
 
 
     void appendChild(TreeModelItem* item);
+    void finalizeInsertion();
     void update();
     QVariant data(const QModelIndex& index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -70,7 +71,8 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    TreeModelItem* m_rootItem;
+    TreeModelItem*        m_rootItem;
+    QList<TreeModelItem*> m_insertionQueue;
 
     Q_OBJECT
     friend class TreeModel;

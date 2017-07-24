@@ -69,6 +69,19 @@ int TreeModelItem::childCount() const
 }
 
 
+int TreeModelItem::totalChildCount() const
+{
+    int count = childCount();
+
+    Q_FOREACH (TreeModelItem* i, m_items)
+    {
+        count += i->totalChildCount();
+    }
+
+    return count;
+}
+
+
 int TreeModelItem::row() const
 {
     if (m_parent)

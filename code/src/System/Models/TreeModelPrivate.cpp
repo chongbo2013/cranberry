@@ -54,9 +54,22 @@ int priv::TreeModelPrivate::columnCount(const QModelIndex&) const
 
 void priv::TreeModelPrivate::appendChild(TreeModelItem* item)
 {
-    beginInsertRows(index(m_rootItem->row(), 0), m_rootItem->childCount(), m_rootItem->childCount());
-    m_rootItem->appendChild(item);
+    // Query item for insertion.
+    m_insertionQueue.append(item);
+}
+
+
+void priv::TreeModelPrivate::finalizeInsertion()
+{
+    // Inserts all pending insertions.
+    beginInsertRows(QModelIndex(), 0, m_insertionQueue.size() - 1);
+    for (TreeModelItem* item : m_insertionQueue)
+    {
+        m_rootItem->appendChild(item);
+    }
     endInsertRows();
+
+    m_insertionQueue.clear();
 }
 
 
