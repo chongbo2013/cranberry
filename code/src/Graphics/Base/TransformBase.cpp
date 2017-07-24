@@ -23,6 +23,7 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/TransformBase.hpp>
 #include <Cranberry/System/Models/TreeModel.hpp>
+#include <Cranberry/System/Models/TreeModelItem.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -949,8 +950,93 @@ TransformBaseEmitter* TransformBase::signals()
 }
 
 
-void TransformBase::parseProperties(TreeModel* model)
+void TransformBase::createProperties(TreeModel* model)
 {
-    TreeModelItem* item = new TreeModelItem("TransformBase", "");
-    TreeModelItem* mem1;
+    QRectF bounds = rect();
+
+    TreeModelItem* tmiRect = new TreeModelItem("Bounds");
+    TreeModelItem* tmiRota = new TreeModelItem("Rotation");
+    TreeModelItem* tmiScal = new TreeModelItem("Scale");
+    TreeModelItem* tmiOrig = new TreeModelItem("Origin");
+    TreeModelItem* tmiStat = new TreeModelItem("States");
+
+    m_rootModelItem = new TreeModelItem("TransformBase");
+    m_rootModelItem->appendChild(tmiRect);
+    m_rootModelItem->appendChild(tmiRota);
+    m_rootModelItem->appendChild(tmiScal);
+    m_rootModelItem->appendChild(tmiOrig);
+    m_rootModelItem->appendChild(tmiStat);
+
+    tmiRect->appendChild(new TreeModelItem("x", bounds.x()));
+    tmiRect->appendChild(new TreeModelItem("y", bounds.y()));
+    tmiRect->appendChild(new TreeModelItem("w", bounds.width()));
+    tmiRect->appendChild(new TreeModelItem("h", bounds.height()));
+
+    tmiRota->appendChild(new TreeModelItem("x", m_angleX));
+    tmiRota->appendChild(new TreeModelItem("y", m_angleY));
+    tmiRota->appendChild(new TreeModelItem("z", m_angleZ));
+
+    tmiScal->appendChild(new TreeModelItem("x", m_scaleX));
+    tmiScal->appendChild(new TreeModelItem("y", m_scaleY));
+
+    tmiOrig->appendChild(new TreeModelItem("x", m_originX));
+    tmiOrig->appendChild(new TreeModelItem("y", m_originY));
+
+    tmiStat->appendChild(new TreeModelItem("opacity", m_opacity));
+    tmiStat->appendChild(new TreeModelItem("isMoving", isMoving()));
+    tmiStat->appendChild(new TreeModelItem("isRotating", isRotating()));
+    tmiStat->appendChild(new TreeModelItem("isScaling", isScaling()));
+    tmiStat->appendChild(new TreeModelItem("isFading", isFading()));
+
+    model->addItem(m_rootModelItem);
+}
+
+
+void TransformBase::updateProperties()
+{
+    QRectF bounds = rect();
+
+    TreeModelItem* tmiRect = m_rootModelItem->childAt(0);
+    TreeModelItem* tmiRota = m_rootModelItem->childAt(1);
+    TreeModelItem* tmiScal = m_rootModelItem->childAt(2);
+    TreeModelItem* tmiOrig = m_rootModelItem->childAt(3);
+    TreeModelItem* tmiStat = m_rootModelItem->childAt(4);
+
+    TreeModelItem* tmiRecX = tmiRect->childAt(0);
+    TreeModelItem* tmiRecY = tmiRect->childAt(1);
+    TreeModelItem* tmiRecW = tmiRect->childAt(2);
+    TreeModelItem* tmiRecH = tmiRect->childAt(3);
+
+    TreeModelItem* tmiRotX = tmiRota->childAt(0);
+    TreeModelItem* tmiRotY = tmiRota->childAt(1);
+    TreeModelItem* tmiRotZ = tmiRota->childAt(2);
+
+    TreeModelItem* tmiScaX = tmiScal->childAt(0);
+    TreeModelItem* tmiScaY = tmiScal->childAt(1);
+
+    TreeModelItem* tmiOriX = tmiOrig->childAt(0);
+    TreeModelItem* tmiOriY = tmiOrig->childAt(1);
+
+    TreeModelItem* tmiStaO = tmiStat->childAt(0);
+    TreeModelItem* tmiStaM = tmiStat->childAt(1);
+    TreeModelItem* tmiStaR = tmiStat->childAt(2);
+    TreeModelItem* tmiStaS = tmiStat->childAt(3);
+    TreeModelItem* tmiStaF = tmiStat->childAt(4);
+
+    tmiRecX->setValue(bounds.x());
+    tmiRecY->setValue(bounds.y());
+    tmiRecW->setValue(bounds.width());
+    tmiRecH->setValue(bounds.height());
+    tmiRotX->setValue(m_angleX);
+    tmiRotY->setValue(m_angleY);
+    tmiRotZ->setValue(m_angleZ);
+    tmiScaX->setValue(m_scaleX);
+    tmiScaY->setValue(m_scaleY);
+    tmiOriX->setValue(m_originX);
+    tmiOriY->setValue(m_originY);
+    tmiStaO->setValue(m_opacity);
+    tmiStaM->setValue(isMoving());
+    tmiStaR->setValue(isScaling());
+    tmiStaS->setValue(isScaling());
+    tmiStaF->setValue(isFading());
 }

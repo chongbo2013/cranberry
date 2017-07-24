@@ -1,5 +1,5 @@
 ﻿<RCC>
     <qresource prefix="/cb">
-        <file>qml/debug_overlay.qml</file>
+        <file>qml/DebugOverlay.qml</file>
     </qresource>
 </RCC>

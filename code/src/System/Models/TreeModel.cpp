@@ -47,7 +47,15 @@ void TreeModel::addItem(TreeModelItem* item)
 
 void TreeModel::removeAllItems()
 {
+    m_priv->beginResetModel();
     m_priv->m_rootItem->removeAllChildren();
+    m_priv->endResetModel();
+}
+
+
+void TreeModel::update()
+{
+    m_priv->update();
 }
 
 

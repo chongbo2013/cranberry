@@ -38,6 +38,7 @@ CRANBERRY_FORWARD_Q(QMatrix4x4)
 CRANBERRY_FORWARD_Q(QStandardItemModel)
 CRANBERRY_FORWARD_C(RenderBase)
 CRANBERRY_FORWARD_C(TreeModel)
+CRANBERRY_FORWARD_C(TreeModelItem)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -602,14 +603,21 @@ public:
     virtual TransformBaseEmitter* signals();
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Parses the properties of this class and appends them to the given \p
-    /// model. Property names added via model->appendRows(), property values
-    /// added via model->appendColumns().
+    /// Creates the property items and appends them to the model. Any items
+    /// appended to the model are owned by it - no custom deletion required.
     ///
-    /// \param model Model to modify.
+    /// \param model Model to append property items to.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void parseProperties(TreeModel* model);
+    virtual void createProperties(TreeModel* model);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the property items. Make sure to have at least an instance of the
+    /// root item stored somewhere in the class. If you reimplement this method,
+    /// you are able to see your objects change live.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void updateProperties();
 
 
 protected:
@@ -640,6 +648,7 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     TransformBaseEmitter m_emitter;
+    TreeModelItem*       m_rootModelItem;
     MoveDirections       m_moveDir;
     RotateDirection      m_rotateDirX;
     RotateDirection      m_rotateDirY;

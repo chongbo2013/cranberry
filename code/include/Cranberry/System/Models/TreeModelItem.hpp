@@ -48,7 +48,7 @@ public:
 
     CRANBERRY_DISABLE_MOVE(TreeModelItem)
 
-    TreeModelItem(QVariant member, QVariant value, TreeModelItem* parent = 0);
+    TreeModelItem(QVariant member = "", QVariant value = "", TreeModelItem* parent = 0);
     TreeModelItem(const TreeModelItem& other);
    ~TreeModelItem();
 

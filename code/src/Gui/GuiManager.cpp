@@ -57,7 +57,7 @@ GuiManager::GuiManager()
     , m_fbo(nullptr)
     , m_requiresUpdate(false)
     , m_isInitialized(false)
-    , m_isReady(false)
+    , m_isVisible(true)
 {
     if (!m_qmlEngine->incubationController())
          m_qmlEngine->setIncubationController(m_renderWindow->incubationController());
@@ -105,8 +105,13 @@ bool GuiManager::isNull() const
            m_rootItem == nullptr     ||
            m_fbo == nullptr          ||
           !m_isInitialized           ||
-          !m_isReady                 ||
           !m_fbo->isValid();
+}
+
+
+bool GuiManager::isVisible() const
+{
+    return m_isVisible;
 }
 
 
@@ -179,8 +184,6 @@ void GuiManager::render()
         m_renderControl->polishItems();
         m_renderControl->sync();
         m_renderControl->render();
-
-        m_isReady = true;
         m_requiresUpdate = false;
     }
     else
@@ -195,6 +198,12 @@ void GuiManager::render()
         m_batch->setOffscreenRenderer(offscreenRenderer());
         m_batch->render();
     }
+}
+
+
+void GuiManager::setVisible(bool visible)
+{
+    m_isVisible = visible;
 }
 
 

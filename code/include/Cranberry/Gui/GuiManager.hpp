@@ -31,6 +31,7 @@
 
 // Forward declarations
 CRANBERRY_FORWARD_C(SpriteBatch)
+CRANBERRY_FORWARD_P(WindowPrivate)
 CRANBERRY_FORWARD_Q(QQmlContext)
 CRANBERRY_FORWARD_Q(QQmlComponent)
 CRANBERRY_FORWARD_Q(QQmlEngine)
@@ -82,6 +83,14 @@ public:
     bool isNull() const override;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Determines whether this GuiManager is visible.
+    ///
+    /// \returns true if visible.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isVisible() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates a new GuiManager that manages the given Qml Gui.
     ///
     /// \param qml Path to Qml file.
@@ -108,6 +117,16 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     void render() override;
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the visibility of this Gui. If false is passed, the Gui will
+    /// not be focusable from the underlying QOpenGLWindow, i.e. it gets
+    /// transparent for input events.
+    ///
+    /// \param visible Should Gui be visible?
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setVisible(bool visible);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the effect to render this object with.
@@ -177,9 +196,10 @@ private:
     QOpenGLFramebufferObject* m_fbo;
     bool                      m_requiresUpdate;
     bool                      m_isInitialized;
-    bool                      m_isReady;
+    bool                      m_isVisible;
 
     friend class GuiManagerReceiver;
+    friend class priv::WindowPrivate;
 };
 
 

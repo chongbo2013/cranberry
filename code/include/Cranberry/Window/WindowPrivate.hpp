@@ -92,6 +92,7 @@ protected:
     void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
     bool event(QEvent* event) override;
+    bool eventFilter(QObject* watched, QEvent* event);
 
 
 private:
@@ -101,6 +102,9 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     void registerQmlWindow(GuiManager*);
     void unregisterQmlWindow(GuiManager*);
+    void resizeDebugOverlay();
+    void setActiveGui(GuiManager* g);
+    void unsetActiveGui();
     void dispatchEvents(QEvent*);
     void renderDebugOverlay();
     void parseSettings();

@@ -23,7 +23,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        anchors.margins: 2
+        anchors.margins: 20
 
         // Each column gets half of the tree view.
         onWidthChanged: {
@@ -48,16 +48,21 @@ Item {
         headerDelegate: Rectangle {
             // Alters the header styling.
             color: "transparent"
-            height: 20
-            anchors.topMargin: -20
+            height: 28
 
             Text {
-                x: styleData.value === "Property name" ? 5 : 0
                 y: 2
-                id: htext
-                font: monospace
+                x: styleData.value === "Property name" ? 5 : 0
+                font: monospaceItalic
                 color: "black"
                 text: styleData.value
+            }
+
+            Rectangle {
+                y: parent.height - 4
+                width: parent.width
+                height: 1
+                color: "black"
             }
         }
 

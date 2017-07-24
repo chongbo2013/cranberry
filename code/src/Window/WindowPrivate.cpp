@@ -157,26 +157,36 @@ void priv::WindowPrivate::setSettings(const WindowSettings& settings)
 
 void priv::WindowPrivate::showDebugOverlay(RenderBase* obj)
 {
-    m_dbgOverlay = obj;
-    m_debugModel->addItem(new TreeModelItem("TEST", ""));
-
-    /*if (obj != nullptr)
+    if (m_dbgOverlay == nullptr || obj == nullptr)
     {
-        QScopedPointer<TreeModel> m(new TreeModel);
-        obj->parseProperties(m.data());
+        m_dbgOverlay = obj;
 
-        m_guiOverlay->context()->setContextProperty("memberModel", QVariant::fromValue<priv::TreeModelPrivate*>(m->model()));
+        if (obj != nullptr)
+        {
+            m_guiOverlay->setVisible(true);
+            m_debugModel->removeAllItems();
+
+            obj->createProperties(m_debugModel);
+            resizeDebugOverlay();
+            setActiveGui(m_guiOverlay);
+        }
+        else
+        {
+            hideDebugOverlay();
+        }
     }
-    else
-    {
-        hideDebugOverlay();
-    }*/
 }
 
 
 void priv::WindowPrivate::hideDebugOverlay()
 {
-    m_dbgOverlay = nullptr;
+    if (m_dbgOverlay != nullptr)
+    {
+        m_guiOverlay->setVisible(false);
+        m_debugModel->removeAllItems();
+        m_debugModel->update();
+        m_dbgOverlay = nullptr;
+    }
 }
 
 
@@ -221,19 +231,23 @@ void priv::WindowPrivate::initializeGL()
     m_window->onInit();
 
     // Tries to find a monospace font for our overlay.
-    QFont font;
+    QFont font, font2;
     font.setStyleHint(QFont::TypeWriter, QFont::PreferAntialias);
     font.setLetterSpacing(QFont::PercentageSpacing, 125);
     font.setPointSizeF(11.5);
+    font2 = font;
+    font2.setItalic(true);
 
     // Load the debug overlay Gui.
     m_guiOverlay->context()->setContextProperty("monospace", font);
+    m_guiOverlay->context()->setContextProperty("monospaceItalic", font2);
     m_guiOverlay->context()->setContextProperty("debugModel", m_debugModel->model());
-    m_guiOverlay->create("qrc:/cb/qml/debug_overlay.qml", m_window);
-    m_guiOverlay->setSize(width(), height());
-    m_guiOverlay->window()->setGeometry(0, 0, width(), height());
-    m_guiOverlay->window()->contentItem()->setSize(QSizeF(width(), height()));
-    m_guiOverlay->rootItem()->setSize(QSizeF(width(), height()));
+    m_guiOverlay->create("qrc:/cb/qml/DebugOverlay.qml", m_window);
+    m_guiOverlay->window()->installEventFilter(this);
+    m_guiOverlay->setVisible(false); // Invisible by default
+
+    // Adjust the size of the Gui to the current window.
+    resizeDebugOverlay();
 }
 
 
@@ -249,44 +263,73 @@ void priv::WindowPrivate::unregisterQmlWindow(GuiManager* qw)
 }
 
 
+void priv::WindowPrivate::resizeDebugOverlay()
+{
+    if (!m_guiOverlay->isNull() &&
+        (width()  != m_guiOverlay->window()->width() ||
+         height() != m_guiOverlay->window()->height()))
+    {
+        m_guiOverlay->setSize(width(), height());
+        m_guiOverlay->window()->setGeometry(0, 0, width(), height());
+        m_guiOverlay->window()->contentItem()->setSize(QSizeF(width(), height()));
+        m_guiOverlay->rootItem()->setSize(QSizeF(width(), height()));
+    }
+}
+
+
+void priv::WindowPrivate::setActiveGui(GuiManager* g)
+{
+    m_activeGui = g;
+    m_fakeFocusOut = true;
+    m_activeGui->window()->requestActivate();
+
+    setFlags(flags() | Qt::WindowDoesNotAcceptFocus);
+}
+
+
+void priv::WindowPrivate::unsetActiveGui()
+{
+    m_activeGui = nullptr;
+    m_fakeFocusOut = false;
+
+    setFlags(flags() & ~Qt::WindowDoesNotAcceptFocus);
+    requestActivate();
+}
+
+
 void priv::WindowPrivate::dispatchEvents(QEvent* event)
 {
     auto localMousePos   = mapFromGlobal(QCursor::pos());
     bool canReceiveFocus = event->type() == QEvent::MouseButtonPress;
 
-    for (GuiManager* w : m_guiWindows)
+    for (GuiManager* g : m_guiWindows)
     {
-        if (canReceiveFocus)
+        if (g->isVisible())
         {
-            QRectF hitbox = w->rect();
-            hitbox.moveTo(hitbox.topLeft() + w->topLeft());
-
-            // Is current manager in range of the mouse cursor?
-            if (hitbox.contains(localMousePos.x(), localMousePos.y()))
+            if (canReceiveFocus)
             {
-                m_activeGui = w;
-                m_fakeFocusOut = true;
-                m_activeGui->window()->requestActivate();
+                QRectF hitbox = g->rect();
+                hitbox.moveTo(hitbox.topLeft() + g->topLeft());
 
-                setFlags(flags() | Qt::WindowDoesNotAcceptFocus);
-            }
-            else
-            {
-                if (m_activeGui == w)
+                // Is current manager in range of the mouse cursor?
+                if (hitbox.contains(localMousePos.x(), localMousePos.y()))
                 {
-                    m_activeGui = nullptr;
-                    m_fakeFocusOut = false;
-
-                    setFlags(flags() & ~Qt::WindowDoesNotAcceptFocus);
-                    requestActivate();
+                    setActiveGui(g);
+                }
+                else
+                {
+                    if (m_activeGui == g)
+                    {
+                        unsetActiveGui();
+                    }
                 }
             }
-        }
 
-        // Only receive events if in focus.
-        if (m_activeGui == w)
-        {
-            QCoreApplication::sendEvent(w->window(), event);
+            // Only receive events if in focus.
+            if (m_activeGui == g)
+            {
+                QCoreApplication::sendEvent(g->window(), event);
+            }
         }
     }
 }
@@ -294,10 +337,7 @@ void priv::WindowPrivate::dispatchEvents(QEvent* event)
 
 void priv::WindowPrivate::renderDebugOverlay()
 {
-    if (m_dbgOverlay != nullptr)
-    {
-        m_guiOverlay->render();
-    }
+    m_guiOverlay->render();
 }
 
 
@@ -366,7 +406,15 @@ void priv::WindowPrivate::paintGL()
     m_window->onUpdate(m_time);
     glDebug(m_gl->glClear(c_clearMask));
     m_window->onRender();
-    renderDebugOverlay();
+
+    if (m_dbgOverlay != nullptr)
+    {
+        m_dbgOverlay->updateProperties();
+        m_debugModel->update();
+        m_guiOverlay->requestUpdate();
+
+        renderDebugOverlay();
+    }
 }
 
 
@@ -468,6 +516,9 @@ void priv::WindowPrivate::touchEvent(QTouchEvent* event)
 void priv::WindowPrivate::resizeEvent(QResizeEvent* event)
 {
     m_window->onWindowResized(event->oldSize());
+
+    // Update the size of the debug overlay.
+    resizeDebugOverlay();
 }
 
 
@@ -517,7 +568,27 @@ bool priv::WindowPrivate::event(QEvent* event)
 }
 
 
-#ifdef QT_DEBUG
+bool priv::WindowPrivate::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == m_guiOverlay->window() && m_guiOverlay->isVisible())
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            // Hook: Escape debug overlay by pressing ESCAPE.
+            if (static_cast<QKeyEvent*>(event)->key() == Qt::Key_Escape)
+            {
+                hideDebugOverlay();
+                unsetActiveGui();
+            }
+        }
+    }
+
+    return QOpenGLWindow::eventFilter(watched, event);
+}
+
+
+if_debug
+(
 void priv::WindowPrivate::calculateFramerate()
 {
     const static QString format = "%0 (%1 fps)";
@@ -526,4 +597,4 @@ void priv::WindowPrivate::calculateFramerate()
 
     setTitle(format.arg(m_settings.title(), QString::number(fps)));
 }
-#endif
+)
