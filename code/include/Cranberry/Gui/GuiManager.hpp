@@ -91,6 +91,14 @@ public:
     bool isVisible() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Determines whether this Gui is transparent to key input.
+    ///
+    /// \returns true if transparent.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isTransparentToKeyInput() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates a new GuiManager that manages the given Qml Gui.
     ///
     /// \param qml Path to Qml file.
@@ -127,6 +135,15 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setVisible(bool visible);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// If this is set to true, the Gui will not receive any key events, they
+    /// will be forwarded to the underlying cranberry window instead.
+    ///
+    /// \param transparent Transparent to key input?
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setTransparentToKeyInput(bool transparent);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the effect to render this object with.
@@ -197,6 +214,7 @@ private:
     bool                      m_requiresUpdate;
     bool                      m_isInitialized;
     bool                      m_isVisible;
+    bool                      m_noKeyInput;
 
     friend class GuiManagerReceiver;
     friend class priv::WindowPrivate;

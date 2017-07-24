@@ -58,6 +58,7 @@ GuiManager::GuiManager()
     , m_requiresUpdate(false)
     , m_isInitialized(false)
     , m_isVisible(true)
+    , m_noKeyInput(false)
 {
     if (!m_qmlEngine->incubationController())
          m_qmlEngine->setIncubationController(m_renderWindow->incubationController());
@@ -112,6 +113,12 @@ bool GuiManager::isNull() const
 bool GuiManager::isVisible() const
 {
     return m_isVisible;
+}
+
+
+bool GuiManager::isTransparentToKeyInput() const
+{
+    return m_noKeyInput;
 }
 
 
@@ -204,6 +211,12 @@ void GuiManager::render()
 void GuiManager::setVisible(bool visible)
 {
     m_isVisible = visible;
+}
+
+
+void GuiManager::setTransparentToKeyInput(bool transparent)
+{
+    m_noKeyInput = transparent;
 }
 
 
