@@ -12,6 +12,7 @@ Item {
         border.color: "white"
         anchors.fill: members
         anchors.margins: -10
+        anchors.bottomMargin: -30
     }
 
     TreeView {
@@ -24,6 +25,7 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.margins: 20
+        anchors.bottomMargin: 40
 
         // Each column gets half of the tree view.
         onWidthChanged: {
@@ -81,5 +83,13 @@ Item {
                 elide: styleData.elideMode
             }
         }
+    }
+
+    Text {
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: 20
+        text: "To hide the debug overlay, press the Escape key."
     }
 }

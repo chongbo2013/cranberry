@@ -25,6 +25,7 @@
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/OpenGL/OpenGLShader.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -331,4 +332,36 @@ void ShapeBase::drawElements()
               : renderModeWired();
 
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
+}
+
+
+void ShapeBase::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiColo = new TreeModelItem("Color", m_colorBuffer[0]);
+    TreeModelItem* tmiFill = new TreeModelItem("Is filled?", m_filled);
+    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_update || m_colorUpdate);
+    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
+    TreeModelItem* tmiVBuf = new TreeModelItem("Vertexbuffer", m_vertexBuffer->bufferId());
+
+    m_rootModelItem = new TreeModelItem("ShapeBase");
+    m_rootModelItem->appendChild(tmiColo);
+    m_rootModelItem->appendChild(tmiFill);
+    m_rootModelItem->appendChild(tmiUpda);
+    m_rootModelItem->appendChild(tmiOpGL);
+
+    tmiOpGL->appendChild(tmiVBuf);
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void ShapeBase::updateProperties()
+{
+    m_rootModelItem->childAt(0)->setValue(m_colorBuffer[0]);
+    m_rootModelItem->childAt(1)->setValue(m_filled);
+    m_rootModelItem->childAt(2)->setValue(m_update || m_colorUpdate);
+    m_rootModelItem->childAt(3)->childAt(0)->setValue(m_vertexBuffer->bufferId());
+
+    RenderBase::updateProperties();
 }

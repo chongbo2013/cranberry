@@ -134,6 +134,24 @@ public:
     void setColor(const QVector<QColor>& colors);
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the property items and appends them to the model. Any items
+    /// appended to the model are owned by it - no custom deletion required.
+    ///
+    /// \param model Model to append property items to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void createProperties(TreeModel* model) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the property items. Make sure to have at least an instance of the
+    /// root item stored somewhere in the class. If you reimplement this method,
+    /// you are able to see your objects change live.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void updateProperties() override;
+
+
 protected:
 
     virtual uint renderModeWired() const = 0;
@@ -159,6 +177,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem*    m_rootModelItem;
     priv::VarVertices m_vertices;
     QOpenGLBuffer*    m_vertexBuffer;
     QVector<QColor>   m_colorBuffer;

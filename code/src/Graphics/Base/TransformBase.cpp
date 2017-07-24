@@ -806,8 +806,12 @@ void TransformBase::updateRotate(double delta)
                 stopRotating();
             }
         }
-    }
 
+        if (m_angleX >= 360.0)
+        {
+            m_angleX -= 360.0;
+        }
+    }
     if (m_isRotatingY)
     {
         if (m_rotateDirY == RotateCW)
@@ -827,6 +831,11 @@ void TransformBase::updateRotate(double delta)
                 m_angleY = m_targetRotateY;
                 stopRotating();
             }
+        }
+
+        if (m_angleY >= 360.0)
+        {
+            m_angleY -= 360.0;
         }
     }
 
@@ -849,6 +858,11 @@ void TransformBase::updateRotate(double delta)
                 m_angleZ = m_targetRotateZ;
                 stopRotating();
             }
+        }
+
+        if (m_angleZ >= 360.0)
+        {
+            m_angleZ -= 360.0;
         }
     }
 }
@@ -1019,7 +1033,7 @@ void TransformBase::updateProperties()
 
     tmiStat->childAt(0)->setValue(m_opacity);
     tmiStat->childAt(1)->setValue(isMoving());
-    tmiStat->childAt(2)->setValue(isScaling());
+    tmiStat->childAt(2)->setValue(isRotating());
     tmiStat->childAt(3)->setValue(isScaling());
     tmiStat->childAt(4)->setValue(isFading());
 }
