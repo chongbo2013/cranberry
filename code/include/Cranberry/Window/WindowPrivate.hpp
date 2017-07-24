@@ -39,6 +39,7 @@
 #include <QOpenGLWindow>
 
 // Forward declarations
+CRANBERRY_FORWARD_Q(QQuickWindow)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
 CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
@@ -105,6 +106,7 @@ private:
     void resizeDebugOverlay();
     void setActiveGui(GuiManager* g);
     void unsetActiveGui();
+    auto findGuiManager(QQuickWindow*) -> GuiManager*;
     void dispatchEvents(QEvent*);
     void renderDebugOverlay();
     void parseSettings();

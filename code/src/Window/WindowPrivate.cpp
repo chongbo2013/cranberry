@@ -169,6 +169,9 @@ void priv::WindowPrivate::showDebugOverlay(RenderBase* obj)
             m_debugModel->removeAllItems();
 
             obj->createProperties(m_debugModel);
+
+            m_debugModel->model()->finalizeInsertion();
+
             resizeDebugOverlay();
             setActiveGui(m_guiOverlay);
         }
@@ -245,8 +248,11 @@ void priv::WindowPrivate::initializeGL()
     m_guiOverlay->context()->setContextProperty("monospaceItalic", font2);
     m_guiOverlay->context()->setContextProperty("debugModel", m_debugModel->model());
     m_guiOverlay->create("qrc:/cb/qml/DebugOverlay.qml", m_window);
+
+    // Initialize some event logic for the overlay.
     m_guiOverlay->window()->installEventFilter(this);
     m_guiOverlay->setVisible(false); // Invisible by default
+    m_guiOverlay->setTransparentToKeyInput(true);
 
     // Adjust the size of the Gui to the current window.
     resizeDebugOverlay();
@@ -256,12 +262,14 @@ void priv::WindowPrivate::initializeGL()
 void priv::WindowPrivate::registerQmlWindow(GuiManager* qw)
 {
     m_guiWindows.append(qw);
+    qw->window()->installEventFilter(this);
 }
 
 
 void priv::WindowPrivate::unregisterQmlWindow(GuiManager* qw)
 {
     m_guiWindows.removeOne(qw);
+    qw->window()->removeEventFilter(this);
 }
 
 
@@ -296,6 +304,25 @@ void priv::WindowPrivate::unsetActiveGui()
 
     setFlags(flags() & ~Qt::WindowDoesNotAcceptFocus);
     requestActivate();
+}
+
+
+GuiManager* priv::WindowPrivate::findGuiManager(QQuickWindow* pQQ)
+{
+    if (pQQ == nullptr)
+    {
+        return nullptr;
+    }
+
+    for (GuiManager* g : m_guiWindows)
+    {
+        if (g->window() == pQQ)
+        {
+            return g;
+        }
+    }
+
+    return nullptr;
 }
 
 
@@ -468,42 +495,34 @@ void priv::WindowPrivate::mouseDoubleClickEvent(QMouseEvent* event)
 
 void priv::WindowPrivate::keyPressEvent(QKeyEvent* event)
 {
-    // Does not send key events if a GuiManager is in focus.
-    if (m_activeGui == nullptr)
+    if (!event->text().isEmpty())
     {
-        if (!event->text().isEmpty())
+        // Emits also a key character event if key has not been pressed before
+        // or if the given key was repeated.
+        if (!m_keyState.isKeyDown(event->key()) || event->isAutoRepeat())
         {
-            // Emits also a key character event if key has not been pressed before
-            // or if the given key was repeated.
-            if (!m_keyState.isKeyDown(event->key()) || event->isAutoRepeat())
-            {
-                m_window->onKeyCharacter(event->text());
-            }
+            m_window->onKeyCharacter(event->text());
         }
-
-        m_keyState.setKeyState(event->key(), true);
-        m_keyState.setModifiers(event->modifiers());
-        m_keyCount++;
-        m_window->onKeyDown(m_keyState);
-
-        dispatchEvents(event);
     }
+
+    m_keyState.setKeyState(event->key(), true);
+    m_keyState.setModifiers(event->modifiers());
+    m_keyCount++;
+    m_window->onKeyDown(m_keyState);
+
+    //dispatchEvents(event);
 }
 
 
 void priv::WindowPrivate::keyReleaseEvent(QKeyEvent* event)
 {
-    // Does not send key events if a GuiManager is in focus.
-    if (m_activeGui == nullptr)
-    {
-        m_keyState.setKeyState(event->key(), false);
-        m_keyCount--;
+    m_keyState.setKeyState(event->key(), false);
+    m_keyCount--;
 
-        if (!event->isAutoRepeat())
-        {
-            m_window->onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
-            dispatchEvents(event);
-        }
+    if (!event->isAutoRepeat())
+    {
+        m_window->onKeyReleased(KeyReleaseEvent(event->key(), event->modifiers()));
+        // dispatchEvents(event);
     }
 }
 
@@ -589,6 +608,18 @@ bool priv::WindowPrivate::eventFilter(QObject* watched, QEvent* event)
                 hideDebugOverlay();
                 unsetActiveGui();
             }
+        }
+    }
+
+    GuiManager* manager = findGuiManager(static_cast<QQuickWindow*>(watched));
+    if (manager != nullptr)
+    {
+        if ((event->type() == QEvent::KeyPress    ||
+             event->type() == QEvent::KeyRelease) &&
+             manager->isTransparentToKeyInput())
+        {
+            // Transparent to key input; send event to this window instead.
+            QCoreApplication::sendEvent(this, event);
         }
     }
 
