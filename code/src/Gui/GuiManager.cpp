@@ -338,16 +338,12 @@ void GuiManager::createFbo()
 
 void GuiManager::resizeFbo()
 {
-    /*if (m_rootItem)
+    if (m_rootItem)
     {
-        renderTarget()->makeCurrent();
-        m_batch->destroy();
-
         makeCurrent();
-        delete m_fbo;
-
+        m_batch->destroy();
         createFbo();
-    }*/
+    }
 }
 
 
