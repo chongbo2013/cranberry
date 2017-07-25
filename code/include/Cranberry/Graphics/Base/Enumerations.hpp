@@ -27,6 +27,9 @@
 // Cranberry headers
 #include <Cranberry/Config.hpp>
 
+// Qt headers
+#include <QString>
+
 
 CRANBERRY_BEGIN_NAMESPACE
 
@@ -216,6 +219,15 @@ Q_DECLARE_FLAGS(RotateDirections, RotateDirection)
 Q_DECLARE_FLAGS(RotateAxes, RotateAxis)
 Q_DECLARE_FLAGS(FadeDirections, FadeDirection)
 Q_DECLARE_FLAGS(ScrollModes, ScrollMode)
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Useful functions to retrieve flag strings
+////////////////////////////////////////////////////////////////////////////////
+extern QString getBlendModeString(BlendModes bm);
+extern QString getEffectString(Effect e);
+extern QString getMoveDirString(MoveDirections md);
+extern QString getScrollModeString(ScrollMode sm);
 
 
 ////////////////////////////////////////////////////////////////////////////////
