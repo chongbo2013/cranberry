@@ -41,6 +41,7 @@ AnimationBase::AnimationBase()
     , m_currentFrame(nullptr)
     , m_elapsedTime(0.0)
     , m_isAnimating(false)
+    , m_isEmbedded(false)
 
 {
 }
@@ -312,6 +313,12 @@ TextureBase* AnimationBase::getCurrentTexture()
 }
 
 
+TreeModelItem* AnimationBase::rootModelItem() const
+{
+    return m_rootModelItem;
+}
+
+
 QString getAnimModeString(AnimationMode mode)
 {
     switch (mode)
@@ -369,9 +376,17 @@ void AnimationBase::createProperties(TreeModel* model)
     tmiCuRe->appendChild(tmiCuRw);
     tmiCuRe->appendChild(tmiCuRh);
 
-    model->addItem(m_rootModelItem);
-
-    RenderBase::createProperties(model);
+    // The animation is also used by other classes; give the possibility to
+    // simply append the root item to another item.
+    if (model != nullptr)
+    {
+        model->addItem(m_rootModelItem);
+        RenderBase::createProperties(model);
+    }
+    else
+    {
+        m_isEmbedded = true;
+    }
 }
 
 
@@ -397,4 +412,9 @@ void AnimationBase::updateProperties()
     tmiCurr->childAt(3)->childAt(1)->setValue(m_currentFrame->rectangle().y());
     tmiCurr->childAt(3)->childAt(2)->setValue(m_currentFrame->rectangle().width());
     tmiCurr->childAt(3)->childAt(3)->setValue(m_currentFrame->rectangle().height());
+
+    if (!m_isEmbedded)
+    {
+        RenderBase::updateProperties();
+    }
 }

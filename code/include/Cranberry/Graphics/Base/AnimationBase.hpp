@@ -200,6 +200,15 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root model item for this instance. Use this method only if
+    /// the debug overlay is about to be shown.
+    ///
+    /// \returns the root model item of this instance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem* rootModelItem() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates the property items and appends them to the model. Any items
     /// appended to the model are owned by it - no custom deletion required.
     ///
@@ -269,6 +278,7 @@ private:
     AnimationFrame*         m_currentFrame;
     qreal                   m_elapsedTime;
     bool                    m_isAnimating;
+    bool                    m_isEmbedded;
 };
 
 
