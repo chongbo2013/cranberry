@@ -23,6 +23,7 @@
 #include <Cranberry/Graphics/Base/AnimationBase.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Constants
@@ -308,4 +309,92 @@ TextureBase* AnimationBase::getCurrentTexture()
                m_currentFrame
               ->atlasId()
            ]  ->texture();
+}
+
+
+QString getAnimModeString(AnimationMode mode)
+{
+    switch (mode)
+    {
+    case AnimateOnce:    return "Once";
+    case AnimateForever: return "Forever";
+    default:             return "Unknown";
+    }
+}
+
+
+void AnimationBase::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiMode = new TreeModelItem("Mode", getAnimModeString(m_mode));
+    TreeModelItem* tmiFram = new TreeModelItem("Frame count", m_frames.size());
+    TreeModelItem* tmiAtla = new TreeModelItem("Atlas count", m_atlases.size());
+    TreeModelItem* tmiAnim = new TreeModelItem("Is animating?", m_isAnimating);
+    TreeModelItem* tmiIdle = new TreeModelItem("Idle frame");
+    TreeModelItem* tmiIdDu = new TreeModelItem("Duration", m_idleFrame.duration());
+    TreeModelItem* tmiIdRe = new TreeModelItem("Rectangle");
+    TreeModelItem* tmiIdRx = new TreeModelItem("x", m_idleFrame.rectangle().x());
+    TreeModelItem* tmiIdRy = new TreeModelItem("y", m_idleFrame.rectangle().y());
+    TreeModelItem* tmiIdRw = new TreeModelItem("w", m_idleFrame.rectangle().width());
+    TreeModelItem* tmiIdRh = new TreeModelItem("h", m_idleFrame.rectangle().height());
+    TreeModelItem* tmiCurr = new TreeModelItem("Current frame");
+    TreeModelItem* tmiCuId = new TreeModelItem("Frame number", m_currentFrame->frameId());
+    TreeModelItem* tmiAtId = new TreeModelItem("Atlas number", m_currentFrame->atlasId());
+    TreeModelItem* tmiCuDu = new TreeModelItem("Duration", m_currentFrame->duration());
+    TreeModelItem* tmiCuRe = new TreeModelItem("Rectangle");
+    TreeModelItem* tmiCuRx = new TreeModelItem("x", m_currentFrame->rectangle().x());
+    TreeModelItem* tmiCuRy = new TreeModelItem("y", m_currentFrame->rectangle().y());
+    TreeModelItem* tmiCuRw = new TreeModelItem("w", m_currentFrame->rectangle().width());
+    TreeModelItem* tmiCuRh = new TreeModelItem("h", m_currentFrame->rectangle().height());
+
+    m_rootModelItem = new TreeModelItem("AnimationBase");
+    m_rootModelItem->appendChild(tmiMode);
+    m_rootModelItem->appendChild(tmiFram);
+    m_rootModelItem->appendChild(tmiAtla);
+    m_rootModelItem->appendChild(tmiAnim);
+    m_rootModelItem->appendChild(tmiIdle);
+    m_rootModelItem->appendChild(tmiCurr);
+
+    tmiIdle->appendChild(tmiIdDu);
+    tmiIdle->appendChild(tmiIdRe);
+    tmiCurr->appendChild(tmiCuId);
+    tmiCurr->appendChild(tmiAtId);
+    tmiCurr->appendChild(tmiCuDu);
+    tmiCurr->appendChild(tmiCuRe);
+    tmiIdRe->appendChild(tmiIdRx);
+    tmiIdRe->appendChild(tmiIdRy);
+    tmiIdRe->appendChild(tmiIdRw);
+    tmiIdRe->appendChild(tmiIdRh);
+    tmiCuRe->appendChild(tmiCuRx);
+    tmiCuRe->appendChild(tmiCuRy);
+    tmiCuRe->appendChild(tmiCuRw);
+    tmiCuRe->appendChild(tmiCuRh);
+
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void AnimationBase::updateProperties()
+{
+    TreeModelItem* tmiIdle = m_rootModelItem->childAt(4);
+    TreeModelItem* tmiCurr = m_rootModelItem->childAt(5);
+
+    m_rootModelItem->childAt(0)->setValue(getAnimModeString(m_mode));
+    m_rootModelItem->childAt(1)->setValue(m_frames.size());
+    m_rootModelItem->childAt(2)->setValue(m_atlases.size());
+    m_rootModelItem->childAt(3)->setValue(m_isAnimating);
+
+    tmiIdle->childAt(0)->setValue(m_idleFrame.duration());
+    tmiIdle->childAt(1)->childAt(0)->setValue(m_idleFrame.rectangle().x());
+    tmiIdle->childAt(1)->childAt(1)->setValue(m_idleFrame.rectangle().y());
+    tmiIdle->childAt(1)->childAt(2)->setValue(m_idleFrame.rectangle().width());
+    tmiIdle->childAt(1)->childAt(3)->setValue(m_idleFrame.rectangle().height());
+    tmiCurr->childAt(0)->setValue(m_currentFrame->frameId());
+    tmiCurr->childAt(1)->setValue(m_currentFrame->atlasId());
+    tmiCurr->childAt(2)->setValue(m_currentFrame->duration());
+    tmiCurr->childAt(3)->childAt(0)->setValue(m_currentFrame->rectangle().x());
+    tmiCurr->childAt(3)->childAt(1)->setValue(m_currentFrame->rectangle().y());
+    tmiCurr->childAt(3)->childAt(2)->setValue(m_currentFrame->rectangle().width());
+    tmiCurr->childAt(3)->childAt(3)->setValue(m_currentFrame->rectangle().height());
 }
