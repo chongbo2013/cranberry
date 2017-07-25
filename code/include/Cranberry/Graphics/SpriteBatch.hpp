@@ -196,6 +196,33 @@ public:
     void setEffect(Effect effect);
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root model item for this instance. Use this method only if
+    /// the debug overlay is about to be shown.
+    ///
+    /// \returns the root model item of this instance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem* rootModelItem() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the property items and appends them to the model. Any items
+    /// appended to the model are owned by it - no custom deletion required.
+    ///
+    /// \param model Model to append property items to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void createProperties(TreeModel* model) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the property items. Make sure to have at least an instance of the
+    /// root item stored somewhere in the class. If you reimplement this method,
+    /// you are able to see your objects change live.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void updateProperties() override;
+
+
 private:
 
     ////////////////////////////////////////////////////////////////////////////
@@ -225,10 +252,10 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     QOpenGLExtraFunctions*    egl;
     QOpenGLFramebufferObject* m_fbo;
+    TreeModelItem*            m_rootModelItem;
     Effect                    m_effect;
     priv::QuadVertices        m_vertices;
     QList<RenderBase*>        m_objects;
-    QString                   m_name;
     QRectF                    m_geometry;
     QColor                    m_backColor;
     uint                      m_frameBuffer;
@@ -239,6 +266,7 @@ private:
     uint                      m_indexBuffer;
     uint                      m_frameTexture;
     uint                      m_msFrameTexture;
+    bool                      m_isEmbedded;
 };
 
 
