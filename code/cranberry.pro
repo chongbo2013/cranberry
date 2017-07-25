@@ -62,6 +62,12 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/System/Emitters/BackgroundEmitter.hpp \
                     include/Cranberry/System/Receivers/SpriteReceiver.hpp \
                     include/Cranberry/System/Receivers/GuiManagerReceiver.hpp \
+                    include/Cranberry/System/Emitters/RenderBaseEmitter.hpp \
+                    include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
+                    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
+                    include/Cranberry/System/Models/TreeModelItem.hpp \
+                    include/Cranberry/System/Models/TreeModelPrivate.hpp \
+                    include/Cranberry/System/Models/TreeModel.hpp \
                     include/Cranberry/OpenGL/OpenGLDebug.hpp \
                     include/Cranberry/OpenGL/OpenGLVertex.hpp \
                     include/Cranberry/OpenGL/OpenGLShader.hpp \
@@ -75,6 +81,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/GamepadState.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
+                    include/Cranberry/Window/WindowPrivate.hpp \
+                    include/Cranberry/Window/Window.hpp \
                     include/Cranberry/Graphics/Base/Enumerations.hpp \
                     include/Cranberry/Graphics/Background.hpp \
                     include/Cranberry/Graphics/Base/TextureAtlas.hpp \
@@ -86,8 +94,6 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/SpriteBatch.hpp \
                     include/Cranberry/Graphics/Sprite.hpp \
                     include/Cranberry/Graphics/RawAnimation.hpp \
-                    include/Cranberry/Game/Game.hpp \
-                    include/Cranberry/Gui/GuiManager.hpp \
                     include/Cranberry/Graphics/Base/AnimationFrame.hpp \
                     include/Cranberry/Graphics/Base/AnimationBase.hpp \
                     include/Cranberry/Graphics/Base/RenderBase.hpp \
@@ -95,16 +101,10 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/TextureBase.hpp \
                     include/Cranberry/Graphics/Base/TransformBase.hpp \
                     include/Cranberry/Graphics/Base/SpriteMovement.hpp \
-                    include/Cranberry/System/Emitters/RenderBaseEmitter.hpp \
-                    include/Cranberry/System/Emitters/TransformBaseEmitter.hpp \
-                    include/Cranberry/System/Emitters/AnimationBaseEmitter.hpp \
+                    include/Cranberry/Graphics/Base/Hitbox.hpp \
+                    include/Cranberry/Game/Game.hpp \
                     include/Cranberry/Game/GamePrivate.hpp \
-    include/Cranberry/Graphics/Base/Hitbox.hpp \
-    include/Cranberry/Window/WindowPrivate.hpp \
-    include/Cranberry/Window/Window.hpp \
-    include/Cranberry/System/Models/TreeModelItem.hpp \
-    include/Cranberry/System/Models/TreeModelPrivate.hpp \
-    include/Cranberry/System/Models/TreeModel.hpp
+                    include/Cranberry/Gui/GuiManager.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -120,6 +120,9 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/System/Random.cpp \
                     src/System/Receivers/SpriteReceiver.cpp \
                     src/System/Receivers/GuiManagerReceiver.cpp \
+                    src/System/Models/TreeModelItem.cpp \
+                    src/System/Models/TreeModelPrivate.cpp \
+                    src/System/Models/TreeModel.cpp \
                     src/OpenGL/OpenGLVertex.cpp \
                     src/OpenGL/OpenGLDebug.cpp \
                     src/OpenGL/OpenGLShader.cpp \
@@ -132,6 +135,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Input/GamepadState.cpp \
                     src/Input/GamepadReleaseEvent.cpp \
                     src/Window/WindowSettings.cpp \
+                    src/Window/WindowPrivate.cpp \
+                    src/Window/Window.cpp \
                     src/Graphics/Background.cpp \
                     src/Graphics/Base/TextureAtlas.cpp \
                     src/Graphics/GifAnimation.cpp \
@@ -142,8 +147,6 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/SpriteBatch.cpp \
                     src/Graphics/Sprite.cpp \
                     src/Graphics/RawAnimation.cpp \
-                    src/Game/Game.cpp \
-                    src/Gui/GuiManager.cpp \
                     src/Graphics/Base/AnimationFrame.cpp \
                     src/Graphics/Base/AnimationBase.cpp \
                     src/Graphics/Base/RenderBase.cpp \
@@ -151,13 +154,11 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/TextureBase.cpp \
                     src/Graphics/Base/TransformBase.cpp \
                     src/Graphics/Base/SpriteMovement.cpp \
+                    src/Graphics/Base/Enumerations.cpp \
+                    src/Graphics/Base/Hitbox.cpp \
+                    src/Game/Game.cpp \
                     src/Game/GamePrivate.cpp \
-    src/Graphics/Base/Hitbox.cpp \
-    src/Window/WindowPrivate.cpp \
-    src/Window/Window.cpp \
-    src/System/Models/TreeModelItem.cpp \
-    src/System/Models/TreeModelPrivate.cpp \
-    src/System/Models/TreeModel.cpp
+                    src/Gui/GuiManager.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp
