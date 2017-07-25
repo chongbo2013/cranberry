@@ -135,6 +135,23 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     BackgroundEmitter* signals() override;
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the property items and appends them to the model. Any items
+    /// appended to the model are owned by it - no custom deletion required.
+    ///
+    /// \param model Model to append property items to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void createProperties(TreeModel* model) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the property items. Make sure to have at least an instance of the
+    /// root item stored somewhere in the class. If you reimplement this method,
+    /// you are able to see your objects change live.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void updateProperties() override;
+
 
 protected:
 
@@ -155,9 +172,10 @@ private:
     float             m_targetScrollX; ///< Target scroll pos X
     float             m_targetScrollY; ///< Target scroll pos Y
     bool              m_isScrolling;   ///< Is currently scrolling?
-    QRectF            m_view;          ///> Current view
+    QRectF            m_view;          ///< Current view
     ScrollMode        m_scrollMode;    ///< Normal or Infinite?
     MoveDirections    m_scrollDir;     ///< Directions to move background in
+    TreeModelItem*    m_rootModelItem; ///< Root item for the debug overlay
     BackgroundEmitter m_emitter;       ///< Holds the signals for this object
 };
 

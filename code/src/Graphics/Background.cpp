@@ -21,6 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/Graphics/Background.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -266,4 +267,54 @@ void Background::updateUVs()
     vertices().at(1).uv(+uvW, -uvY);
     vertices().at(2).uv(+uvW, +uvH);
     vertices().at(3).uv(-uvX, +uvH);
+}
+
+
+void Background::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiDire = new TreeModelItem("Direction", getMoveDirString(m_scrollDir));
+    TreeModelItem* tmiMode = new TreeModelItem("Mode", getScrollModeString(m_scrollMode));
+    TreeModelItem* tmiScro = new TreeModelItem("Is scrolling?", m_isScrolling);
+    TreeModelItem* tmiView = new TreeModelItem("Viewport");
+    TreeModelItem* tmiVieX = new TreeModelItem("x", m_view.x());
+    TreeModelItem* tmiVieY = new TreeModelItem("y", m_view.y());
+    TreeModelItem* tmiVieW = new TreeModelItem("w", m_view.width());
+    TreeModelItem* tmiVieH = new TreeModelItem("h", m_view.height());
+    TreeModelItem* tmiPosi = new TreeModelItem("Scroll position");
+    TreeModelItem* tmiPosX = new TreeModelItem("x", m_scrollX);
+    TreeModelItem* tmiPosY = new TreeModelItem("y", m_scrollY);
+
+    m_rootModelItem = new TreeModelItem("Background");
+    m_rootModelItem->appendChild(tmiDire);
+    m_rootModelItem->appendChild(tmiMode);
+    m_rootModelItem->appendChild(tmiScro);
+    m_rootModelItem->appendChild(tmiView);
+    m_rootModelItem->appendChild(tmiPosi);
+
+    tmiView->appendChild(tmiVieX);
+    tmiView->appendChild(tmiVieY);
+    tmiView->appendChild(tmiVieW);
+    tmiView->appendChild(tmiVieH);
+    tmiPosi->appendChild(tmiPosX);
+    tmiPosi->appendChild(tmiPosY);
+
+    model->addItem(m_rootModelItem);
+
+    TextureBase::createProperties(model);
+}
+
+
+void Background::updateProperties()
+{
+    m_rootModelItem->childAt(0)->setValue(getMoveDirString(m_scrollDir));
+    m_rootModelItem->childAt(1)->setValue(getScrollModeString(m_scrollMode));
+    m_rootModelItem->childAt(2)->setValue(m_isScrolling);
+    m_rootModelItem->childAt(3)->childAt(0)->setValue(m_view.x());
+    m_rootModelItem->childAt(3)->childAt(1)->setValue(m_view.y());
+    m_rootModelItem->childAt(3)->childAt(2)->setValue(m_view.width());
+    m_rootModelItem->childAt(3)->childAt(3)->setValue(m_view.height());
+    m_rootModelItem->childAt(4)->childAt(0)->setValue(m_scrollX);
+    m_rootModelItem->childAt(4)->childAt(1)->setValue(m_scrollY);
+
+    TextureBase::updateProperties();
 }
