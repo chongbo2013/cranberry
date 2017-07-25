@@ -24,6 +24,7 @@
 #include <Cranberry/Graphics/Sprite.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 
 // Qt headers
 #include <QFile>
@@ -375,5 +376,103 @@ void Sprite::setEffect(Effect effect)
     for (auto* const m : m_movements.values())
     {
         m->animation()->setEffect(effect);
+    }
+}
+
+
+QString getSpriteModeString(MovementMode mm)
+{
+    switch (mm)
+    {
+    case MovementDefault: return "Default";
+    case MovementTile:    return "Tile";
+    default:              return "Unknown";
+    }
+}
+
+
+void Sprite::createProperties(TreeModel* model)
+{
+    if (isNull())
+    {
+        m_rootModelItem = new TreeModelItem("This object is not valid.");
+        model->addItem(m_rootModelItem);
+        return;
+    }
+    else
+    {
+        m_currentMove->animation()->createProperties(nullptr);
+    }
+
+    TreeModelItem* tmiRunn = new TreeModelItem("Is running?", m_isRunning);
+    TreeModelItem* tmiBloc = new TreeModelItem("Is blocking?", m_isBlocking);
+    TreeModelItem* tmiMove = new TreeModelItem("Movements");
+    TreeModelItem* tmiCurr = new TreeModelItem("Current movement");
+    TreeModelItem* tmiCurN = new TreeModelItem("Name", m_currentMove->name());
+    TreeModelItem* tmiCurR = new TreeModelItem("Idle frame");
+    TreeModelItem* tmiCuRx = new TreeModelItem("x", m_currentMove->idleFrame().x());
+    TreeModelItem* tmiCuRy = new TreeModelItem("y", m_currentMove->idleFrame().y());
+    TreeModelItem* tmiCuRw = new TreeModelItem("w", m_currentMove->idleFrame().width());
+    TreeModelItem* tmiCuRh = new TreeModelItem("h", m_currentMove->idleFrame().height());
+    TreeModelItem* tmiAdvX = new TreeModelItem("Advance X", m_currentMove->horizontalAdvance());
+    TreeModelItem* tmiAdvY = new TreeModelItem("Advance Y", m_currentMove->verticalAdvance());
+    TreeModelItem* tmiMode = new TreeModelItem("Mode", getSpriteModeString(m_currentMove->mode()));
+
+    m_rootModelItem = new TreeModelItem("Sprite");
+    m_rootModelItem->appendChild(tmiRunn);
+    m_rootModelItem->appendChild(tmiBloc);
+    m_rootModelItem->appendChild(tmiMove);
+    m_rootModelItem->appendChild(tmiCurr);
+
+    Q_FOREACH (QString name, m_movements.keys())
+    {
+        tmiMove->appendChild(new TreeModelItem("Name", name));
+    }
+
+    tmiCurr->appendChild(tmiCurN);
+    tmiCurr->appendChild(tmiCurR);
+    tmiCurr->appendChild(tmiAdvX);
+    tmiCurr->appendChild(tmiAdvY);
+    tmiCurr->appendChild(tmiMode);
+    tmiCurR->appendChild(tmiCuRx);
+    tmiCurR->appendChild(tmiCuRy);
+    tmiCurR->appendChild(tmiCuRw);
+    tmiCurR->appendChild(tmiCuRh);
+    tmiCurr->appendChild(m_currentMove->animation()->rootModelItem());
+
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void Sprite::updateProperties()
+{
+    if (!isNull())
+    {
+        // Has current move changed?
+        if (m_rootModelItem->childAt(3)->childAt(0)->value().toString() != m_currentMove->name())
+        {
+            m_currentMove->animation()->createProperties(nullptr);
+            m_rootModelItem->childAt(3)->removeChild(m_rootModelItem->childAt(3)->childCount() - 1);
+            m_rootModelItem->childAt(3)->appendChild(m_currentMove->animation()->rootModelItem());
+        }
+        else
+        {
+            m_currentMove->animation()->updateProperties();
+        }
+
+        m_rootModelItem->childAt(0)->setValue(m_isRunning);
+        m_rootModelItem->childAt(1)->setValue(m_isBlocking);
+        m_rootModelItem->childAt(3)->childAt(0)->setValue(m_currentMove->name());
+        m_rootModelItem->childAt(3)->childAt(1)->childAt(0)->setValue(m_currentMove->idleFrame().x());
+        m_rootModelItem->childAt(3)->childAt(1)->childAt(1)->setValue(m_currentMove->idleFrame().y());
+        m_rootModelItem->childAt(3)->childAt(1)->childAt(2)->setValue(m_currentMove->idleFrame().width());
+        m_rootModelItem->childAt(3)->childAt(1)->childAt(3)->setValue(m_currentMove->idleFrame().height());
+        m_rootModelItem->childAt(3)->childAt(2)->setValue(m_currentMove->horizontalAdvance());
+        m_rootModelItem->childAt(3)->childAt(3)->setValue(m_currentMove->verticalAdvance());
+        m_rootModelItem->childAt(3)->childAt(4)->setValue(getSpriteModeString(m_currentMove->mode()));
+
+        RenderBase::updateProperties();
     }
 }
