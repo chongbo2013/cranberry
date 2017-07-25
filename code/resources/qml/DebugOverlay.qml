@@ -53,6 +53,12 @@ Item {
             color: "transparent"
             height: 28
 
+            Rectangle {
+                color: Qt.rgba(1, 1, 1, 0.9)
+                width: parent.width
+                height: 24
+            }
+
             Text {
                 y: 2
                 x: styleData.value === "Property name" ? 5 : 0

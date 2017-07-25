@@ -41,7 +41,8 @@ priv::TreeModelPrivate::~TreeModelPrivate()
 
 
 priv::TreeModelPrivate::TreeModelPrivate(const TreeModelPrivate& other)
-    : m_rootItem(other.m_rootItem)
+    : QAbstractItemModel()
+    , m_rootItem(other.m_rootItem)
 {
 }
 
