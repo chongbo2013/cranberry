@@ -41,6 +41,7 @@
 // Forward declarations
 CRANBERRY_FORWARD_Q(QQuickWindow)
 CRANBERRY_FORWARD_Q(QOpenGLFunctions)
+CRANBERRY_FORWARD_C(Game)
 CRANBERRY_FORWARD_C(GuiManager)
 CRANBERRY_FORWARD_C(OpenGLShader)
 CRANBERRY_FORWARD_C(RenderBase)
@@ -137,9 +138,9 @@ private:
     bool              m_isMainWindow;
     bool              m_fakeFocusOut;
 
-    friend class Game;
-    friend class GuiManager;
-    friend class Window;
+    friend class cran::Game;
+    friend class cran::GuiManager;
+    friend class cran::Window;
 };
 
 

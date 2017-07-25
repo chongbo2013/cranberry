@@ -135,7 +135,7 @@
 #define CRANBERRY_DISABLE_COPY(x) x(const x& other) = delete; x& operator =(const x& other) = delete;
 
 #ifndef _MSC_VER
-    #define CRANBERRY_DEFAULT_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = default;
+    #define CRANBERRY_DEFAULT_MOVE(x) x(x&& other) = default; x& operator =(x&& other) = default;
     #define CRANBERRY_DISABLE_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = delete;
 #else
     #define CRANBERRY_DEFAULT_MOVE(x)

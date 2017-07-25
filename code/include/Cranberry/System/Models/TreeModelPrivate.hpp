@@ -34,6 +34,7 @@
 #include <QVariant>
 
 // Forward declarations
+CRANBERRY_FORWARD_C(TreeModel)
 CRANBERRY_FORWARD_C(TreeModelItem)
 
 
@@ -75,7 +76,7 @@ private:
     QList<TreeModelItem*> m_insertionQueue;
 
     Q_OBJECT
-    friend class TreeModel;
+    friend class cran::TreeModel;
 };
 
 

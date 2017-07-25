@@ -51,7 +51,7 @@ QString priv::StackWalkerWin32::stackTrace()
         HANDLE thread = GetCurrentThread();
         CONTEXT context;
 
-        std::memset(&context, 0, sizeof(CONTEXT));
+        memset(&context, 0, sizeof(CONTEXT));
         context.ContextFlags = CONTEXT_FULL;
         RtlCaptureContext(&context);
         SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES);

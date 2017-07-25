@@ -56,6 +56,23 @@ void TreeModelItem::appendChild(TreeModelItem* child)
 }
 
 
+void TreeModelItem::insertChild(int index, TreeModelItem* child)
+{
+    m_items.insert(index, child);
+    child->m_parent = this;
+}
+
+
+void TreeModelItem::removeChild(int index)
+{
+    if (index >= 0 && index < m_items.size())
+    {
+        auto* item = m_items.takeAt(index);
+        delete item;
+    }
+}
+
+
 void TreeModelItem::removeAllChildren()
 {
     qDeleteAll(m_items);
