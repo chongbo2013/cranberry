@@ -389,43 +389,6 @@ void TextureBase::requestUpdate()
 }
 
 
-QString getBlendModeString(BlendModes bm)
-{
-    if (bm == BlendNone)
-    {
-        return "None";
-    }
-
-    QStringList s;
-
-    if ((bm & BlendMultiply) != 0)   s.append("Multiply");
-    if ((bm & BlendScreen) != 0)     s.append("Screen");
-    if ((bm & BlendOverlay) != 0)    s.append("Overlay");
-    if ((bm & BlendDivide) != 0)     s.append("Divide");
-    if ((bm & BlendAdd) != 0)        s.append("Add");
-    if ((bm & BlendSubtract) != 0)   s.append("Subtract");
-    if ((bm & BlendDifference) != 0) s.append("Difference");
-    if ((bm & BlendDarken) != 0)     s.append("Darken");
-    if ((bm & BlendLighten) != 0)    s.append("Lighten");
-
-    return s.join(" | ");
-}
-
-
-QString getEffectString(Effect e)
-{
-    switch (e)
-    {
-    case EffectNone:       return "None";
-    case EffectGrayscale:  return "Grayscale";
-    case EffectSepia:      return "Sepia";
-    case EffectInvert:     return "Invert";
-    case EffectSilhouette: return "Silhouette";
-    default:               return "Unknown";
-    }
-}
-
-
 void TextureBase::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiBlen = new TreeModelItem("Blending mode", getBlendModeString(m_blendMode));

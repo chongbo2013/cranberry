@@ -179,7 +179,7 @@ void RenderBase::setName(const QString& name)
 void RenderBase::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiName = new TreeModelItem("Name", m_name);
-    TreeModelItem* tmiOffs = new TreeModelItem("Framebuffer", m_osRenderer);
+    TreeModelItem* tmiOffs = new TreeModelItem("Frame buffer", m_osRenderer);
 
     m_rootModelItem = new TreeModelItem("RenderBase");
     m_rootModelItem->appendChild(tmiName);
