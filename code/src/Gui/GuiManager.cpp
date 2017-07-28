@@ -25,6 +25,7 @@
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -372,4 +373,42 @@ void GuiManager::resizeFbo()
 void GuiManager::requestUpdate()
 {
     m_requiresUpdate = true;
+}
+
+
+void GuiManager::createProperties(TreeModel* model)
+{
+    m_batch->createProperties(nullptr);
+
+    TreeModelItem* tmiInit = new TreeModelItem("Is initialized?", m_isInitialized);
+    TreeModelItem* tmiVisi = new TreeModelItem("Is visible?", m_isVisible);
+    TreeModelItem* tmiKeyi = new TreeModelItem("Allow key input?", !m_noKeyInput);
+    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_requiresUpdate);
+    TreeModelItem* tmiGFbo = new TreeModelItem("Qml frame buffer", m_fbo->handle());
+
+    m_rootModelItem = new TreeModelItem("GuiManager");
+    m_rootModelItem->appendChild(tmiInit);
+    m_rootModelItem->appendChild(tmiVisi);
+    m_rootModelItem->appendChild(tmiKeyi);
+    m_rootModelItem->appendChild(tmiUpda);
+    m_rootModelItem->appendChild(tmiGFbo);
+    m_rootModelItem->appendChild(m_batch->rootModelItem());
+
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void GuiManager::updateProperties()
+{
+    m_batch->updateProperties();
+
+    m_rootModelItem->childAt(0)->setValue(m_isInitialized);
+    m_rootModelItem->childAt(1)->setValue(m_isVisible);
+    m_rootModelItem->childAt(2)->setValue(!m_noKeyInput);
+    m_rootModelItem->childAt(3)->setValue(m_requiresUpdate);
+    m_rootModelItem->childAt(4)->setValue(m_fbo->handle());
+
+    RenderBase::updateProperties();
 }
