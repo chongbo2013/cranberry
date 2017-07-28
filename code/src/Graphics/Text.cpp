@@ -24,6 +24,7 @@
 #include <Cranberry/OpenGL/OpenGLDebug.hpp>
 #include <Cranberry/OpenGL/OpenGLDefaultShaders.hpp>
 #include <Cranberry/System/Debug.hpp>
+#include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/Window/Window.hpp>
 
 // Qt headers
@@ -32,6 +33,7 @@
 #include <QPainterPath>
 #include <QOpenGLFunctions>
 #include <QOpenGLTexture>
+#include <QTextDocumentFragment>
 
 
 CRANBERRY_USING_NAMESPACE
@@ -338,6 +340,12 @@ QSizeF Text::findPerfectSize()
 }
 
 
+QString htmlToPlain(const QString& str)
+{
+    return QTextDocumentFragment::fromHtml(str).toPlainText();
+}
+
+
 QSizeF Text::measureText()
 {
     QFontMetrics fm(m_font);
@@ -351,4 +359,40 @@ QSizeF Text::measureText()
     if ((sz.height() % 2) != 0) sz.rheight() += 1;
 
     return sz;
+}
+
+
+void Text::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiText = new TreeModelItem("Text", htmlToPlain(m_text));
+    TreeModelItem* tmiFont = new TreeModelItem("Font", m_font.toString());
+    TreeModelItem* tmiTCol = new TreeModelItem("Text color", m_textPen->color());
+    TreeModelItem* tmiOCol = new TreeModelItem("Outline color", m_outlineBrush->color());
+    TreeModelItem* tmiOWid = new TreeModelItem("Outline width", m_outlineWidth);
+    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_textUpdate);
+
+    m_rootModelItem = new TreeModelItem("Text");
+    m_rootModelItem->appendChild(tmiText);
+    m_rootModelItem->appendChild(tmiFont);
+    m_rootModelItem->appendChild(tmiTCol);
+    m_rootModelItem->appendChild(tmiOCol);
+    m_rootModelItem->appendChild(tmiOWid);
+    m_rootModelItem->appendChild(tmiUpda);
+
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void Text::updateProperties()
+{
+    m_rootModelItem->childAt(0)->setValue(htmlToPlain(m_text));
+    m_rootModelItem->childAt(1)->setValue(m_font.toString());
+    m_rootModelItem->childAt(2)->setValue(m_textPen->color());
+    m_rootModelItem->childAt(3)->setValue(m_outlineBrush->color());
+    m_rootModelItem->childAt(4)->setValue(m_outlineWidth);
+    m_rootModelItem->childAt(5)->setValue(m_textUpdate);
+
+    RenderBase::updateProperties();
 }

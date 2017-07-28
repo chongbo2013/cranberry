@@ -230,6 +230,24 @@ public:
     void render() override;
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates the property items and appends them to the model. Any items
+    /// appended to the model are owned by it - no custom deletion required.
+    ///
+    /// \param model Model to append property items to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void createProperties(TreeModel* model) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the property items. Make sure to have at least an instance of the
+    /// root item stored somewhere in the class. If you reimplement this method,
+    /// you are able to see your objects change live.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void updateProperties() override;
+
+
 private:
 
     ////////////////////////////////////////////////////////////////////////////
@@ -246,18 +264,19 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QString       m_text;
-    QFont         m_font;
-    QPen*         m_textPen;
-    QBrush*       m_outlineBrush;
-    QTextOption   m_options;
-    TextureBase*  m_texture;
-    int           m_outlineWidth;
-    int           m_columnLimit;
-    int           m_rowLimit;
-    float         m_lastWidth;
-    float         m_lastHeight;
-    bool          m_textUpdate;
+    TreeModelItem* m_rootModelItem;
+    QString        m_text;
+    QFont          m_font;
+    QPen*          m_textPen;
+    QBrush*        m_outlineBrush;
+    QTextOption    m_options;
+    TextureBase*   m_texture;
+    int            m_outlineWidth;
+    int            m_columnLimit;
+    int            m_rowLimit;
+    float          m_lastWidth;
+    float          m_lastHeight;
+    bool           m_textUpdate;
 };
 
 
