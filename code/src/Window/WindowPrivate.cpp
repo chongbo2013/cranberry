@@ -237,8 +237,8 @@ void priv::WindowPrivate::initializeGL()
 
     // Tries to find a monospace font for our overlay.
     QFont font, font2;
+    font.setKerning(true);
     font.setStyleHint(QFont::TypeWriter, QFont::PreferAntialias);
-    font.setLetterSpacing(QFont::PercentageSpacing, 125);
     font.setPointSizeF(11.5);
     font2 = font;
     font2.setItalic(true);
