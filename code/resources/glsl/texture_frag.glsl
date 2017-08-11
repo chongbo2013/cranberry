@@ -172,8 +172,8 @@ vec4 applyGrayscale(vec4 p)
 vec4 applySepia(vec4 p)
 {
     float r = p.r * 0.393 + p.g * 0.769 + p.b * 0.189;
-    float g = p.g * 0.349 + p.g * 0.686 + p.b * 0.168;
-    float b = p.b * 0.272 + p.g * 0.534 + p.b * 0.131;
+    float g = p.r * 0.349 + p.g * 0.686 + p.b * 0.168;
+    float b = p.r * 0.272 + p.g * 0.534 + p.b * 0.131;
     return vec4(r, g, b, p.a);
 }
 
