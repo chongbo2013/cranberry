@@ -122,7 +122,7 @@ private:
 /// coordinate components. Future- and compiler-proof since it does not rely
 /// on the order or alignment of members.
 ///
-/// \class GLVertex
+/// \class TextureVertex
 /// \author Nicolas Kogler
 /// \date May 25, 2017
 ///
@@ -215,11 +215,88 @@ private:
     float m_fields[9];
 };
 
+////////////////////////////////////////////////////////////////////////////////
+/// Defines a single vertex having a XYZ position and UV texture coordinate
+/// components. Future- and compiler-proof since it does not rely on the order
+/// or alignment of members.
+///
+/// \class MapVertex
+/// \author Nicolas Kogler
+/// \date August 16, 2017
+///
+////////////////////////////////////////////////////////////////////////////////
+class MapVertex
+{
+public:
+
+    MapVertex();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the position of the vertex.
+    ///
+    /// \param x X-position.
+    /// \param y Y-position.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void xy(float x, float y);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the position of the vertex.
+    ///
+    /// \param pos 2D-Vector representing the XY tuple.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void xy(const QVector2D& pos);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the texture coordinates of the vertex.
+    ///
+    /// \param u U-coordinate.
+    /// \param v V-coordinate.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void uv(float u, float v);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the texture coordinates of the vertex.
+    ///
+    /// \param coords 2D-Vector representing the UV tuple.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void uv(const QVector2D& coords);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the raw floating-point data.
+    ///
+    /// \returns a pointer to the raw data.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const float* data() const;
+
+    // Attribute offsets and sizes
+    static constexpr uint  xyAttrib() { return 0; }
+    static constexpr uint  uvAttrib() { return 1; }
+    static constexpr uint  xyLength() { return 2; }
+    static constexpr uint  uvLength() { return 2; }
+    static constexpr uint  size()     { return sizeof(float) * 4; }
+    static constexpr void* xyOffset() { return (void*) (nullptr); }
+    static constexpr void* uvOffset() { return (void*) (sizeof(float) * 2); }
+
+
+private:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Members
+    ////////////////////////////////////////////////////////////////////////////
+    float m_fields[4];
+};
+
 
 template <size_t n> using Vertices = std::array<Vertex, n>;
 template <size_t n> using TexVertices = std::array<TextureVertex, n>;
 using QuadVertices = std::array<TextureVertex, 4>;
 using VarVertices = std::vector<Vertex>;
+using MapVertices = std::vector<MapVertex>;
 
 
 // Convert

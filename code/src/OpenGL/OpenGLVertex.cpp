@@ -133,3 +133,44 @@ const float* priv::TextureVertex::data() const
 {
     return m_fields;
 }
+
+
+priv::MapVertex::MapVertex()
+{
+    m_fields[0] = 0;
+    m_fields[1] = 0;
+    m_fields[2] = 0;
+    m_fields[3] = 0;
+}
+
+
+void priv::MapVertex::xy(float x, float y)
+{
+    m_fields[0] = x;
+    m_fields[1] = y;
+}
+
+
+void priv::MapVertex::xy(const QVector2D& pos)
+{
+    xy(pos.x(), pos.y());
+}
+
+
+void priv::MapVertex::uv(float u, float v)
+{
+    m_fields[2] = u;
+    m_fields[3] = v;
+}
+
+
+void priv::MapVertex::uv(const QVector2D& coords)
+{
+    uv(coords.x(), coords.y());
+}
+
+
+const float* priv::MapVertex::data() const
+{
+    return m_fields;
+}
