@@ -104,7 +104,10 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Graphics/Base/Hitbox.hpp \
                     include/Cranberry/Game/Game.hpp \
                     include/Cranberry/Game/GamePrivate.hpp \
-                    include/Cranberry/Gui/GuiManager.hpp
+                    include/Cranberry/Gui/GuiManager.hpp \
+                    include/Cranberry/Game/Mapping/MapTile.hpp \
+                    include/Cranberry/Game/Mapping/MapTileProperties.hpp \
+                    include/Cranberry/Graphics/Tilemap.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -158,7 +161,8 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/Hitbox.cpp \
                     src/Game/Game.cpp \
                     src/Game/GamePrivate.cpp \
-                    src/Gui/GuiManager.cpp
+                    src/Gui/GuiManager.cpp \
+                    src/Graphics/Tilemap.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

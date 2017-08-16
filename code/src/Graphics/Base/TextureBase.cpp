@@ -230,10 +230,10 @@ void TextureBase::writeVertices()
     if (m_update)
     {
         glDebug(m_vertexBuffer->write(
-                GL_ZERO,
-                m_vertices.data(),
-                priv::TextureVertex::size() * 4)
-                );
+            GL_ZERO,
+            m_vertices.data(),
+            priv::TextureVertex::size() * 4)
+            );
 
         m_update = false;
     }

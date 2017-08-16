@@ -109,6 +109,8 @@ void SpriteBatch::destroy()
 {
     destroyFboRbo();
     destroyBuffers();
+
+    RenderBase::destroy();
 }
 
 
