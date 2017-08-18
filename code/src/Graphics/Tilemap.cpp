@@ -358,9 +358,8 @@ bool Tilemap::appendTile(uint tileIndex, int tileset)
 
     // Calculates the tile position from the tile index.
     int swid = tex->width()  / m_tileWidth;
-    int shei = tex->height() / m_tileHeight;
     float uvX = ((tileIndex % swid) * m_tileWidth)  / (qreal) tex->width();
-    float uvY = ((tileIndex / shei) * m_tileHeight) / (qreal) tex->height();
+    float uvY = ((tileIndex / swid) * m_tileHeight) / (qreal) tex->height();
     float uvW = uvX + ((qreal) m_tileWidth  / tex->width());
     float uvH = uvY + ((qreal) m_tileHeight / tex->height());
     float xyX = m_currentX * m_tileWidth;
@@ -392,6 +391,18 @@ bool Tilemap::appendTile(uint tileIndex, int tileset)
     m_update = true;
 
     return true;
+}
+
+
+void Tilemap::appendEmptyTile()
+{
+    if (m_currentX >= m_mapWidth)
+    {
+        m_currentX = 0;
+        m_currentY++;
+    }
+
+    m_currentX++;
 }
 
 
