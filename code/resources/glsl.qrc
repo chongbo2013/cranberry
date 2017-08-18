@@ -22,5 +22,7 @@
         <file>glsl/fisheye_frag.glsl</file>
         <file>glsl/radialblur_vert.glsl</file>
         <file>glsl/radialblur_frag.glsl</file>
+        <file>glsl/tilemap_vert.glsl</file>
+        <file>glsl/tilemap_frag.glsl</file>
     </qresource>
 </RCC>
