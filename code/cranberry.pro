@@ -11,7 +11,7 @@
 ## GENERAL SETTINGS
 ##
 ################################################################################
-QT             +=       widgets gamepad qml quick
+QT             +=       widgets gamepad qml quick xml
 CONFIG         +=       c++11 exceptions no_keywords
 DEFINES        +=       CRANBERRY_BUILD
 DEFINES        +=       CRANBERRY_VERSION=\\\"1.0.0\\\"
@@ -77,7 +77,6 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Input/MouseMoveEvent.hpp \
                     include/Cranberry/Input/MouseReleaseEvent.hpp \
                     include/Cranberry/Input/MouseState.hpp \
-                    include/Cranberry/Input/Enumerations.hpp \
                     include/Cranberry/Input/GamepadState.hpp \
                     include/Cranberry/Input/GamepadReleaseEvent.hpp \
                     include/Cranberry/Window/WindowSettings.hpp \
@@ -108,9 +107,11 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Game/Mapping/MapTile.hpp \
                     include/Cranberry/Game/Mapping/MapTileProperties.hpp \
                     include/Cranberry/Graphics/Tilemap.hpp \
-    include/Cranberry/Game/Mapping/MapLayer.hpp \
-    include/Cranberry/Game/Mapping/Enumerations.hpp \
-    include/Cranberry/Game/Mapping/MapTileset.hpp
+                    include/Cranberry/Game/Mapping/MapLayer.hpp \
+                    include/Cranberry/Game/Mapping/MapTileset.hpp \
+                    include/Cranberry/Game/Mapping/Enumerations.hpp \
+                    include/Cranberry/Input/Enumerations.hpp \
+                    include/Cranberry/Game/Mapping/Map.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -160,16 +161,18 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Graphics/Base/TextureBase.cpp \
                     src/Graphics/Base/TransformBase.cpp \
                     src/Graphics/Base/SpriteMovement.cpp \
-                    src/Graphics/Base/Enumerations.cpp \
                     src/Graphics/Base/Hitbox.cpp \
                     src/Game/Game.cpp \
                     src/Game/GamePrivate.cpp \
                     src/Gui/GuiManager.cpp \
                     src/Graphics/Tilemap.cpp \
                     src/Game/Mapping/MapTileset.cpp \
-                    src/Game/Mapping/Enumerations.cpp \
-    src/Game/Mapping/MapTile.cpp \
-    src/Game/Mapping/MapTileProperties.cpp
+                    src/Game/Mapping/MapTile.cpp \
+                    src/Game/Mapping/MapTileProperties.cpp \
+                    src/Game/Mapping/MapEnumerations.cpp \
+                    src/Graphics/Base/GraphicsEnumerations.cpp \
+                    src/Game/Mapping/Map.cpp \
+                    src/Game/Mapping/MapLayer.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp
