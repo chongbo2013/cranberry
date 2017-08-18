@@ -77,10 +77,10 @@ bool Tilemap::create(
     )
 {
     // Specifies all members.
-    m_tileWidth  = static_cast<uint>(tileSize.width());
-    m_tileHeight = static_cast<uint>(tileSize.height());
-    m_mapWidth   = static_cast<uint>(mapSize.width());
-    m_mapHeight  = static_cast<uint>(mapSize.height());
+    m_tileWidth  = static_cast<int>(tileSize.width());
+    m_tileHeight = static_cast<int>(tileSize.height());
+    m_mapWidth   = static_cast<int>(mapSize.width());
+    m_mapHeight  = static_cast<int>(mapSize.height());
     m_view = view;
 
     if (!createInternal(rt)) return false;
@@ -115,10 +115,10 @@ bool Tilemap::create(
     }
 
     // Specifies all members.
-    m_tileWidth  = static_cast<uint>(tileSize.width());
-    m_tileHeight = static_cast<uint>(tileSize.height());
-    m_mapWidth   = static_cast<uint>(mapSize.width());
-    m_mapHeight  = static_cast<uint>(mapSize.height());
+    m_tileWidth  = static_cast<int>(tileSize.width());
+    m_tileHeight = static_cast<int>(tileSize.height());
+    m_mapWidth   = static_cast<int>(mapSize.width());
+    m_mapHeight  = static_cast<int>(mapSize.height());
     m_ownTextures = false;
     m_textures = textures;
     m_view = view;
@@ -182,8 +182,13 @@ void Tilemap::destroy()
     }
 
     delete m_vertexBuffer;
+    delete m_textureBuffer;
 
     m_vertexBuffer = nullptr;
+    m_textureBuffer = nullptr;
+
+    m_ids.clear();
+    m_vertices.clear();
     m_textures.clear();
 
     RenderBase::destroy();
@@ -314,16 +319,31 @@ void Tilemap::modifyAttribs()
 
 void Tilemap::drawElements()
 {
-    // Renders all tiles at once.
-    glDebug(gl->glDrawArrays(
-                GL_TRIANGLES,
-                GL_ZERO,
-                m_vertices.size()
-                ));
+    // For really big maps, it is way better to split up the work in order to
+    // only draw as many vertices as actually needed for the entire window.
+
+    // Calculates the carry and the max tiles on screen.
+    int carryX = static_cast<int>(-x() / m_tileWidth);
+    int carryY = static_cast<int>(-y() / m_tileHeight);
+    int screenX = static_cast<int>(renderTarget()->width() / m_tileWidth);
+    int screenY = static_cast<int>(renderTarget()->height() / m_tileHeight);
+
+    // Calculates the visible parts of the map on screen.
+    int visibleX = qMax(0, carryX);
+    int visibleY = qMax(0, carryY);
+    int visibleW = qMin(m_mapWidth  - visibleX, screenX) + 1;
+    int visibleH = qMin(m_mapHeight - visibleY, screenY) + 1;
+
+    for (; visibleY < visibleH; visibleY++)
+    {
+        int start = 6 * (visibleY * m_mapWidth + visibleX);
+        int count = 6 * visibleW;
+        glDebug(gl->glDrawArrays(GL_TRIANGLES, start, count));
+    }
 }
 
 
-bool Tilemap::setTiles(const QVector<QPair<uint, int>>& tiles)
+bool Tilemap::setTiles(const QVector<QPair<int, int>>& tiles)
 {
     removeAllTiles();
 
@@ -339,7 +359,7 @@ bool Tilemap::setTiles(const QVector<QPair<uint, int>>& tiles)
 }
 
 
-bool Tilemap::appendTile(uint tileIndex, int tileset)
+bool Tilemap::appendTile(int tileIndex, int tileset)
 {
     if (m_currentX >= m_mapWidth)
     {
@@ -400,6 +420,12 @@ void Tilemap::appendEmptyTile()
     {
         m_currentX = 0;
         m_currentY++;
+    }
+
+    for (int i = 0; i < 6; i++)
+    {
+        m_vertices.push_back(priv::MapVertex());
+        m_ids.push_back(0);
     }
 
     m_currentX++;
