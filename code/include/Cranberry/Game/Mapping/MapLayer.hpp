@@ -1,0 +1,176 @@
+﻿////////////////////////////////////////////////////////////////////////////////
+//
+// Cranberry - C++ game engine based on the Qt 5.8 framework.
+// Copyright (C) 2017 Nicolas Kogler
+//
+// Cranberry is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Cranberry is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Cranberry. If not, see <http://www.gnu.org/licenses/>.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+#pragma once
+#ifndef CRANBERRY_GAME_MAPPING_MAPLAYER_HPP
+#define CRANBERRY_GAME_MAPPING_MAPLAYER_HPP
+
+
+// Cranberry headers
+#include <Cranberry/Game/Mapping/Enumerations.hpp>
+#include <Cranberry/Game/Mapping/MapTile.hpp>
+#include <Cranberry/Graphics/Tilemap.hpp>
+
+// Forward declarations
+CRANBERRY_FORWARD_Q(QDomElement)
+CRANBERRY_FORWARD_C(Map)
+CRANBERRY_FORWARD_C(MapTileset)
+
+
+CRANBERRY_BEGIN_NAMESPACE
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Defines one map layer with multiple tiles.
+///
+/// \class MapLayer
+/// \author Nicolas Kogler
+/// \date August 16, 2017
+///
+////////////////////////////////////////////////////////////////////////////////
+class CRANBERRY_GAME_EXPORT MapLayer
+{
+public:
+
+    CRANBERRY_DEFAULT_COPY(MapLayer)
+    CRANBERRY_DEFAULT_MOVE(MapLayer)
+
+    MapLayer(Map* parent = nullptr);
+   ~MapLayer();
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the name of this layer.
+    ///
+    /// \returns the layer name.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const QString& name() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the opacity of the layer.
+    ///
+    /// \returns the layer opacity.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    float opacity() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the visibility of the layer.
+    ///
+    /// \returns true if the layer is visible.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isVisible() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the X-offset of this layer.
+    ///
+    /// \returns the X-offset.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int offsetX() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the Y-offset of this layer.
+    ///
+    /// \returns the Y-offset.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int offsetY() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the data encoding type for this layer.
+    ///
+    /// \returns the encoding type.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    LayerEncoding dataEncoding() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the data compression mode for this layer.
+    ///
+    /// \returns the compression mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    CompressionMode dataCompressionMode() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves all tiles, starting from top-left to bottom-right.
+    ///
+    /// \returns the tiles.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const QVector<MapTile>& tiles() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the object to render.
+    ///
+    /// \returns the render object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    Tilemap* renderObject() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Parses the given layer XML element.
+    ///
+    /// \param xmlElement Layer element to parse.
+    /// \param tilesets Tilesets to use.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool parse(QDomElement* xmlElement, const QVector<MapTileset*>& tilesets);
+
+
+private:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Members
+    ////////////////////////////////////////////////////////////////////////////
+    Tilemap*         m_tileMap;
+    Map*             m_parent;
+    QString          m_name;
+    float            m_opacity;
+    bool             m_isVisible;
+    int              m_offsetX;
+    int              m_offsetY;
+    LayerEncoding    m_encoding;
+    CompressionMode  m_compression;
+    QVector<MapTile> m_tiles;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \class MapLayer
+/// \ingroup Game
+///
+/// More detailed description, code examples.
+///
+/// \code
+/// ...
+/// \endcode
+///
+////////////////////////////////////////////////////////////////////////////////
+
+
+CRANBERRY_END_NAMESPACE
+
+
+#endif
