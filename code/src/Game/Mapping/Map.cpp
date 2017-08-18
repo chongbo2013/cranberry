@@ -201,21 +201,26 @@ void Map::destroy()
 void Map::update(const GameTime& time)
 {
     updateTransform(time);
+
+    // Avoid artifacts while rendering all the tiles.
+    float dx = round(x());
+    float dy = round(y());
+
+    // Update the layer positions.
+    for (MapLayer* layer : m_layers)
+    {
+        layer->renderObject()->setPosition(dx + layer->offsetX(), dy + layer->offsetY());
+        layer->renderObject()->setOpacity(layer->opacity());
+    }
 }
 
 
 void Map::render()
 {
-    // Avoid artifacts while rendering all the tiles.
-    float dx = round(x());
-    float dy = round(y());
-
     for (MapLayer* layer : m_layers)
     {
         if (layer->isVisible())
         {
-            layer->renderObject()->setPosition(dx + layer->offsetX(), dy + layer->offsetY());
-            layer->renderObject()->setOpacity(layer->opacity());
             layer->renderObject()->render();
         }
     }
