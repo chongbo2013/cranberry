@@ -224,10 +224,10 @@ Q_DECLARE_FLAGS(ScrollModes, ScrollMode)
 ////////////////////////////////////////////////////////////////////////////////
 // Useful functions to retrieve flag strings
 ////////////////////////////////////////////////////////////////////////////////
-extern QString getBlendModeString(BlendModes bm);
-extern QString getEffectString(Effect e);
-extern QString getMoveDirString(MoveDirections md);
-extern QString getScrollModeString(ScrollMode sm);
+QString getBlendModeString(BlendModes bm);
+QString getEffectString(Effect e);
+QString getMoveDirString(MoveDirections md);
+QString getScrollModeString(ScrollMode sm);
 
 
 ////////////////////////////////////////////////////////////////////////////////

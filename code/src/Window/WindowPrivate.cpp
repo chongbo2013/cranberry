@@ -425,9 +425,7 @@ void priv::WindowPrivate::paintGL()
     // Updating & rendering.
     m_time.update();
 
-#ifdef QT_DEBUG
-    calculateFramerate();
-#endif
+    if_debug(calculateFramerate())
 
     // Update shaders that require time for noise.
     OpenGLDefaultShaders::cranberryUpdateDefaultShaders();
