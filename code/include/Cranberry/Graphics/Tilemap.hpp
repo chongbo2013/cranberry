@@ -28,6 +28,9 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/OpenGL/OpenGLVertex.hpp>
 
+// Qt headers
+#include <QVector>
+
 // Forward declarations
 CRANBERRY_FORWARD_Q(QOpenGLTexture)
 CRANBERRY_FORWARD_Q(QOpenGLBuffer)
@@ -37,7 +40,8 @@ CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Renders multiple tiles from a tilemap with a great performance.
+/// Renders multiple tiles from a tilemap with a great performance. Also
+/// supports multiple tilesets.
 ///
 /// \class Tilemap
 /// \author Nicolas Kogler
@@ -66,7 +70,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the tilemap object.
     ///
-    /// \param tileset Tileset image to use.
+    /// \param tilesets Paths to tileset images to use.
     /// \param tileSize Size of each tile, in pixels.
     /// \param mapSize Size of the entire map, in tiles.
     /// \param view The map view inside the window. A null rectangle leads to
@@ -76,7 +80,28 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     bool create(
-            const QString& tileset,
+            const QVector<QString>& tilesets,
+            const QSize& tileSize,
+            const QSize& mapSize,
+            const QRect& view,
+            Window* renderTarget = nullptr
+            );
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates a tilemap object, but with several textures to use as tilesets.
+    /// This class will _not_ take ownership of the tilesets provided!
+    ///
+    /// \param textures Tilesets to use for this tilemap.
+    /// \param tileSize Size of each tile, in pixels.
+    /// \param mapSize Size of the entire map, in tiles.
+    /// \param view The map view inside the window. A null rectangle leads to
+    ///        having the entire window as view.
+    /// \param renderTarget Target to render batch on.
+    /// \returns true if created successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool create(
+            const QVector<QOpenGLTexture*>& textures,
             const QSize& tileSize,
             const QSize& mapSize,
             const QRect& view,
@@ -106,20 +131,21 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the tiles in the map.
     ///
-    /// \param tiles List of tile indices.
+    /// \param tiles List of tile indices, paired with tileset indices.
     /// \returns false if there are more tiles than the map can actually hold.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool setTiles(const QVector<uint>& tiles);
+    bool setTiles(const QVector<QPair<uint, int>>& tiles);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Appends one single tile.
     ///
     /// \param tileIndex The index of the tile within the tileset.
+    /// \param tileset The id of the tileset to pick tile from (defaults to 0).
     /// \returns false if out of bounds.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool appendTile(uint tileIndex);
+    bool appendTile(uint tileIndex, int tileset = 0);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Removes all tiles from the map.
@@ -131,8 +157,10 @@ public:
 private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Members
+    // Helpers
     ////////////////////////////////////////////////////////////////////////////
+    bool createInternal(Window* rt);
+    bool getUniformLocations();
     void bindObjects();
     void releaseObjects();
     void writeVertices();
@@ -143,21 +171,26 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    QOpenGLTexture*   m_texture;
-    QOpenGLBuffer*    m_vertexBuffer;
-    priv::MapVertices m_vertices;
-    QRect             m_view;
-    uint              m_tileWidth;
-    uint              m_tileHeight;
-    uint              m_setWidth;
-    uint              m_setHeight;
-    uint              m_mapWidth;
-    uint              m_mapHeight;
-    uint              m_currentX;
-    uint              m_currentY;
-    bool              m_update;
+    QVector<QOpenGLTexture*> m_textures;
+    QVector<int>             m_uniformLocs;
+    QOpenGLBuffer*           m_vertexBuffer;
+    QOpenGLBuffer*           m_textureBuffer;
+    priv::MapVertices        m_vertices;
+    priv::IdVertices         m_ids;
+    QRect                    m_view;
+    uint                     m_tileWidth;
+    uint                     m_tileHeight;
+    uint                     m_mapWidth;
+    uint                     m_mapHeight;
+    uint                     m_currentX;
+    uint                     m_currentY;
+    bool                     m_update;
+    bool                     m_ownTextures;
 
 };
+
+
+#define TILEMAP_MAX_SETS 10
 
 
 ////////////////////////////////////////////////////////////////////////////////

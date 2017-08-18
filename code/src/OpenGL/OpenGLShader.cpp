@@ -186,6 +186,12 @@ void OpenGLShader::setWindowSize(const QSize& size)
 }
 
 
+int OpenGLShader::uniformLocation(const QString& name)
+{
+    return m_program->uniformLocation(name);
+}
+
+
 void OpenGLShader::setUniformValue(int location, int value)
 {
     set_uniform(location, value);

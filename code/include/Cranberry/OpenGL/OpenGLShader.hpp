@@ -216,7 +216,7 @@ public:
     /// \returns >0 if successful and -1 if failed.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    int uniformLocation(const char* name);
+    int uniformLocation(const QString& name);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Sets the uniform value at \p location to \p value. To optimize these

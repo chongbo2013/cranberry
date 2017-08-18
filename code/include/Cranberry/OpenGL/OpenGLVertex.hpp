@@ -276,11 +276,14 @@ public:
     // Attribute offsets and sizes
     static constexpr uint  xyAttrib() { return 0; }
     static constexpr uint  uvAttrib() { return 1; }
+    static constexpr uint  idAttrib() { return 2; }
     static constexpr uint  xyLength() { return 2; }
     static constexpr uint  uvLength() { return 2; }
+    static constexpr uint  idLength() { return 1; }
     static constexpr uint  size()     { return sizeof(float) * 4; }
     static constexpr void* xyOffset() { return (void*) (nullptr); }
     static constexpr void* uvOffset() { return (void*) (sizeof(float) * 2); }
+    static constexpr void* idOffset() { return (void*) (nullptr); }
 
 
 private:
@@ -297,6 +300,7 @@ template <size_t n> using TexVertices = std::array<TextureVertex, n>;
 using QuadVertices = std::array<TextureVertex, 4>;
 using VarVertices = std::vector<Vertex>;
 using MapVertices = std::vector<MapVertex>;
+using IdVertices = std::vector<qint32>;
 
 
 // Convert
