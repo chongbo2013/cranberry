@@ -135,7 +135,7 @@ public:
     /// \returns false if there are more tiles than the map can actually hold.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool setTiles(const QVector<QPair<uint, int>>& tiles);
+    bool setTiles(const QVector<QPair<int, int>>& tiles);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Appends one single tile.
@@ -145,7 +145,7 @@ public:
     /// \returns false if out of bounds.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool appendTile(uint tileIndex, int tileset = 0);
+    bool appendTile(int tileIndex, int tileset = 0);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Appends a transparent tile of size (tilewidth, tileheight).
@@ -184,12 +184,12 @@ private:
     priv::MapVertices        m_vertices;
     priv::IdVertices         m_ids;
     QRect                    m_view;
-    uint                     m_tileWidth;
-    uint                     m_tileHeight;
-    uint                     m_mapWidth;
-    uint                     m_mapHeight;
-    uint                     m_currentX;
-    uint                     m_currentY;
+    int                      m_tileWidth;
+    int                      m_tileHeight;
+    int                      m_mapWidth;
+    int                      m_mapHeight;
+    int                      m_currentX;
+    int                      m_currentY;
     bool                     m_update;
     bool                     m_ownTextures;
 
