@@ -249,6 +249,7 @@ bool MapLayer::parse(QDomElement* xmlElement, const QVector<MapTileset*>& tilese
         if (tile == 0)
         {
             m_tileMap->appendEmptyTile();
+            m_tiles.append(MapTile());
             continue;
         }
 
@@ -257,6 +258,8 @@ bool MapLayer::parse(QDomElement* xmlElement, const QVector<MapTileset*>& tilese
         for (int i = setCount - 1; i >= 0; i--)
         {
             MapTileset* const tileset = tilesets.at(i);
+            MapTile mTile;
+
             if (tileset->globalId() <= tile)
             {
                 int realId = tile - tileset->globalId();
@@ -264,6 +267,10 @@ bool MapLayer::parse(QDomElement* xmlElement, const QVector<MapTileset*>& tilese
                 {
                     return cranError(e_04);
                 }
+
+                mTile.setTileId(realId);
+                mTile.setTilesetId(i);
+                m_tiles.append(mTile);
             }
         }
     }
