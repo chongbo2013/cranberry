@@ -26,7 +26,9 @@
 
 // Cranberry headers
 #include <Cranberry/Game/Mapping/MapLayer.hpp>
+#include <Cranberry/Game/Mapping/MapObject.hpp>
 #include <Cranberry/Game/Mapping/MapTileset.hpp>
+#include <Cranberry/Game/Mapping/Events/TileEvent.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 
 
@@ -62,12 +64,28 @@ public:
     bool isNull() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Determines whether the player is currently moving.
+    ///
+    /// \returns true if the player is moving.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isPlayerMoving() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the orientation of the map.
     ///
     /// \returns the map orientation.
     ///
     ////////////////////////////////////////////////////////////////////////////
     MapOrientation orientation() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the move mode of the player.
+    ///
+    /// \returns the player move mode.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    PlayerMoveMode playerMoveMode() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the width of the map.
@@ -102,6 +120,26 @@ public:
     int tileHeight() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the X-position of the player. If playerMoveMode() equals
+    /// PlayerMoveTiles, the position is measured in tiles. Measured in pixels
+    /// otherwise.
+    ///
+    /// \returns the X-position.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int playerX() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the Y-position of the player. If playerMoveMode() equals
+    /// PlayerMoveTiles, the position is measured in tiles. Measured in pixels
+    /// otherwise.
+    ///
+    /// \returns the Y-position.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int playerY() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the back color of the map.
     ///
     /// \returns the background color.
@@ -116,6 +154,39 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     const QMap<QString, QVariant>& properties() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the move mode of the player.
+    ///
+    /// \param mode Either move by tiles or pixels.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setPlayerMoveMode(PlayerMoveMode mode);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Moves the imaginary player by \p x and \p y on the map. Will
+    /// trigger onAboutStepTile() and onStepTile() respectively.
+    ///
+    /// \note Synchronise calls to TransformBase::startMovingBy() with this.
+    /// \note Scrolling the map can be achieved by using startMovingBy().
+    /// \note To move by pixels, use setPlayerMoveMode(PlayerMovePixels).
+    ///
+    /// \param x Tiles/pixels to advance player in direction X.
+    /// \param y Tiles/pixels to advance player in direction Y.
+    /// \returns false if the player could not be moved for whatever reason.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool movePlayerBy(int x, int y);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Moves the player to (\p x,\p y) (in tiles) instantly.
+    ///
+    /// \param x New X-position of the player in tiles.
+    /// \param y New Y-position of the player in tiles.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void movePlayerTo(int x, int y);
+
 
     ////////////////////////////////////////////////////////////////////////////
     /// Loads a TMX map from \p mapPath and renders it on \p renderTarget.
@@ -148,26 +219,52 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     virtual void render();
 
+    virtual void onAboutStepTile(const TileEvent& event);
+    virtual void onStepTile(const TileEvent& event);
+    virtual void onLeaveTile(const TileEvent& event);
+
+    //virtual void onAboutStepObject();
+    //virtual void onStepObject();
+    //virtual void onLeaveObject();
+
 
 protected:
 
     const QVector<MapTileset*>& tilesets() const;
     const QVector<MapLayer*>& layers() const;
+    const QVector<MapObject>& objects() const;
 
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
+    // Helpers
+    ////////////////////////////////////////////////////////////////////////////
+    int getTileIndex(int x, int y);
+
+    ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
     MapOrientation          m_orientation;
+    PlayerMoveMode          m_moveMode;
     int                     m_width;
     int                     m_height;
     int                     m_tileWidth;
     int                     m_tileHeight;
+    int                     m_playerX;
+    int                     m_playerY;
+    int                     m_targetX;
+    int                     m_targetY;
+    float                   m_realposX;
+    float                   m_realposY;
+    float                   m_realtargetX;
+    float                   m_realtargetY;
+    bool                    m_playerMovingX;
+    bool                    m_playerMovingY;
     QColor                  m_bgColor;
     QVector<MapLayer*>      m_layers;
     QVector<MapTileset*>    m_tilesets;
+    QVector<MapObject>      m_objects;
     QMap<QString, QVariant> m_properties;
 };
 

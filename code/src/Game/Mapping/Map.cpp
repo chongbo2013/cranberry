@@ -40,10 +40,17 @@ CRANBERRY_USING_NAMESPACE
 
 Map::Map()
     : m_orientation(MapOrientationOrthogonal)
+    , m_moveMode(PlayerMoveTiles)
     , m_width(0)
     , m_height(0)
     , m_tileWidth(0)
     , m_tileHeight(0)
+    , m_playerX(0)
+    , m_playerY(0)
+    , m_targetX(0)
+    , m_targetY(0)
+    , m_playerMovingX(false)
+    , m_playerMovingY(false)
 {
 }
 
@@ -66,9 +73,21 @@ bool Map::isNull() const
 }
 
 
+bool Map::isPlayerMoving() const
+{
+    return m_playerMovingX || m_playerMovingY;
+}
+
+
 MapOrientation Map::orientation() const
 {
     return m_orientation;
+}
+
+
+PlayerMoveMode Map::playerMoveMode() const
+{
+    return m_moveMode;
 }
 
 
@@ -108,6 +127,113 @@ const QMap<QString, QVariant>& Map::properties() const
 }
 
 
+void Map::setPlayerMoveMode(PlayerMoveMode mode)
+{
+    m_moveMode = mode;
+}
+
+
+bool Map::movePlayerBy(int x, int y)
+{
+    // Reject any movement while there is one running.
+    if (isPlayerMoving())
+    {
+        return false;
+    }
+
+    if (m_moveMode == PlayerMoveTiles)
+    {
+        for (MapLayer* layer : m_layers)
+        {
+            const MapTile& oldT = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
+            const MapTile& newT = layer->tiles().at(getTileIndex(m_playerX + x, m_playerY + y));
+
+            if (!newT.isTransparent())
+            {
+                TileEvent event(newT, layer, m_tilesets[newT.tilesetId()]);
+                onAboutStepTile(event);
+
+                if (!event.isAccepted())
+                {
+                    // We e.g. hit something solid, abort.
+                    return false;
+                }
+            }
+
+            if (!oldT.isTransparent())
+            {
+                onLeaveTile(TileEvent(oldT, layer, m_tilesets[oldT.tilesetId()]));
+            }
+        }
+
+        // Triggers a movement.
+        if (x != 0) m_playerMovingX = true;
+        if (y != 0) m_playerMovingY = true;
+
+        m_targetX = m_playerX + x;
+        m_targetY = m_playerY + y;
+        m_realposX = m_playerX * m_tileWidth;
+        m_realposY = m_playerY * m_tileHeight;
+        m_realtargetX = m_realposX + (x * m_tileWidth);
+        m_realtargetY = m_realposY + (y * m_tileHeight);
+    }
+    else
+    {
+        int oldTileX = m_playerX / m_tileWidth;
+        int oldTileY = m_playerY / m_tileHeight;
+        int newTileX = (m_playerX + x) / m_tileWidth;
+        int newTileY = (m_playerY + y) / m_tileHeight;
+
+        if (oldTileX != newTileX || oldTileY != newTileY)
+        {
+            // Current tile changed, send event to all layers.
+            for (MapLayer* layer : m_layers)
+            {
+                const MapTile& oldT = layer->tiles().at(getTileIndex(oldTileX, oldTileY));
+                const MapTile& newT = layer->tiles().at(getTileIndex(newTileX, newTileY));
+
+                if (!newT.isTransparent())
+                {
+                    TileEvent event(newT, layer, m_tilesets[newT.tilesetId()]);
+                    onAboutStepTile(event);
+
+                    if (!event.isAccepted())
+                    {
+                        // We e.g. hit something solid, abort.
+                        return false;
+                    }
+
+                    onStepTile(TileEvent(newT, layer, m_tilesets[newT.tilesetId()]));
+                }
+
+                onLeaveTile(TileEvent(oldT, layer, m_tilesets[oldT.tilesetId()]));
+            }
+        }
+
+        // Moves the player in an instant.
+        m_playerX += x;
+        m_playerY += y;
+    }
+
+    return true;
+}
+
+
+void Map::movePlayerTo(int x, int y)
+{
+    if (m_moveMode == PlayerMoveTiles)
+    {
+        m_playerX = x;
+        m_playerY = y;
+    }
+    else
+    {
+        m_playerX = x * m_tileWidth;
+        m_playerY = y * m_tileHeight;
+    }
+}
+
+
 bool Map::create(const QString& mapPath, Window* rt)
 {
     if (!RenderBase::create(rt)) return false;
@@ -140,6 +266,7 @@ bool Map::create(const QString& mapPath, Window* rt)
 
     QDomNodeList listTileset = mapNode.elementsByTagName("tileset");
     QDomNodeList listLayer = mapNode.elementsByTagName("layer");
+    QDomNodeList listObject = mapNode.elementsByTagName("objectgroup");
 
     // Parses the tilesets.
     for (int i = 0; i < listTileset.size(); i++)
@@ -159,12 +286,42 @@ bool Map::create(const QString& mapPath, Window* rt)
     {
         QDomElement elem = listLayer.at(i).toElement();
         MapLayer* layer = new MapLayer(this);
-        if (!layer->parse(&elem, m_tilesets))
+        if (!layer->parse(&elem, m_tilesets, i))
         {
             return cranError(ERRARG(e_03));
         }
 
         m_layers.append(layer);
+    }
+
+    // Parses the objects.
+    for (int i = 0; i < listObject.size(); i++)
+    {
+        QDomNodeList objs = listObject.at(i).childNodes();
+        for (int j = 0; j < objs.size(); j++)
+        {
+            MapObject obj;
+            QDomElement elem = objs.at(j).toElement();
+            QDomElement props = elem
+                    .elementsByTagName("properties")
+                    .at(0)
+                    .toElement();
+
+            QString strId = elem.attribute("id");
+            QString strX = elem.attribute("x");
+            QString strY = elem.attribute("y");
+            QString strW = elem.attribute("width");
+            QString strH = elem.attribute("height");
+
+            obj.setId(strId.toInt());
+            obj.setX(strX.toInt());
+            obj.setY(strY.toInt());
+            obj.setWidth(strW.toInt());
+            obj.setHeight(strH.toInt());
+            getTmxProperties(&props, obj.properties());
+
+            m_objects.push_back(obj);
+        }
     }
 
     // Parses the properties.
@@ -212,6 +369,45 @@ void Map::update(const GameTime& time)
         layer->renderObject()->setPosition(dx + layer->offsetX(), dy + layer->offsetY());
         layer->renderObject()->setOpacity(layer->opacity());
     }
+
+    // Update running movements, if any.
+    if (isPlayerMoving())
+    {
+        if (m_playerMovingX)
+        {
+            m_realposX += moveSpeedX() * time.deltaTime();
+            if (m_realposX >= m_realtargetX)
+            {
+                m_realposX = m_realtargetX;
+                m_playerX = m_targetX;
+                m_playerMovingX = false;
+            }
+        }
+
+        if (m_playerMovingY)
+        {
+            m_realposY += moveSpeedY() * time.deltaTime();
+            if (m_realposY >= m_realtargetY)
+            {
+                m_realposY = m_realtargetY;
+                m_playerY = m_targetY;
+                m_playerMovingY = false;
+            }
+        }
+
+        if (!isPlayerMoving())
+        {
+            // Current tile changed, send event to all layers.
+            for (MapLayer* layer : m_layers)
+            {
+                const MapTile& tile = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
+                if (!tile.isTransparent())
+                {
+                    onStepTile(TileEvent(tile, layer, m_tilesets[tile.tilesetId()]));
+                }
+            }
+        }
+    }
 }
 
 
@@ -227,6 +423,30 @@ void Map::render()
 }
 
 
+void Map::onAboutStepTile(const TileEvent &event)
+{
+    if (event.layer().layerId() == 0)
+        printf("On about to step on tile (layer 0): %d\n", event.tile().tileId());
+}
+
+
+void Map::onStepTile(const TileEvent &event)
+{
+    if (event.layer().layerId() == 0)
+    {
+        printf("On stepping tile (layer 0): %d\n", event.tile().tileId());
+        printf("Property \"type\": \"%s\"\n", event.properties().value("type").toString().toStdString().c_str());
+    }
+}
+
+
+void Map::onLeaveTile(const TileEvent &event)
+{
+    if (event.layer().layerId() == 0)
+        printf("On leaving tile (layer 0): %d\n", event.tile().tileId());
+}
+
+
 const QVector<MapTileset*>& Map::tilesets() const
 {
     return m_tilesets;
@@ -236,4 +456,16 @@ const QVector<MapTileset*>& Map::tilesets() const
 const QVector<MapLayer*>& Map::layers() const
 {
     return m_layers;
+}
+
+
+const QVector<MapObject>& Map::objects() const
+{
+    return m_objects;
+}
+
+
+int Map::getTileIndex(int x, int y)
+{
+    return y * m_tileWidth + x;
 }
