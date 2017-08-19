@@ -82,6 +82,14 @@ public:
     bool isVisible() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// The position (index) of the layer in the entire map.
+    ///
+    /// \returns the layer index.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int layerId() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the X-offset of this layer.
     ///
     /// \returns the X-offset.
@@ -136,7 +144,11 @@ public:
     /// \param tilesets Tilesets to use.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool parse(QDomElement* xmlElement, const QVector<MapTileset*>& tilesets);
+    bool parse(
+        QDomElement* xmlElement,
+        const QVector<MapTileset*>& tilesets,
+        int layerId
+        );
 
 
 private:
@@ -149,6 +161,7 @@ private:
     QString          m_name;
     float            m_opacity;
     bool             m_isVisible;
+    int              m_layerId;
     int              m_offsetX;
     int              m_offsetY;
     LayerEncoding    m_encoding;

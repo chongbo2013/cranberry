@@ -76,6 +76,12 @@ bool MapLayer::isVisible() const
 }
 
 
+int MapLayer::layerId() const
+{
+    return m_layerId;
+}
+
+
 int MapLayer::offsetX() const
 {
     return m_offsetX;
@@ -112,8 +118,13 @@ Tilemap* MapLayer::renderObject() const
 }
 
 
-bool MapLayer::parse(QDomElement* xmlElement, const QVector<MapTileset*>& tilesets)
+bool MapLayer::parse(
+    QDomElement* xmlElement,
+    const QVector<MapTileset*>& tilesets,
+    int layerId)
 {
+    m_layerId = layerId;
+
     // Parses all the attributes.
     if (!xmlElement->hasAttribute("name"))
     {
