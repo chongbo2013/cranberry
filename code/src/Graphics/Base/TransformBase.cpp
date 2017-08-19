@@ -185,6 +185,54 @@ float TransformBase::opacity() const
 }
 
 
+float TransformBase::moveSpeedX() const
+{
+    return m_speedMoveX;
+}
+
+
+float TransformBase::moveSpeedY() const
+{
+    return m_speedMoveY;
+}
+
+
+float TransformBase::scaleSpeedX() const
+{
+    return m_speedScaleX;
+}
+
+
+float TransformBase::scaleSpeedY() const
+{
+    return m_speedScaleY;
+}
+
+
+float TransformBase::rotateSpeedX() const
+{
+    return m_speedRotateX;
+}
+
+
+float TransformBase::rotateSpeedY() const
+{
+    return m_speedRotateY;
+}
+
+
+float TransformBase::rotateSpeedZ() const
+{
+    return m_speedRotateZ;
+}
+
+
+float TransformBase::fadeSpeed() const
+{
+    return m_speedFade;
+}
+
+
 QMatrix4x4* TransformBase::matrix(RenderBase* obj) const
 {
     QMatrix4x4 proj, tran, rot, scale, orig, norig;
