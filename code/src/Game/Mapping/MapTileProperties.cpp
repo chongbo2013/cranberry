@@ -22,6 +22,9 @@
 // Cranberry headers
 #include <Cranberry/Game/Mapping/MapTileProperties.hpp>
 
+// Global variables
+CRANBERRY_GLOBAL_VAR(QVariant, g_default)
+
 
 CRANBERRY_USING_NAMESPACE
 
@@ -34,7 +37,15 @@ bool MapTileProperties::isValid() const
 
 const QVariant& MapTileProperties::value(const QString& name) const
 {
-    return m_properties[name];
+    auto it = m_properties.find(name);
+    if (it == m_properties.end())
+    {
+        return g_default;
+    }
+    else
+    {
+        return it.value();
+    }
 }
 
 

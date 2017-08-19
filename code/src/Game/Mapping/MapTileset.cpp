@@ -36,6 +36,9 @@ CRANBERRY_CONST_VAR(QString, e_04, "TMX (tileset): \"tilecount\" attribute is mi
 CRANBERRY_CONST_VAR(QString, e_05, "TMX (image): \"source\" attribute is missing.")
 CRANBERRY_CONST_VAR(QString, e_06, "TMX (image): Path to image invalid.")
 
+// Globals
+CRANBERRY_GLOBAL_VAR(cran::MapTileProperties, g_default)
+
 
 CRANBERRY_USING_NAMESPACE
 
@@ -121,7 +124,14 @@ const QMap<QString, QVariant>& MapTileset::properties() const
 const MapTileProperties& MapTileset::tileProperties(int tileId) const
 {
     auto it = m_tileProps.find(tileId);
-    return it.value();
+    if (it == m_tileProps.end())
+    {
+        return g_default;
+    }
+    else
+    {
+        return it.value();
+    }
 }
 
 
