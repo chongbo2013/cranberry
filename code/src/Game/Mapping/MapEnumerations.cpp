@@ -51,6 +51,8 @@ cran::MapOrientation cran::getOrientationFromString(const QString& type)
 
 cran::PropertyType cran::getPropertyTypeFromString(const QString& type)
 {
+    // Fix: No type defaults to "string".
+    if (type == "")       return PropertyTypeString;
     if (type == "string") return PropertyTypeString;
     if (type == "int")    return PropertyTypeInteger;
     if (type == "float")  return PropertyTypeFloat;

@@ -121,7 +121,8 @@ Tilemap* MapLayer::renderObject() const
 bool MapLayer::parse(
     QDomElement* xmlElement,
     const QVector<MapTileset*>& tilesets,
-    int layerId)
+    int layerId
+    )
 {
     m_layerId = layerId;
 

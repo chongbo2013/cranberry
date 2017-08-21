@@ -41,6 +41,7 @@ CRANBERRY_USING_NAMESPACE
 Map::Map()
     : m_orientation(MapOrientationOrthogonal)
     , m_moveMode(PlayerMoveTiles)
+    , m_playerMoveDir(MoveNone)
     , m_width(0)
     , m_height(0)
     , m_tileWidth(0)
@@ -166,9 +167,16 @@ bool Map::movePlayerBy(int x, int y)
             }
         }
 
+        m_playerMoveDir = MoveNone;
+
         // Triggers a movement.
         if (x != 0) m_playerMovingX = true;
         if (y != 0) m_playerMovingY = true;
+
+        if (x <= 0) m_playerMoveDir |= MoveWest;
+        if (x >= 0) m_playerMoveDir |= MoveEast;
+        if (y <= 0) m_playerMoveDir |= MoveNorth;
+        if (y >= 0) m_playerMoveDir |= MoveSouth;
 
         m_targetX = m_playerX + x;
         m_targetY = m_playerY + y;
@@ -370,44 +378,7 @@ void Map::update(const GameTime& time)
         layer->renderObject()->setOpacity(layer->opacity());
     }
 
-    // Update running movements, if any.
-    if (isPlayerMoving())
-    {
-        if (m_playerMovingX)
-        {
-            m_realposX += moveSpeedX() * time.deltaTime();
-            if (m_realposX >= m_realtargetX)
-            {
-                m_realposX = m_realtargetX;
-                m_playerX = m_targetX;
-                m_playerMovingX = false;
-            }
-        }
-
-        if (m_playerMovingY)
-        {
-            m_realposY += moveSpeedY() * time.deltaTime();
-            if (m_realposY >= m_realtargetY)
-            {
-                m_realposY = m_realtargetY;
-                m_playerY = m_targetY;
-                m_playerMovingY = false;
-            }
-        }
-
-        if (!isPlayerMoving())
-        {
-            // Current tile changed, send event to all layers.
-            for (MapLayer* layer : m_layers)
-            {
-                const MapTile& tile = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
-                if (!tile.isTransparent())
-                {
-                    onStepTile(TileEvent(tile, layer, m_tilesets[tile.tilesetId()]));
-                }
-            }
-        }
-    }
+    updateTileMovement(time.deltaTime());
 }
 
 
@@ -435,7 +406,7 @@ void Map::onStepTile(const TileEvent &event)
     if (event.layer().layerId() == 0)
     {
         printf("On stepping tile (layer 0): %d\n", event.tile().tileId());
-        printf("Property \"type\": \"%s\"\n", event.properties().value("type").toString().toStdString().c_str());
+        printf("Property \"type\": \"%s\"\n", event.properties().value("prop").toString().toStdString().c_str());
     }
 }
 
@@ -468,4 +439,74 @@ const QVector<MapObject>& Map::objects() const
 int Map::getTileIndex(int x, int y)
 {
     return y * m_tileWidth + x;
+}
+
+
+void Map::updateTileMovement(double deltaTime)
+{
+    // Update running movements, if any.
+    if (isPlayerMoving())
+    {
+        if (m_playerMovingX)
+        {
+            if (m_playerMoveDir & MoveEast)
+            {
+                m_realposX += moveSpeedX() * deltaTime;
+                if (m_realposX >= m_realtargetX)
+                {
+                    m_realposX = m_realtargetX;
+                    m_playerX = m_targetX;
+                    m_playerMovingX = false;
+                }
+            }
+
+            if (m_playerMoveDir & MoveWest)
+            {
+                m_realposX -= moveSpeedX() * deltaTime;
+                if (m_realposX <= m_realtargetX)
+                {
+                    m_realposX = m_realtargetX;
+                    m_playerX = m_targetX;
+                    m_playerMovingX = false;
+                }
+            }
+        }
+
+        if (m_playerMovingY)
+        {
+            if (m_playerMoveDir & MoveSouth)
+            {
+                m_realposY += moveSpeedY() * deltaTime;
+                if (m_realposY >= m_realtargetY)
+                {
+                    m_realposY = m_realtargetY;
+                    m_playerY = m_targetY;
+                    m_playerMovingY = false;
+                }
+            }
+            else
+            {
+                m_realposY -= moveSpeedY() * deltaTime;
+                if (m_realposY <= m_realtargetY)
+                {
+                    m_realposY = m_realtargetY;
+                    m_playerY = m_targetY;
+                    m_playerMovingY = false;
+                }
+            }
+        }
+
+        if (!isPlayerMoving())
+        {
+            // Current tile changed, send event to all layers.
+            for (MapLayer* layer : m_layers)
+            {
+                const MapTile& tile = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
+                if (!tile.isTransparent())
+                {
+                    onStepTile(TileEvent(tile, layer, m_tilesets[tile.tilesetId()]));
+                }
+            }
+        }
+    }
 }
