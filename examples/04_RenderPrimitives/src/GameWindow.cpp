@@ -128,13 +128,14 @@ void GameWindow::onInit()
 
     // m_decagon
     m_decagon = new Polygon;
+    m_decagon->setLineWidth(4);
     m_decagon->create(150, 10, this);
     m_decagon->setColor(colorGenerator(m_decagon, 1));
-    m_decagon->setShapeFilled(true);
     m_decagon->setPosition(QPointF(100, 300));
 
     // m_polygon
     m_polygon = new Polygon;
+    m_polygon->setLineWidth(2);
     m_polygon->create(pointsGenerator(), this);
     m_polygon->setColor(QColor(Qt::red));
     m_polygon->setRotateMode(RotateForever);
