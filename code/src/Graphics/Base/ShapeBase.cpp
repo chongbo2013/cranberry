@@ -195,6 +195,8 @@ bool ShapeBase::createInternal(const QVector<QPointF>& points, Window* rt)
 
             if (isShapeClosed())
             {
+                // If shape is closed, we need to fetch the first two elements
+                // again, otherwise it will be missing a side afterwards.
                 c = (i + 1 >= points.size()) ? 0 : i + 1;
                 d = (i + 2 >= points.size()) ? 1 : i + 2;
             }
