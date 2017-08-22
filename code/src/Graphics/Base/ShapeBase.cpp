@@ -36,6 +36,7 @@
 // Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Vertex buffer creation failed.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Color count does not match vertex count.")
+CRANBERRY_CONST_VAR(float, c_magic, 0.375f)
 
 
 CRANBERRY_USING_NAMESPACE
@@ -184,24 +185,26 @@ bool ShapeBase::createInternal(const QVector<QPointF>& points, Window* rt)
         if (m_lineWidth == 1)
         {
             priv::Vertex v;
-            v.xyz(p.x() + 0.375f, p.y() + 0.375f, 0);
+            v.xyz(p.x() + c_magic, p.y() + c_magic, 0);
             m_vertices.push_back(v);
         }
         else
         {
-            int a = (i - 1 < 0) ? 0 : i - 1;
             int b = i;
-            int c, d;
+            int a, c, d;
 
             if (isShapeClosed())
             {
+                a = (i - 1 < 0) ? points.size() - 1 : i - 1;
+
                 // If shape is closed, we need to fetch the first two elements
                 // again, otherwise it will be missing a side afterwards.
-                c = (i + 1 >= points.size()) ? 0 : i + 1;
-                d = (i + 2 >= points.size()) ? 1 : i + 2;
+                c = (i + 1 >= points.size()) ? qAbs(points.size() - (i + 1)) : i + 1;
+                d = (i + 2 >= points.size()) ? qAbs(points.size() - (i + 2)) : i + 2;
             }
             else
             {
+                a = (i - 1 < 0) ? 0 : i - 1;
                 c = (i + 1 >= points.size()) ? points.size() - 1 : i + 1;
                 d = (i + 2 >= points.size()) ? points.size() - 1 : i + 2;
             }
@@ -468,12 +471,12 @@ void ShapeBase::extrudeSegment(
     QVector2D a4 = QVector2D(p2) + len2 * mit2;
 
     // Generate the vertices.
-    v1.xyz(a1.x(), a1.y());
-    v2.xyz(a3.x(), a3.y());
-    v3.xyz(a2.x(), a2.y());
-    v4.xyz(a2.x(), a2.y());
-    v5.xyz(a3.x(), a3.y());
-    v6.xyz(a4.x(), a4.y());
+    v1.xyz(a1.x() + c_magic, a1.y() + c_magic);
+    v2.xyz(a3.x() + c_magic, a3.y() + c_magic);
+    v3.xyz(a2.x() + c_magic, a2.y() + c_magic);
+    v4.xyz(a2.x() + c_magic, a2.y() + c_magic);
+    v5.xyz(a3.x() + c_magic, a3.y() + c_magic);
+    v6.xyz(a4.x() + c_magic, a4.y() + c_magic);
 
     m_vertices.push_back(v1);
     m_vertices.push_back(v2);
