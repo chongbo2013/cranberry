@@ -76,6 +76,15 @@ protected:
 
     uint renderModeWired() const override;
     uint renderModeFilled() const override;
+    bool isShapeClosed() const override;
+
+
+private:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Members
+    ////////////////////////////////////////////////////////////////////////////
+    bool m_isClosed = false;
 };
 
 

@@ -75,6 +75,7 @@ protected:
 
     uint renderModeWired() const override;
     uint renderModeFilled() const override;
+    bool isShapeClosed() const override;
 
 
 private:

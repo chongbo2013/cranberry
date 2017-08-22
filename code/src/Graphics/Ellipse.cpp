@@ -81,3 +81,9 @@ uint Ellipse::renderModeWired() const
 {
     return (m_isArc) ? RenderLineStrip : RenderLineLoop;
 }
+
+
+bool Ellipse::isShapeClosed() const
+{
+    return !m_isArc;
+}

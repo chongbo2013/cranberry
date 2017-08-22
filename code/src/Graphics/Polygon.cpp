@@ -29,8 +29,17 @@
 CRANBERRY_USING_NAMESPACE
 
 
+bool pointsEqual(const QPointF& p1, const QPointF& p2)
+{
+    return abs(p1.x() - p2.x()) < 0.1 &&
+           abs(p1.y() - p2.y()) < 0.1;
+}
+
+
 bool Polygon::create(const QVector<QPointF>& points, Window* renderTarget)
 {
+    m_isClosed = pointsEqual(points.first(), points.last());
+
     return createInternal(points, renderTarget);
 }
 
@@ -50,6 +59,8 @@ bool Polygon::create(float radius, uint sides, Window* renderTarget)
         points.append(QPointF(c, s));
     }
 
+    m_isClosed = true;
+
     return createInternal(points, renderTarget);
 }
 
@@ -63,4 +74,10 @@ uint Polygon::renderModeWired() const
 uint Polygon::renderModeFilled() const
 {
     return RenderTriangleFan;
+}
+
+
+bool Polygon::isShapeClosed() const
+{
+    return m_isClosed;
 }

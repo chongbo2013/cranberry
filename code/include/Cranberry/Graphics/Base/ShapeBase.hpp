@@ -113,6 +113,14 @@ public:
     bool isSmooth() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the line width in pixels. Guaranteed to be at least 1.
+    ///
+    /// \returns the line width.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    int lineWidth() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Renders this primitive filled or wired.
     ///
     /// \param filled True to fill primitive.
@@ -128,6 +136,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setSmooth(bool smooth);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the line width. Must be at least 1.
+    ///
+    /// \param width New line width.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setLineWidth(int width);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the color that will be applied on this object.
@@ -172,6 +188,7 @@ protected:
 
     virtual uint renderModeWired() const = 0;
     virtual uint renderModeFilled() const = 0;
+    virtual bool isShapeClosed() const = 0;
     bool createInternal(const QVector<QPointF>& points, Window* renderTarget);
 
 
@@ -189,6 +206,12 @@ private:
     void modifyProgram();
     void modifyAttribs();
     void drawElements();
+    void extrudeSegment(
+            const QPointF& p0,
+            const QPointF& p1,
+            const QPointF& p2,
+            const QPointF& p3
+            );
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
@@ -197,6 +220,8 @@ private:
     priv::VarVertices m_vertices;
     QOpenGLBuffer*    m_vertexBuffer;
     QVector<QColor>   m_colorBuffer;
+    QVector<QPointF>  m_points;
+    int               m_lineWidth;
     bool              m_filled;
     bool              m_colorUpdate;
     bool              m_smooth;

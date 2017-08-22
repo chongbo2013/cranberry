@@ -43,6 +43,7 @@ CRANBERRY_USING_NAMESPACE
 
 ShapeBase::ShapeBase()
     : m_vertexBuffer(nullptr)
+    , m_lineWidth(1)
     , m_filled(false)
     , m_colorUpdate(false)
     , m_smooth(true)
@@ -71,6 +72,7 @@ void ShapeBase::destroy()
 
     m_vertexBuffer = nullptr;
     m_colorBuffer.clear();
+    m_vertices.clear();
     m_update = false;
 
     RenderBase::destroy();
@@ -111,6 +113,12 @@ bool ShapeBase::isShapeFilled() const
 }
 
 
+int ShapeBase::lineWidth() const
+{
+    return m_lineWidth;
+}
+
+
 bool ShapeBase::isSmooth() const
 {
     return m_smooth;
@@ -126,6 +134,12 @@ void ShapeBase::setShapeFilled(bool filled)
 void ShapeBase::setSmooth(bool smooth)
 {
     m_smooth = smooth;
+}
+
+
+void ShapeBase::setLineWidth(int width)
+{
+    m_lineWidth = qMax(width, 1);
 }
 
 
@@ -163,19 +177,41 @@ bool ShapeBase::createInternal(const QVector<QPointF>& points, Window* rt)
         return false;
     }
 
-    // Allocates as much data as we need to store all points.
-    m_vertexBuffer->allocate(priv::Vertex::size() * points.size());
-    m_vertexBuffer->release();
-    m_vertices.clear();
-    m_update = true;
-
     auto size = findSize(points);
-    for (const QPointF& p : points)
+    for (int i = 0; i < points.size(); i++)
     {
-        priv::Vertex v;
-        v.xyz(p.x() + 0.375f, p.y() + 0.375f, 0);
-        m_vertices.push_back(v);
+        const QPointF& p = points.at(i);
+        if (m_lineWidth == 1)
+        {
+            priv::Vertex v;
+            v.xyz(p.x() + 0.375f, p.y() + 0.375f, 0);
+            m_vertices.push_back(v);
+        }
+        else
+        {
+            int a = (i - 1 < 0) ? 0 : i - 1;
+            int b = i;
+            int c, d;
+
+            if (isShapeClosed())
+            {
+                c = (i + 1 >= points.size()) ? 0 : i + 1;
+                d = (i + 2 >= points.size()) ? 1 : i + 2;
+            }
+            else
+            {
+                c = (i + 1 >= points.size()) ? points.size() - 1 : i + 1;
+                d = (i + 2 >= points.size()) ? points.size() - 1 : i + 2;
+            }
+
+            extrudeSegment(points.at(a), points.at(b), points.at(c), points.at(d));
+        }
     }
+
+    m_vertexBuffer->allocate(priv::Vertex::size() * m_vertices.size());
+    m_vertexBuffer->release();
+    m_points = points;
+    m_update = true;
 
     setOrigin(findCenter(points));
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.shape"));
@@ -362,6 +398,12 @@ void ShapeBase::drawElements()
               ? renderModeFilled()
               : renderModeWired();
 
+    // We need to draw triangles for line widths bigger than 1.
+    if (m_lineWidth > 1)
+    {
+        mode = GL_TRIANGLES;
+    }
+
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
 }
 
@@ -395,4 +437,46 @@ void ShapeBase::updateProperties()
     m_rootModelItem->childAt(3)->childAt(0)->setValue(m_vertexBuffer->bufferId());
 
     RenderBase::updateProperties();
+}
+
+
+void ShapeBase::extrudeSegment(
+    const QPointF& p0,
+    const QPointF& p1,
+    const QPointF& p2,
+    const QPointF& p3
+    )
+{
+    priv::Vertex v1, v2, v3, v4, v5, v6;
+    QVector2D line = QVector2D(p2 - p1).normalized();
+    QVector2D norm = QVector2D(-line.y(), line.x()).normalized();
+    QVector2D tan1 = (p0 == p1) ? line : (QVector2D(p1 - p0).normalized() + line).normalized();
+    QVector2D tan2 = (p2 == p3) ? line : (QVector2D(p3 - p2).normalized() + line).normalized();
+    QVector2D mit1 = QVector2D(-tan1.y(), tan1.x());
+    QVector2D mit2 = QVector2D(-tan2.y(), tan2.x());
+
+    // Calculate the length of the miter.
+    qreal len1 = m_lineWidth / QVector2D::dotProduct(norm, mit1);
+    qreal len2 = m_lineWidth / QVector2D::dotProduct(norm, mit2);
+
+    // Calculates the new points.
+    QVector2D a1 = QVector2D(p1) - len1 * mit1;
+    QVector2D a2 = QVector2D(p2) - len2 * mit2;
+    QVector2D a3 = QVector2D(p1) + len1 * mit1;
+    QVector2D a4 = QVector2D(p2) + len2 * mit2;
+
+    // Generate the vertices.
+    v1.xyz(a1.x(), a1.y());
+    v2.xyz(a3.x(), a3.y());
+    v3.xyz(a2.x(), a2.y());
+    v4.xyz(a2.x(), a2.y());
+    v5.xyz(a3.x(), a3.y());
+    v6.xyz(a4.x(), a4.y());
+
+    m_vertices.push_back(v1);
+    m_vertices.push_back(v2);
+    m_vertices.push_back(v3);
+    m_vertices.push_back(v4);
+    m_vertices.push_back(v5);
+    m_vertices.push_back(v6);
 }
