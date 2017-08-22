@@ -137,7 +137,7 @@ void Map::setPlayerMoveMode(PlayerMoveMode mode)
 bool Map::movePlayerBy(int x, int y)
 {
     // Reject any movement while there is one running.
-    if (isPlayerMoving())
+    if (isPlayerMoving() || (x == 0 && y == 0))
     {
         return false;
     }
