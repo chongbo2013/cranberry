@@ -29,6 +29,7 @@
 #include <Cranberry/Game/Mapping/MapObject.hpp>
 #include <Cranberry/Game/Mapping/MapTileset.hpp>
 #include <Cranberry/Game/Mapping/Events/TileEvent.hpp>
+#include <Cranberry/Game/Mapping/Events/ObjectEvent.hpp>
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 
 
@@ -219,13 +220,53 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     virtual void render();
 
-    virtual void onAboutStepTile(const TileEvent& event);
-    virtual void onStepTile(const TileEvent& event);
-    virtual void onLeaveTile(const TileEvent& event);
+    ////////////////////////////////////////////////////////////////////////////
+    /// This method is called when the player is about to step on a tile.
+    ///
+    /// \param event Contains useful information about the tile.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void onAboutStepTile(const TileEvent& event) { Q_UNUSED(event); }
 
-    //virtual void onAboutStepObject();
-    //virtual void onStepObject();
-    //virtual void onLeaveObject();
+    ////////////////////////////////////////////////////////////////////////////
+    /// This method is called when the player stepped on the tile.
+    ///
+    /// \param event Contains useful information about the tile.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void onStepTile(const TileEvent& event) { Q_UNUSED(event); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// This method is called when the player left a tile.
+    ///
+    /// \param event Contains useful information about the tile.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void onLeaveTile(const TileEvent& event) { Q_UNUSED(event); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// This method is called when the player is about to step on an object.
+    ///
+    /// \param event Contains useful information about the object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void onAboutStepObject(const ObjectEvent& event) { Q_UNUSED(event); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// This method is called when the player stepped on an object.
+    ///
+    /// \param event Contains useful information about the object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void onStepObject(const ObjectEvent& event) { Q_UNUSED(event); }
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// This method is called when the player left an object.
+    ///
+    /// \param event Contains useful information about the object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void onLeaveObject(const ObjectEvent& event) { Q_UNUSED(event); }
 
 
 protected:
@@ -267,6 +308,7 @@ private:
     QVector<MapLayer*>      m_layers;
     QVector<MapTileset*>    m_tilesets;
     QVector<MapObject>      m_objects;
+    QVector<MapObject*>     m_aboutStepObjs;
     QMap<QString, QVariant> m_properties;
 };
 

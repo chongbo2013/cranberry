@@ -167,6 +167,19 @@ bool Map::movePlayerBy(int x, int y)
             }
         }
 
+        for (MapObject& o : m_objects)
+        {
+            QRect r1(o.x(), o.y(), o.width(), o.height());
+            QRect r2(m_playerX + x, m_playerY + y, m_tileWidth, m_tileHeight);
+
+            if (r1.intersects(r2))
+            {
+                m_aboutStepObjs.append(&o);
+
+                onAboutStepObject(ObjectEvent(&o));
+            }
+        }
+
         m_playerMoveDir = MoveNone;
 
         // Triggers a movement.
@@ -211,10 +224,29 @@ bool Map::movePlayerBy(int x, int y)
                         return false;
                     }
 
-                    onStepTile(TileEvent(newT, layer, m_tilesets[newT.tilesetId()]));
+                    onStepTile(event);
                 }
 
                 onLeaveTile(TileEvent(oldT, layer, m_tilesets[oldT.tilesetId()]));
+            }
+
+            for (MapObject& o : m_objects)
+            {
+                QRect r1(o.x(), o.y(), o.width(), o.height());
+                QRect r2(m_playerX + x, m_playerY + y, m_tileWidth, m_tileHeight);
+
+                if (r1.intersects(r2))
+                {
+                    ObjectEvent event(&o);
+                    onAboutStepObject(event);
+
+                    if (!event.isAccepted())
+                    {
+                        return false;
+                    }
+
+                    onStepObject(event);
+                }
             }
         }
 
@@ -394,30 +426,6 @@ void Map::render()
 }
 
 
-void Map::onAboutStepTile(const TileEvent &event)
-{
-    if (event.layer().layerId() == 0)
-        printf("On about to step on tile (layer 0): %d\n", event.tile().tileId());
-}
-
-
-void Map::onStepTile(const TileEvent &event)
-{
-    if (event.layer().layerId() == 0)
-    {
-        printf("On stepping tile (layer 0): %d\n", event.tile().tileId());
-        printf("Property \"type\": \"%s\"\n", event.properties().value("prop").toString().toStdString().c_str());
-    }
-}
-
-
-void Map::onLeaveTile(const TileEvent &event)
-{
-    if (event.layer().layerId() == 0)
-        printf("On leaving tile (layer 0): %d\n", event.tile().tileId());
-}
-
-
 const QVector<MapTileset*>& Map::tilesets() const
 {
     return m_tilesets;
@@ -507,6 +515,13 @@ void Map::updateTileMovement(double deltaTime)
                     onStepTile(TileEvent(tile, layer, m_tilesets[tile.tilesetId()]));
                 }
             }
+
+            for (MapObject* o : m_aboutStepObjs)
+            {
+                onStepObject(ObjectEvent(o));
+            }
+
+            m_aboutStepObjs.clear();
         }
     }
 }
