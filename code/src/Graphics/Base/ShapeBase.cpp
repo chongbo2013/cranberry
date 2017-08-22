@@ -45,6 +45,7 @@ ShapeBase::ShapeBase()
     : m_vertexBuffer(nullptr)
     , m_filled(false)
     , m_colorUpdate(false)
+    , m_smooth(true)
     , m_update(false)
 {
 }
@@ -110,9 +111,21 @@ bool ShapeBase::isShapeFilled() const
 }
 
 
+bool ShapeBase::isSmooth() const
+{
+    return m_smooth;
+}
+
+
 void ShapeBase::setShapeFilled(bool filled)
 {
     m_filled = filled;
+}
+
+
+void ShapeBase::setSmooth(bool smooth)
+{
+    m_smooth = smooth;
 }
 
 
@@ -160,7 +173,7 @@ bool ShapeBase::createInternal(const QVector<QPointF>& points, Window* rt)
     for (const QPointF& p : points)
     {
         priv::Vertex v;
-        v.xyz(p.x(), p.y(), 0);
+        v.xyz(p.x() + 0.375f, p.y() + 0.375f, 0);
         m_vertices.push_back(v);
     }
 
@@ -250,6 +263,12 @@ void ShapeBase::bindObjects()
 {
     glDebug(m_vertexBuffer->bind());
     glDebug(shaderProgram()->program()->bind());
+
+    if (!m_smooth)
+    {
+        glDebug(gl->glDisable(GL_MULTISAMPLE));
+        glDebug(gl->glDisable(GL_LINE_SMOOTH));
+    }
 }
 
 
@@ -257,6 +276,12 @@ void ShapeBase::releaseObjects()
 {
     glDebug(m_vertexBuffer->release());
     glDebug(shaderProgram()->program()->release());
+
+    if (!m_smooth)
+    {
+        glDebug(gl->glEnable(GL_MULTISAMPLE));
+        glDebug(gl->glEnable(GL_LINE_SMOOTH));
+    }
 }
 
 
@@ -272,8 +297,14 @@ void ShapeBase::writeVertices()
             // Colors every vertex.
             for (int i = 0; i < size; i++)
             {
-                if (singleColor) m_vertices[i].rgba(m_colorBuffer.at(0));
-                else m_vertices[i].rgba(m_colorBuffer.at(i));
+                if (singleColor)
+                {
+                    m_vertices[i].rgba(m_colorBuffer.at(0));
+                }
+                else
+                {
+                    m_vertices[i].rgba(m_colorBuffer.at(i));
+                }
             }
         }
 
