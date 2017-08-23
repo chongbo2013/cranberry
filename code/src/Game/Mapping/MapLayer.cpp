@@ -94,7 +94,7 @@ int MapLayer::offsetY() const
 }
 
 
-LayerEncoding MapLayer::dataEncoding() const
+EncodingType MapLayer::dataEncoding() const
 {
     return m_encoding;
 }

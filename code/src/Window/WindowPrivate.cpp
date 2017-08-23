@@ -337,7 +337,7 @@ void priv::WindowPrivate::dispatchEvents(QEvent* event)
         {
             if (canReceiveFocus)
             {
-                QRectF hitbox = g->rect();
+                QRectF hitbox = g->visibleBounds();
                 hitbox.moveTo(hitbox.topLeft() + g->topLeft());
 
                 // Is current manager in range of the mouse cursor?

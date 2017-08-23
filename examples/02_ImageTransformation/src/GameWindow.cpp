@@ -72,10 +72,10 @@ void GameWindow::onInit()
     m_linkText->setY(WINDOW_HEIGHT - 32 - m_linkText->height());
 
     // transformations
-    QRectF rc = m_texture->rect();
-    m_texture->startMovingTo(WINDOW_WIDTH - rc.width(), rc.y());
+    QRectF rc = m_texture->visibleBounds();
+    m_texture->moveTo(WINDOW_WIDTH - rc.width(), rc.y());
     m_texture->setRotateMode(RotateForever);
-    m_texture->startRotating();
+    m_texture->beginRotate();
     m_texture->startScalingTo(0.25, 0.25);
 
     // signals & slots
@@ -135,14 +135,14 @@ void GameWindow::onRender()
 
 void GameWindow::stoppedMoving()
 {
-    auto rc = m_texture->rect();
+    auto rc = m_texture->visibleBounds();
     if (m_texture->moveDirection() & MoveEast)
     {
-        m_texture->startMovingTo(0, rc.y());
+        m_texture->moveTo(0, rc.y());
     }
     else
     {
-        m_texture->startMovingTo(WINDOW_WIDTH - rc.width(), rc.y());
+        m_texture->moveTo(WINDOW_WIDTH - rc.width(), rc.y());
     }
 }
 

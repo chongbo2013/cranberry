@@ -116,7 +116,7 @@ public:
     /// \returns the encoding type.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    LayerEncoding dataEncoding() const;
+    EncodingType dataEncoding() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the data compression mode for this layer.
@@ -169,7 +169,7 @@ private:
     int              m_layerId;
     int              m_offsetX;
     int              m_offsetY;
-    LayerEncoding    m_encoding;
+    EncodingType    m_encoding;
     CompressionMode  m_compression;
     QVector<MapTile> m_tiles;
 };

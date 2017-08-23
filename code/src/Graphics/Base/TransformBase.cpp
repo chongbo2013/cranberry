@@ -314,16 +314,6 @@ QPointF TransformBase::origin() const
 }
 
 
-std::tuple<float, float, float> TransformBase::rotateAxes() const
-{
-    return std::make_tuple(
-                m_angleX != 0 ? 1 : 0,
-                m_angleY != 0 ? 1 : 0,
-                m_angleZ != 0 ? 1 : 0
-                );
-}
-
-
 const Hitbox& TransformBase::hitbox()
 {
     QPainterPath path;
@@ -345,7 +335,7 @@ const Hitbox& TransformBase::hitbox()
 }
 
 
-QRectF TransformBase::rect() const
+QRectF TransformBase::visibleBounds() const
 {
     QPainterPath path;
     QTransform transform;
@@ -469,7 +459,7 @@ void TransformBase::setOrigin(const QPointF& origin)
 }
 
 
-void TransformBase::startMovingBy(float advanceX, float advanceY)
+void TransformBase::moveBy(float advanceX, float advanceY)
 {
     m_isMovingX = false;
     m_isMovingY = false;
@@ -508,14 +498,14 @@ void TransformBase::startMovingBy(float advanceX, float advanceY)
 }
 
 
-void TransformBase::startMovingTo(float targetX, float targetY)
+void TransformBase::moveTo(float targetX, float targetY)
 {
     m_isMovingX = false;
     m_isMovingY = false;
     m_moveDir = MoveNone;
 
     // Gathers amount of pixels to move in real coordinates.
-    auto b = rect();
+    auto b = visibleBounds();
     float toMoveX = targetX - b.x();
     float toMoveY = targetY - b.y();
 
@@ -547,7 +537,7 @@ void TransformBase::startMovingTo(float targetX, float targetY)
 }
 
 
-void TransformBase::startRotating(bool cwX, bool cwY, bool cwZ)
+void TransformBase::beginRotate(bool cwX, bool cwY, bool cwZ)
 {
     if (m_rotateMode != RotateForever) return;
 
@@ -561,13 +551,13 @@ void TransformBase::startRotating(bool cwX, bool cwY, bool cwZ)
 }
 
 
-void TransformBase::startRotatingBy(float advance)
+void TransformBase::rotateBy(float advance)
 {
-    startRotatingBy(0, 0, advance);
+    rotateBy(0, 0, advance);
 }
 
 
-void TransformBase::startRotatingBy(float advanceX, float advanceY, float advanceZ)
+void TransformBase::rotateBy(float advanceX, float advanceY, float advanceZ)
 {
     m_isRotatingX = false;
     m_isRotatingY = false;
@@ -627,13 +617,13 @@ void TransformBase::startRotatingBy(float advanceX, float advanceY, float advanc
 }
 
 
-void TransformBase::startRotatingTo(float target)
+void TransformBase::rotateTo(float target)
 {
-    startRotatingTo(0, 0, target);
+    rotateTo(0, 0, target);
 }
 
 
-void TransformBase::startRotatingTo(float targetX, float targetY, float targetZ)
+void TransformBase::rotateTo(float targetX, float targetY, float targetZ)
 {
     m_targetRotateX = targetX;
     m_targetRotateY = targetY;
@@ -653,7 +643,7 @@ void TransformBase::startRotatingTo(float targetX, float targetY, float targetZ)
 }
 
 
-void TransformBase::startScalingTo(float scaleX, float scaleY)
+void TransformBase::scaleTo(float scaleX, float scaleY)
 {
     // Do not accept negative values.
     m_targetScaleX = qAbs(scaleX);
@@ -670,7 +660,7 @@ void TransformBase::startScalingTo(float scaleX, float scaleY)
 }
 
 
-void TransformBase::startFadingTo(float target)
+void TransformBase::fadeTo(float target)
 {
     // Do not accept negative values.
     target = (float)(uchar) qAbs(target);
@@ -684,7 +674,7 @@ void TransformBase::startFadingTo(float target)
 }
 
 
-void TransformBase::stopMoving()
+void TransformBase::endMove()
 {
     m_isMovingX = false;
     m_isMovingY = false;
@@ -693,7 +683,7 @@ void TransformBase::stopMoving()
 }
 
 
-void TransformBase::stopRotating()
+void TransformBase::endRotate()
 {
     m_isRotatingX = false;
     m_isRotatingY = false;
@@ -703,7 +693,7 @@ void TransformBase::stopRotating()
 }
 
 
-void TransformBase::stopScaling()
+void TransformBase::endScale()
 {
     m_isScalingX = false;
     m_isScalingY = false;
@@ -712,7 +702,7 @@ void TransformBase::stopScaling()
 }
 
 
-void TransformBase::stopFading()
+void TransformBase::endFade()
 {
     m_isFading = false;
 
@@ -842,7 +832,7 @@ void TransformBase::updateRotate(double delta)
             if (m_rotateMode == RotateOnce && m_angleX >= m_targetRotateX)
             {
                 m_angleX = m_targetRotateX;
-                stopRotating();
+                endRotate();
             }
         }
         else
@@ -851,7 +841,7 @@ void TransformBase::updateRotate(double delta)
             if (m_rotateMode == RotateOnce && m_angleX <= m_targetRotateX)
             {
                 m_angleX = m_targetRotateX;
-                stopRotating();
+                endRotate();
             }
         }
 
@@ -868,7 +858,7 @@ void TransformBase::updateRotate(double delta)
             if (m_rotateMode == RotateOnce && m_angleY >= m_targetRotateY)
             {
                 m_angleY = m_targetRotateY;
-                stopRotating();
+                endRotate();
             }
         }
         else
@@ -877,7 +867,7 @@ void TransformBase::updateRotate(double delta)
             if (m_rotateMode == RotateOnce && m_angleY <= m_targetRotateY)
             {
                 m_angleY = m_targetRotateY;
-                stopRotating();
+                endRotate();
             }
         }
 
@@ -895,7 +885,7 @@ void TransformBase::updateRotate(double delta)
             if (m_rotateMode == RotateOnce && m_angleZ >= m_targetRotateZ)
             {
                 m_angleZ = m_targetRotateZ;
-                stopRotating();
+                endRotate();
             }
         }
         else
@@ -904,7 +894,7 @@ void TransformBase::updateRotate(double delta)
             if (m_rotateMode == RotateOnce && m_angleZ <= m_targetRotateZ)
             {
                 m_angleZ = m_targetRotateZ;
-                stopRotating();
+                endRotate();
             }
         }
 
@@ -978,7 +968,7 @@ void TransformBase::updateFade(double delta)
             if (m_opacity >= m_targetOpacity)
             {
                 m_opacity = m_targetOpacity;
-                stopFading();
+                endFade();
             }
         }
         else
@@ -987,7 +977,7 @@ void TransformBase::updateFade(double delta)
             if (m_opacity <= m_targetOpacity)
             {
                 m_opacity = m_targetOpacity;
-                stopFading();
+                endFade();
             }
         }
     }
@@ -996,13 +986,13 @@ void TransformBase::updateFade(double delta)
 
 void TransformBase::checkMove()
 {
-    if (!m_isMovingX && !m_isMovingY) stopMoving();
+    if (!m_isMovingX && !m_isMovingY) endMove();
 }
 
 
 void TransformBase::checkScale()
 {
-    if (!m_isScalingX && !m_isScalingY) stopScaling();
+    if (!m_isScalingX && !m_isScalingY) endScale();
 }
 
 
@@ -1014,7 +1004,7 @@ TransformBaseEmitter* TransformBase::signals()
 
 void TransformBase::createProperties(TreeModel* model)
 {
-    QRectF bounds = rect();
+    QRectF bounds = visibleBounds();
 
     TreeModelItem* tmiRect = new TreeModelItem("Bounds");
     TreeModelItem* tmiRota = new TreeModelItem("Rotation");
@@ -1056,7 +1046,7 @@ void TransformBase::createProperties(TreeModel* model)
 
 void TransformBase::updateProperties()
 {
-    QRectF bounds = rect();
+    QRectF bounds = visibleBounds();
 
     TreeModelItem* tmiRect = m_rootModelItem->childAt(0);
     TreeModelItem* tmiRota = m_rootModelItem->childAt(1);

@@ -60,7 +60,7 @@ void GameWindow::onInit()
     m_hexagon->setColor(QColor(183, 18, 95));
     m_hexagon->setShapeFilled(true);
     m_hexagon->setRotateMode(RotateForever);
-    m_hexagon->startRotating();
+    m_hexagon->beginRotate();
 
     // m_gui
     m_gui = new GuiManager;

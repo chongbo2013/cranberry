@@ -91,7 +91,7 @@ enum PlayerMoveMode
 /// \enum LayerEncoding
 ///
 ////////////////////////////////////////////////////////////////////////////////
-enum LayerEncoding
+enum EncodingType
 {
     LayerEncodingNone,
     LayerEncodingBase64,
@@ -144,7 +144,7 @@ Q_DECLARE_FLAGS(FlipFlags, FlipFlag)
 ////////////////////////////////////////////////////////////////////////////////
 MapOrientation getOrientationFromString(const QString& type);
 PropertyType getPropertyTypeFromString(const QString& type);
-LayerEncoding getEncodingFromString(const QString& type);
+EncodingType getEncodingFromString(const QString& type);
 CompressionMode getCompressionFromString(const QString& type);
 QVariant getPropertyValue(PropertyType type, const QString& value);
 QColor getColorFromString(QString str);

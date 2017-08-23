@@ -64,7 +64,7 @@ cran::PropertyType cran::getPropertyTypeFromString(const QString& type)
 }
 
 
-cran::LayerEncoding cran::getEncodingFromString(const QString& type)
+cran::EncodingType cran::getEncodingFromString(const QString& type)
 {
     if (type == "base64") return LayerEncodingBase64;
     if (type == "csv")    return LayerEncodingCsv;

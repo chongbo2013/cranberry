@@ -142,10 +142,10 @@ void GameWindow::onInit()
     m_polygon->setOrigin(WINDOW_POS);
 
     // transformations
-    m_ellipse->startRotating();
-    m_hexagon->startScalingTo(0.25, 0.25);
-    m_decagon->startMovingBy(200, 0);
-    m_polygon->startRotating(false, false, false);
+    m_ellipse->beginRotate();
+    m_hexagon->scaleTo(0.25, 0.25);
+    m_decagon->moveBy(200, 0);
+    m_polygon->beginRotate(false, false, false);
 
     // signals & slots
     QObject::connect(
@@ -224,11 +224,11 @@ void GameWindow::stoppedScaling()
 {
     if (m_hexagon->scaleDirectionX() == ScaleDown)
     {
-        m_hexagon->startScalingTo(1.0, 1.0);
+        m_hexagon->scaleTo(1.0, 1.0);
     }
     else
     {
-        m_hexagon->startScalingTo(0.25, 0.25);
+        m_hexagon->scaleTo(0.25, 0.25);
     }
 }
 
@@ -237,10 +237,10 @@ void GameWindow::stoppedMoving()
 {
     if (m_decagon->moveDirection() & MoveEast)
     {
-        m_decagon->startMovingBy(-200, 0);
+        m_decagon->moveBy(-200, 0);
     }
     else
     {
-        m_decagon->startMovingBy(200, 0);
+        m_decagon->moveBy(200, 0);
     }
 }

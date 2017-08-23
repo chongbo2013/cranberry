@@ -236,7 +236,7 @@ void Sprite::runMovement(const QString& n)
     }
     else if (m_isRunning && m_currentMove)
     {
-        startMovingBy(m_currentMove->horizontalAdvance(), m_currentMove->verticalAdvance());
+        moveBy(m_currentMove->horizontalAdvance(), m_currentMove->verticalAdvance());
         resumeMovement();
         return;
     }
@@ -257,7 +257,7 @@ void Sprite::runMovement(const QString& n)
         float my = m->verticalAdvance()   / m->totalDuration();
 
         setMoveSpeed(mx, my);
-        startMovingBy(m->horizontalAdvance(), m->verticalAdvance());
+        moveBy(m->horizontalAdvance(), m->verticalAdvance());
 
         m_isBlocking = true;
     }
@@ -309,7 +309,7 @@ void Sprite::stopMovement()
     }
 
     m_currentMove->animation()->stopAnimation();
-    m_currentMove->animation()->stopMoving();
+    m_currentMove->animation()->endMove();
     m_currentMove->animation()->startIdle();
 
     m_isBlocking = false;
