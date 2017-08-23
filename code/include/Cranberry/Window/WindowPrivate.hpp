@@ -68,16 +68,16 @@ public:
     const WindowSettings& settings() const;
     const GameTime& currentTime() const;
     QOpenGLFunctions* functions() const;
+    QPixmap takeScreenshot();
     uint vao() const;
-    void restoreOpenGLSettings();
     void setSettings(const WindowSettings& settings);
+    void restoreOpenGLSettings();
     void showDebugOverlay(RenderBase* obj);
     void hideDebugOverlay();
-    QPixmap takeScreenshot();
     static WindowPrivate* activeWindow();
 
 
-protected:
+protected overridden:
 
     void initializeGL() override;
     void paintGL() override;
@@ -93,7 +93,7 @@ protected:
     void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
     bool event(QEvent* event) override;
-    bool eventFilter(QObject* watched, QEvent* event);
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 
 private:

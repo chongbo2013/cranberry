@@ -187,6 +187,8 @@ public:
     void movePlayerTo(int x, int y);
 
 
+public overridden:
+
     ////////////////////////////////////////////////////////////////////////////
     /// Loads a TMX map from \p mapPath and renders it on \p renderTarget.
     ///
@@ -217,6 +219,9 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     virtual void render();
+
+
+public overridable:
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player is about to step on a tile.

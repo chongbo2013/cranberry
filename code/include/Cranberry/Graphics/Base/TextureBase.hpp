@@ -64,57 +64,6 @@ public:
     QOpenGLTexture* texture() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Reimplements IRenderable::isNull(). Adds the condition that the
-    /// underlying texture and vertex buffer are valid.
-    ///
-    /// \returns true if the object is invalid.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual bool isNull() const override;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// In addition to creating IRenderable, creates the texture and the vertex
-    /// buffer.
-    ///
-    /// \param imgPath Holds the path to the image to load.
-    /// \param renderTarget Target to render texture on.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual bool create(const QString& imgPath, Window* renderTarget);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// In addition to creating IRenderable, stores the texture and creates
-    /// the vertex  buffer. Takes ownership of the texture and deletes it as
-    /// soon as this instance is destroyed, therefore allocate it on the heap.
-    ///
-    /// \param img The heap-allocated QOpenGLTexture to use.
-    /// \param renderTarget Target to render texture on.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual bool create(QOpenGLTexture* img, Window* renderTarget);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Destroys all OpenGL resources allocated for this object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual void destroy() override;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Updates the transformations of this object.
-    ///
-    /// \param time Contains the delta time.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual void update(const GameTime& time) override;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Renders this object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual void render() override;
-
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Specifies the region of the object to be rendered.
     ///
     /// \param rc Region to render.
@@ -176,6 +125,58 @@ public:
     void setEffect(Effect effect);
 
 
+public overridden:
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Reimplements IRenderable::isNull(). Adds the condition that the
+    /// underlying texture and vertex buffer are valid.
+    ///
+    /// \returns true if the object is invalid.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual bool isNull() const override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// In addition to creating IRenderable, creates the texture and the vertex
+    /// buffer.
+    ///
+    /// \param imgPath Holds the path to the image to load.
+    /// \param renderTarget Target to render texture on.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual bool create(const QString& imgPath, Window* renderTarget);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// In addition to creating IRenderable, stores the texture and creates
+    /// the vertex  buffer. Takes ownership of the texture and deletes it as
+    /// soon as this instance is destroyed, therefore allocate it on the heap.
+    ///
+    /// \param img The heap-allocated QOpenGLTexture to use.
+    /// \param renderTarget Target to render texture on.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual bool create(QOpenGLTexture* img, Window* renderTarget);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Destroys all OpenGL resources allocated for this object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void destroy() override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the transformations of this object.
+    ///
+    /// \param time Contains the delta time.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void update(const GameTime& time) override;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Renders this object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void render() override;
+
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the property items and appends them to the model. Any items
     /// appended to the model are owned by it - no custom deletion required.
@@ -205,12 +206,13 @@ public:
     static int maxSize();
 
 
-protected:
+protected overridable:
+
+    virtual bool initializeData();
 
     priv::QuadVertices& vertices();
     QOpenGLBuffer* buffer() const;
     void requestUpdate();
-    virtual bool initializeData();
 
 
 private:

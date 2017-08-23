@@ -208,7 +208,7 @@ public:
     static Window* activeWindow();
 
 
-protected:
+protected overridable:
 
     virtual void onInit() { }
     virtual void onExit() { }

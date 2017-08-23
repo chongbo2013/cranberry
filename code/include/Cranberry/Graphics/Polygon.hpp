@@ -71,7 +71,7 @@ public:
     bool create(float radius, uint sides, Window* renderTarget = nullptr);
 
 
-protected:
+protected overridden:
 
     uint renderModeWired() const override;
     uint renderModeFilled() const override;

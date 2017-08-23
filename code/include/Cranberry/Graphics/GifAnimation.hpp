@@ -48,6 +48,9 @@ public:
     CRANBERRY_DISABLE_COPY(GifAnimation)
     CRANBERRY_DISABLE_MOVE(GifAnimation)
 
+
+public overridden:
+
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the animation by loading all data from a GIF file.
     ///

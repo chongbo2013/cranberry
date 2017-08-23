@@ -70,7 +70,7 @@ public:
             );
 
 
-protected:
+protected overridden:
 
     uint renderModeWired() const override;
     uint renderModeFilled() const override;
