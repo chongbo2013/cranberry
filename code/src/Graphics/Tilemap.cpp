@@ -77,10 +77,10 @@ bool Tilemap::create(
     )
 {
     // Specifies all members.
-    m_tileWidth  = static_cast<int>(tileSize.width());
-    m_tileHeight = static_cast<int>(tileSize.height());
-    m_mapWidth   = static_cast<int>(mapSize.width());
-    m_mapHeight  = static_cast<int>(mapSize.height());
+    m_tileWidth  = tileSize.width();
+    m_tileHeight = tileSize.height();
+    m_mapWidth   = mapSize.width();
+    m_mapHeight  = mapSize.height();
     m_view = view;
 
     if (!createInternal(rt)) return false;
@@ -115,10 +115,10 @@ bool Tilemap::create(
     }
 
     // Specifies all members.
-    m_tileWidth  = static_cast<int>(tileSize.width());
-    m_tileHeight = static_cast<int>(tileSize.height());
-    m_mapWidth   = static_cast<int>(mapSize.width());
-    m_mapHeight  = static_cast<int>(mapSize.height());
+    m_tileWidth  = tileSize.width();
+    m_tileHeight = tileSize.height();
+    m_mapWidth   = mapSize.width();
+    m_mapHeight  = mapSize.height();
     m_ownTextures = false;
     m_textures = textures;
     m_view = view;
@@ -367,7 +367,19 @@ bool Tilemap::appendTile(int tileIndex, int tileset)
         m_currentY++;
     }
 
-    if (m_currentY >= m_mapHeight)
+    return insertTile(m_currentX++, m_currentY, tileIndex, tileset);
+}
+
+
+bool Tilemap::insertTile(int index, int tileIndex, int tileset)
+{
+    return insertTile(index % m_mapWidth, index / m_mapWidth, tileIndex, tileset);
+}
+
+
+bool Tilemap::insertTile(int x, int y, int tileIndex, int tileset)
+{
+    if (x < 0 || x >= m_mapWidth || y < 0 || y >= m_mapHeight)
     {
         // Out of map bounds.
         return false;
@@ -382,8 +394,8 @@ bool Tilemap::appendTile(int tileIndex, int tileset)
     float uvY = ((tileIndex / swid) * m_tileHeight) / (qreal) tex->height();
     float uvW = uvX + ((qreal) m_tileWidth  / tex->width());
     float uvH = uvY + ((qreal) m_tileHeight / tex->height());
-    float xyX = m_currentX * m_tileWidth;
-    float xyY = m_currentY * m_tileHeight;
+    float xyX = x * m_tileWidth;
+    float xyY = y * m_tileHeight;
     float xyW = xyX + m_tileWidth;
     float xyH = xyY + m_tileHeight;
 
@@ -395,19 +407,77 @@ bool Tilemap::appendTile(int tileIndex, int tileset)
     t22.xy(xyW, xyY); t22.uv(uvW, uvY);
     t23.xy(xyW, xyH); t23.uv(uvW, uvH);
 
-    m_vertices.push_back(t11);
-    m_vertices.push_back(t12);
-    m_vertices.push_back(t13);
-    m_vertices.push_back(t21);
-    m_vertices.push_back(t22);
-    m_vertices.push_back(t23);
+    auto posV = m_vertices.begin() + (6 * (y * m_mapWidth + x));
+    auto posI = m_ids.begin()      + (6 * (y * m_mapWidth + x));
+
+    posV = m_vertices.insert(posV, t11);
+    posV = m_vertices.insert(posV, t12);
+    posV = m_vertices.insert(posV, t13);
+    posV = m_vertices.insert(posV, t21);
+    posV = m_vertices.insert(posV, t22);
+    posV = m_vertices.insert(posV, t23);
 
     for (int i = 0; i < 6; i++)
     {
-        m_ids.push_back(tileset);
+        posI = m_ids.insert(posI, tileset);
     }
 
-    m_currentX++;
+    m_update = true;
+
+    return true;
+}
+
+
+bool Tilemap::replaceTile(int index, int tileIndex, int tileset)
+{
+    return replaceTile(index % m_mapWidth, index / m_mapWidth, tileIndex, tileset);
+}
+
+
+bool Tilemap::replaceTile(int x, int y, int tileIndex, int tileset)
+{
+    if (x < 0 || x >= m_mapWidth || y < 0 || y >= m_mapHeight)
+    {
+        // Out of map bounds.
+        return false;
+    }
+
+    priv::MapVertex t11, t12, t13, t21, t22, t23;
+    QOpenGLTexture* const tex = m_textures.at(tileset);
+
+    // Calculates the tile position from the tile index.
+    int swid = tex->width()  / m_tileWidth;
+    float uvX = ((tileIndex % swid) * m_tileWidth)  / (qreal) tex->width();
+    float uvY = ((tileIndex / swid) * m_tileHeight) / (qreal) tex->height();
+    float uvW = uvX + ((qreal) m_tileWidth  / tex->width());
+    float uvH = uvY + ((qreal) m_tileHeight / tex->height());
+    float xyX = x * m_tileWidth;
+    float xyY = y * m_tileHeight;
+    float xyW = xyX + m_tileWidth;
+    float xyH = xyY + m_tileHeight;
+
+    // Modifies the vertices.
+    t11.xy(xyX, xyY); t11.uv(uvX, uvY);
+    t12.xy(xyW, xyY); t12.uv(uvW, uvY);
+    t13.xy(xyX, xyH); t13.uv(uvX, uvH);
+    t21.xy(xyX, xyH); t21.uv(uvX, uvH);
+    t22.xy(xyW, xyY); t22.uv(uvW, uvY);
+    t23.xy(xyW, xyH); t23.uv(uvW, uvH);
+
+    int pos = (6 * (y * m_mapWidth + x));
+
+    m_vertices[pos + 0] = t11;
+    m_vertices[pos + 1] = t12;
+    m_vertices[pos + 2] = t13;
+    m_vertices[pos + 3] = t21;
+    m_vertices[pos + 4] = t22;
+    m_vertices[pos + 5] = t23;
+
+    for (int i = 0; i < 6; i++)
+    {
+        m_ids[pos + i] = tileset;
+    }
+
     m_update = true;
 
     return true;

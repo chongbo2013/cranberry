@@ -118,6 +118,52 @@ public:
     bool appendTile(int tileIndex, int tileset = 0);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Inserts one tile at \p index.
+    ///
+    /// \param index Map index to insert to. Will be mapped to X/Y.
+    /// \param tileIndex The index of the tile within the tileset.
+    /// \param tileset The id of the tileset to pick tile from (defaults to 0).
+    /// \returns false if out of bounds.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool insertTile(int index, int tileIndex, int tileset = 0);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Inserts one tile at \p x, \p y.
+    ///
+    /// \param x X-location to insert tile to, in tile units.
+    /// \param y Y-location to insert tile to, in tile units.
+    /// \param tileIndex The index of the tile within the tileset.
+    /// \param tileset The id of the tileset to pick tile from (defaults to 0).
+    /// \returns false if out of bounds.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool insertTile(int x, int y, int tileIndex, int tileset = 0);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Replaces one tile at \p index.
+    ///
+    /// \param index Map index to replace. Will be mapped to X/Y.
+    /// \param tileIndex The index of the new tile within the tileset.
+    /// \param tileset The id of the tileset to pick tile from (defaults to 0).
+    /// \returns false if out of bounds.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool replaceTile(int index, int tileIndex, int tileset = 0);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Replaces one tile at \p x, \p y.
+    ///
+    /// \param x X-location to replace tile, in tile units.
+    /// \param y Y-location to replace tile, in tile units.
+    /// \param tileIndex The index of the new tile within the tileset.
+    /// \param tileset The id of the tileset to pick tile from (defaults to 0).
+    /// \returns false if out of bounds.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool replaceTile(int x, int y, int tileIndex, int tileset = 0);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Appends a transparent tile of size (tilewidth, tileheight).
     ///
     ////////////////////////////////////////////////////////////////////////////
