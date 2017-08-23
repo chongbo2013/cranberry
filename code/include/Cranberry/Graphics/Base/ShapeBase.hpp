@@ -51,12 +51,10 @@ class CRANBERRY_GRAPHICS_EXPORT ShapeBase : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(ShapeBase)
+    CRANBERRY_DECLARE_DTOR(ShapeBase)
     CRANBERRY_DISABLE_COPY(ShapeBase)
     CRANBERRY_DISABLE_MOVE(ShapeBase)
-
-    ShapeBase();
-    virtual ~ShapeBase();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Reimplements IRenderable::isNull(). Adds the condition that the

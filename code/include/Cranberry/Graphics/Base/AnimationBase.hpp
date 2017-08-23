@@ -51,12 +51,10 @@ class CRANBERRY_GRAPHICS_EXPORT AnimationBase : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(AnimationBase)
+    CRANBERRY_DECLARE_DTOR(AnimationBase)
     CRANBERRY_DISABLE_COPY(AnimationBase)
     CRANBERRY_DISABLE_MOVE(AnimationBase)
-
-    AnimationBase();
-   ~AnimationBase();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this animation is null.

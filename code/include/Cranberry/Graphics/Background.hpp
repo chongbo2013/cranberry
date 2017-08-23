@@ -48,11 +48,9 @@ class CRANBERRY_GRAPHICS_EXPORT Background : public TextureBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(Background)
     CRANBERRY_DISABLE_COPY(Background)
     CRANBERRY_DISABLE_MOVE(Background)
-
-    Background();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this background is scrolling.

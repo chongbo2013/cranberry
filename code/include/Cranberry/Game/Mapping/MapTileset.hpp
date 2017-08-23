@@ -52,12 +52,10 @@ class CRANBERRY_GAME_EXPORT MapTileset
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(MapTileset)
+    CRANBERRY_DECLARE_DTOR(MapTileset)
     CRANBERRY_DEFAULT_COPY(MapTileset)
     CRANBERRY_DEFAULT_MOVE(MapTileset)
-
-    MapTileset();
-   ~MapTileset();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the first global ID of this tileset.

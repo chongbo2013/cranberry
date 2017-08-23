@@ -45,12 +45,10 @@ class TreeModelPrivate : public QAbstractItemModel
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(TreeModelPrivate)
+    CRANBERRY_DECLARE_DTOR(TreeModelPrivate)
+    CRANBERRY_DEFAULT_COPY(TreeModelPrivate)
     CRANBERRY_DISABLE_MOVE(TreeModelPrivate)
-
-    TreeModelPrivate();
-    TreeModelPrivate(const TreeModelPrivate& other);
-   ~TreeModelPrivate();
-
 
     void appendChild(TreeModelItem* item);
     void finalizeInsertion();

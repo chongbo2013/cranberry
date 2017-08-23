@@ -53,17 +53,10 @@ public:
     typedef std::discrete_distribution<> Distribution;
     typedef std::mt19937 MersenneTwister;
 
-
+    CRANBERRY_DECLARE_CTOR(Random)
     CRANBERRY_DEFAULT_DTOR(Random)
     CRANBERRY_DEFAULT_COPY(Random)
     CRANBERRY_DEFAULT_MOVE(Random)
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Initializes the engine with an initial seed (current time).
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    Random();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies a new seed for the random. By default, this is the time at

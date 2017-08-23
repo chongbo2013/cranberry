@@ -46,12 +46,10 @@ class CRANBERRY_GRAPHICS_EXPORT Hitbox
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(Hitbox)
+    CRANBERRY_DECLARE_DTOR(Hitbox)
     CRANBERRY_DISABLE_COPY(Hitbox)
     CRANBERRY_DISABLE_MOVE(Hitbox)
-
-    Hitbox();
-   ~Hitbox();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the QPainterPath for this hitbox. This method is only used

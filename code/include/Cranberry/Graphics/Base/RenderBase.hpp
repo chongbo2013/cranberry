@@ -50,12 +50,10 @@ class CRANBERRY_GRAPHICS_EXPORT RenderBase : public TransformBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(RenderBase)
+    CRANBERRY_DECLARE_DTOR(RenderBase)
     CRANBERRY_DISABLE_COPY(RenderBase)
     CRANBERRY_DISABLE_MOVE(RenderBase)
-
-    RenderBase();
-    virtual ~RenderBase();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this IRenderable object is valid. If a devired class

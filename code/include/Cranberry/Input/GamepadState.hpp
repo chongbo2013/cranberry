@@ -51,7 +51,6 @@ public:
     CRANBERRY_DEFAULT_COPY(GamepadState)
     CRANBERRY_DEFAULT_MOVE(GamepadState)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the associated gamepad.
     ///

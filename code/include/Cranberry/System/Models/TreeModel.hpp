@@ -46,12 +46,10 @@ class CRANBERRY_SYSTEM_EXPORT TreeModel
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(TreeModel)
+    CRANBERRY_DECLARE_DTOR(TreeModel)
     CRANBERRY_DEFAULT_COPY(TreeModel)
     CRANBERRY_DEFAULT_MOVE(TreeModel)
-
-    TreeModel();
-   ~TreeModel();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Adds a top item to the tree model. The item can also contain child items

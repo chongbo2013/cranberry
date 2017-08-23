@@ -43,12 +43,10 @@ class CRANBERRY_GAME_EXPORT MapTile
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(MapTile)
     CRANBERRY_DEFAULT_DTOR(MapTile)
     CRANBERRY_DEFAULT_COPY(MapTile)
     CRANBERRY_DEFAULT_MOVE(MapTile)
-
-    MapTile();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this tile is transparent.

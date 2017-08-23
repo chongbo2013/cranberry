@@ -47,17 +47,10 @@ class CRANBERRY_SYSTEM_EXPORT GameTime
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(GameTime)
     CRANBERRY_DEFAULT_DTOR(GameTime)
     CRANBERRY_DEFAULT_COPY(GameTime)
     CRANBERRY_DEFAULT_MOVE(GameTime)
-
-    ////////////////////////////////////////////////////////////////////////////
-    ///
-    /// Initializes all values to zero.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    GameTime();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the amount of hours since the game started.

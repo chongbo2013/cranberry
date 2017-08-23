@@ -48,7 +48,6 @@ public:
     CRANBERRY_DISABLE_COPY(CranAnimation)
     CRANBERRY_DISABLE_MOVE(CranAnimation)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the animation by loading all data from a JSON file. In order to
     /// get information about the JSON attributes, look up the documentation

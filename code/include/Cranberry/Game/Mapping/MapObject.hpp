@@ -49,12 +49,10 @@ class CRANBERRY_GAME_EXPORT MapObject
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(MapObject)
     CRANBERRY_DEFAULT_DTOR(MapObject)
     CRANBERRY_DEFAULT_COPY(MapObject)
     CRANBERRY_DEFAULT_MOVE(MapObject)
-
-    MapObject();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this object is null.

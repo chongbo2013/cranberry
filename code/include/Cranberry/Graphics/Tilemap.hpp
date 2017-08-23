@@ -52,12 +52,10 @@ class CRANBERRY_GRAPHICS_EXPORT Tilemap final : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(Tilemap)
+    CRANBERRY_DECLARE_DTOR(Tilemap)
     CRANBERRY_DEFAULT_COPY(Tilemap)
     CRANBERRY_DEFAULT_MOVE(Tilemap)
-
-    Tilemap();
-   ~Tilemap();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this object is null.

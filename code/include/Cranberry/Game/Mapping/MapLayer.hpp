@@ -50,12 +50,17 @@ class CRANBERRY_GAME_EXPORT MapLayer
 {
 public:
 
+    CRANBERRY_DECLARE_DTOR(MapLayer)
     CRANBERRY_DEFAULT_COPY(MapLayer)
     CRANBERRY_DEFAULT_MOVE(MapLayer)
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Constructs a new MapLayer with the given Map as parent.
+    ///
+    /// \param parent The parent of this layer.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
     MapLayer(Map* parent = nullptr);
-   ~MapLayer();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the name of this layer.

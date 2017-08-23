@@ -48,7 +48,6 @@ public:
     CRANBERRY_DISABLE_COPY(Ellipse)
     CRANBERRY_DISABLE_MOVE(Ellipse)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Creates a new ellipse. If \p radius1 equals \p radius2, a circle will
     /// be displayed. Change \p beginAngle and \p endAngle respectively in order

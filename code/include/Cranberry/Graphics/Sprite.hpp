@@ -48,12 +48,10 @@ class CRANBERRY_GRAPHICS_EXPORT Sprite final : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(Sprite)
+    CRANBERRY_DECLARE_DTOR(Sprite)
     CRANBERRY_DISABLE_COPY(Sprite)
     CRANBERRY_DISABLE_MOVE(Sprite)
-
-    Sprite();
-   ~Sprite();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this object is null.

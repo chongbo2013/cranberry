@@ -50,12 +50,10 @@ class CRANBERRY_GRAPHICS_EXPORT TextureBase : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(TextureBase)
+    CRANBERRY_DECLARE_DTOR(TextureBase)
     CRANBERRY_DISABLE_COPY(TextureBase)
     CRANBERRY_DISABLE_MOVE(TextureBase)
-
-    TextureBase();
-    virtual ~TextureBase();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the underlying QOpenGLTexture.

@@ -50,7 +50,6 @@ public:
     CRANBERRY_DEFAULT_COPY(Debug)
     CRANBERRY_DEFAULT_MOVE(Debug)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Shows an error. Behaves differently, depending on whether the library
     /// was built in debug or release mode.

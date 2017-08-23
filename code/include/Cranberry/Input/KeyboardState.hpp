@@ -51,7 +51,6 @@ public:
     CRANBERRY_DEFAULT_COPY(KeyboardState)
     CRANBERRY_DEFAULT_MOVE(KeyboardState)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether the given key is pressed.
     ///

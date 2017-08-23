@@ -56,12 +56,10 @@ class CRANBERRY_OPENGL_EXPORT OpenGLShader
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(OpenGLShader)
+    CRANBERRY_DECLARE_DTOR(OpenGLShader)
     CRANBERRY_DISABLE_COPY(OpenGLShader)
     CRANBERRY_DISABLE_MOVE(OpenGLShader)
-
-    OpenGLShader();
-    virtual ~OpenGLShader();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves a pointer to the shader program.

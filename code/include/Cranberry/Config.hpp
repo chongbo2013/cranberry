@@ -127,19 +127,26 @@
 /// \def CRANBERRY_DEFAULT_CTOR CRANBERRY_DEFAULT_DTOR
 ///      CRANBERRY_DEFAULT_COPY CRANBERRY_DEFAULT_MOVE
 ///      CRANBERRY_DISABLE_COPY CRANBERRY_DISABLE_MOVE
+///      CRANBERRY_DECLARE_CTOR CRANBERRY_DECLARE_DTOR
+///      CRANBERRY_DECLARE_COPY CRANBERRY_DECLARE_MOVE
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #define CRANBERRY_DEFAULT_CTOR(x) x() = default;
 #define CRANBERRY_DEFAULT_DTOR(x) virtual ~x() = default;
 #define CRANBERRY_DEFAULT_COPY(x) x(const x& other) = default; x& operator =(const x& other) = default;
 #define CRANBERRY_DISABLE_COPY(x) x(const x& other) = delete; x& operator =(const x& other) = delete;
+#define CRANBERRY_DECLARE_CTOR(x) x();
+#define CRANBERRY_DECLARE_DTOR(x) virtual ~x();
+#define CRANBERRY_DECLARE_COPY(x) x(const x& other); x& operator =(const x& other);
 
 #ifndef _MSC_VER
     #define CRANBERRY_DEFAULT_MOVE(x) x(x&& other) = default; x& operator =(x&& other) = default;
     #define CRANBERRY_DISABLE_MOVE(x) x(x&& other) = delete; x& operator =(x&& other) = delete;
+    #define CRANBERRY_DECLARE_MOVE(x) x(x&& other);
 #else
     #define CRANBERRY_DEFAULT_MOVE(x)
     #define CRANBERRY_DISABLE_MOVE(x)
+    #define CRANBERRY_DECLARE_MOVE(x)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

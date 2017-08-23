@@ -47,12 +47,10 @@ class CRANBERRY_GRAPHICS_EXPORT AnimationFrame
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(AnimationFrame)
     CRANBERRY_DEFAULT_DTOR(AnimationFrame)
     CRANBERRY_DEFAULT_COPY(AnimationFrame)
     CRANBERRY_DEFAULT_MOVE(AnimationFrame)
-
-    AnimationFrame();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the frame rectangle.

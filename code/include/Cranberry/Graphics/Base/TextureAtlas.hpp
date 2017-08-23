@@ -48,6 +48,7 @@ class CRANBERRY_GRAPHICS_EXPORT TextureAtlas
 {
 public:
 
+    CRANBERRY_DECLARE_DTOR(TextureAtlas)
     CRANBERRY_DISABLE_COPY(TextureAtlas)
     CRANBERRY_DISABLE_MOVE(TextureAtlas)
 
@@ -70,13 +71,6 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     TextureAtlas(const QImage& img, Window* renderTarget = nullptr);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Frees all OpenGL textures allocated in this atlas.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    virtual ~TextureAtlas();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Inserts a new image into the texture atlas.

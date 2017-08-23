@@ -57,12 +57,10 @@ class CRANBERRY_GRAPHICS_EXPORT SpriteBatch : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(SpriteBatch)
+    CRANBERRY_DECLARE_DTOR(SpriteBatch)
     CRANBERRY_DISABLE_COPY(SpriteBatch)
     CRANBERRY_DISABLE_MOVE(SpriteBatch)
-
-    SpriteBatch();
-   ~SpriteBatch();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this object is null.

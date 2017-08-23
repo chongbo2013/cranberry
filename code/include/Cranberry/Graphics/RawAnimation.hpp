@@ -48,7 +48,6 @@ public:
     CRANBERRY_DISABLE_COPY(RawAnimation)
     CRANBERRY_DISABLE_MOVE(RawAnimation)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// This method is unused.
     ///

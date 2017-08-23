@@ -48,7 +48,6 @@ public:
     CRANBERRY_DISABLE_COPY(Polygon)
     CRANBERRY_DISABLE_MOVE(Polygon)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Creates a new polygon with the given \p points.
     ///

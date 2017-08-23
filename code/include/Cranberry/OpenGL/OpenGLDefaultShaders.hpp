@@ -44,7 +44,6 @@ class CRANBERRY_OPENGL_EXPORT OpenGLDefaultShaders
 {
 public:
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Adds a shader to the default shader collection. Given key must be unique
     /// and the given program valid. If a call to OpenGLDefaultShaders::remove()

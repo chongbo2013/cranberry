@@ -49,12 +49,10 @@ class CRANBERRY_GAME_EXPORT Map : public RenderBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(Map)
+    CRANBERRY_DECLARE_DTOR(Map)
     CRANBERRY_DISABLE_COPY(Map)
     CRANBERRY_DISABLE_MOVE(Map)
-
-    Map();
-    virtual ~Map();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this map is null.

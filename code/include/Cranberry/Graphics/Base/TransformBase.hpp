@@ -56,12 +56,10 @@ class CRANBERRY_GRAPHICS_EXPORT TransformBase
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(TransformBase)
+    CRANBERRY_DECLARE_DTOR(TransformBase)
     CRANBERRY_DISABLE_COPY(TransformBase)
     CRANBERRY_DISABLE_MOVE(TransformBase)
-
-    TransformBase();
-    virtual ~TransformBase();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this object is currently moving.
@@ -334,7 +332,7 @@ public:
     /// \returns the position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-     QPointF pos() const;
+    QPointF pos() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the origin of the object.

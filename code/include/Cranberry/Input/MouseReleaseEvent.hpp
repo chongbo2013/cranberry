@@ -51,7 +51,6 @@ public:
     CRANBERRY_DEFAULT_COPY(MouseReleaseEvent)
     CRANBERRY_DEFAULT_MOVE(MouseReleaseEvent)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Constructs a new MouseReleaseEvent with pos and buttons.
     ///

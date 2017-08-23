@@ -46,12 +46,11 @@ class CRANBERRY_SYSTEM_EXPORT TreeModelItem
 {
 public:
 
+    CRANBERRY_DECLARE_DTOR(TreeModelItem)
+    CRANBERRY_DECLARE_COPY(TreeModelItem)
     CRANBERRY_DISABLE_MOVE(TreeModelItem)
 
     TreeModelItem(QVariant member = "", QVariant value = "", TreeModelItem* parent = 0);
-    TreeModelItem(const TreeModelItem& other);
-   ~TreeModelItem();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Appends one child to the tree item.

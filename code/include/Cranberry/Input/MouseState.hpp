@@ -51,7 +51,6 @@ public:
     CRANBERRY_DEFAULT_COPY(MouseState)
     CRANBERRY_DEFAULT_MOVE(MouseState)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether the given button is pressed.
     ///

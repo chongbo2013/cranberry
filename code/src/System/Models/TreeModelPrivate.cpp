@@ -40,13 +40,6 @@ priv::TreeModelPrivate::~TreeModelPrivate()
 }
 
 
-priv::TreeModelPrivate::TreeModelPrivate(const TreeModelPrivate& other)
-    : QAbstractItemModel()
-    , m_rootItem(other.m_rootItem)
-{
-}
-
-
 int priv::TreeModelPrivate::columnCount(const QModelIndex&) const
 {
     return 2;

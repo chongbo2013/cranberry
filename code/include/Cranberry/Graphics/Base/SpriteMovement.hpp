@@ -50,12 +50,10 @@ class CRANBERRY_GRAPHICS_EXPORT SpriteMovement final
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(SpriteMovement)
+    CRANBERRY_DECLARE_DTOR(SpriteMovement)
     CRANBERRY_DEFAULT_COPY(SpriteMovement)
     CRANBERRY_DEFAULT_MOVE(SpriteMovement)
-
-    SpriteMovement();
-   ~SpriteMovement();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the name of this movement.

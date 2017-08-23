@@ -43,11 +43,10 @@ class GamePrivate
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(GamePrivate)
+    CRANBERRY_DECLARE_DTOR(GamePrivate)
     CRANBERRY_DEFAULT_COPY(GamePrivate)
     CRANBERRY_DEFAULT_MOVE(GamePrivate)
-
-    GamePrivate();
-   ~GamePrivate();
 
 
 private:

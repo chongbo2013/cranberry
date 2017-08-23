@@ -57,12 +57,11 @@ class WindowPrivate final : public QOpenGLWindow
 {
 public:
 
+    CRANBERRY_DECLARE_DTOR(WindowPrivate)
     CRANBERRY_DISABLE_COPY(WindowPrivate)
     CRANBERRY_DISABLE_MOVE(WindowPrivate)
 
     WindowPrivate(cran::Window*);
-   ~WindowPrivate();
-
 
     bool isValid() const;
     bool isActive() const;

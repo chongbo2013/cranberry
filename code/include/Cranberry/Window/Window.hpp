@@ -63,12 +63,10 @@ class CRANBERRY_WINDOW_EXPORT Window : public QObject
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(Window)
+    CRANBERRY_DECLARE_DTOR(Window)
     CRANBERRY_DISABLE_COPY(Window)
     CRANBERRY_DISABLE_MOVE(Window)
-
-    Window();
-    virtual ~Window();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this window is valid.

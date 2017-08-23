@@ -51,7 +51,6 @@ public:
     CRANBERRY_DEFAULT_COPY(TransformBaseEmitter)
     CRANBERRY_DEFAULT_MOVE(TransformBaseEmitter)
 
-
     inline void emitStoppedMoving() { Q_EMIT stoppedMoving(); }
     inline void emitStoppedRotating() { Q_EMIT stoppedRotating(); }
     inline void emitStoppedScaling() { Q_EMIT stoppedScaling(); }

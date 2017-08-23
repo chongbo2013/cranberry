@@ -49,16 +49,10 @@ class CRANBERRY_WINDOW_EXPORT WindowSettings
 {
 public:
 
+    CRANBERRY_DECLARE_CTOR(WindowSettings)
     CRANBERRY_DEFAULT_DTOR(WindowSettings)
     CRANBERRY_DEFAULT_COPY(WindowSettings)
     CRANBERRY_DEFAULT_MOVE(WindowSettings)
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Sets all members to their default values.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    WindowSettings();
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this window is resizable. By default, this value is

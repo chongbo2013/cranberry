@@ -53,7 +53,6 @@ public:
     CRANBERRY_DEFAULT_COPY(MapTileProperties)
     CRANBERRY_DEFAULT_MOVE(MapTileProperties)
 
-
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this tile properties are valid.
     ///
