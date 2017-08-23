@@ -46,7 +46,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date August 16, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT MapLayer
+class CRANBERRY_GAME_EXPORT MapLayer final
 {
 public:
 

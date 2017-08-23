@@ -52,7 +52,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT SpriteBatch : public RenderBase
+class CRANBERRY_GRAPHICS_EXPORT SpriteBatch final : public RenderBase
 {
 public:
 
@@ -210,7 +210,7 @@ public overridden:
     /// \param model Model to append property items to.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void createProperties(TreeModel* model) override;
+    void createProperties(TreeModel* model) override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Updates the property items. Make sure to have at least an instance of the
@@ -218,7 +218,7 @@ public overridden:
     /// you are able to see your objects change live.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void updateProperties() override;
+    void updateProperties() override;
 
 
 private:

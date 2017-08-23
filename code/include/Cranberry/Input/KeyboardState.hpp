@@ -42,7 +42,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_INPUT_EXPORT KeyboardState
+class CRANBERRY_INPUT_EXPORT KeyboardState final
 {
 public:
 

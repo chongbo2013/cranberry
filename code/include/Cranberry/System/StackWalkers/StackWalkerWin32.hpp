@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_PRIV_NAMESPACE
 /// \date July 22, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT StackWalkerWin32 : public StackWalker
+class CRANBERRY_SYSTEM_EXPORT StackWalkerWin32 final : public StackWalker
 {
 public:
 

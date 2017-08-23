@@ -45,7 +45,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 11, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_WINDOW_EXPORT WindowSettings
+class CRANBERRY_WINDOW_EXPORT WindowSettings final
 {
 public:
 

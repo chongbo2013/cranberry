@@ -44,7 +44,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 24, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Background : public TextureBase
+class CRANBERRY_GRAPHICS_EXPORT Background final : public TextureBase
 {
 public:
 
@@ -143,7 +143,7 @@ public overridden:
     /// \param model Model to append property items to.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void createProperties(TreeModel* model) override;
+    void createProperties(TreeModel* model) override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Updates the property items. Make sure to have at least an instance of the
@@ -151,7 +151,7 @@ public overridden:
     /// you are able to see your objects change live.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void updateProperties() override;
+    void updateProperties() override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Initializes the background vertex data.

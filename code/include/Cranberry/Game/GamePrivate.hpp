@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_PRIV_NAMESPACE
 /// \date July 22, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class GamePrivate
+class GamePrivate final
 {
 public:
 

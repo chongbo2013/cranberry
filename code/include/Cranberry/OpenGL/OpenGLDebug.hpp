@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_PRIV_NAMESPACE
 /// \date May 23, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class GLDebug
+class GLDebug final
 {
 public:
 

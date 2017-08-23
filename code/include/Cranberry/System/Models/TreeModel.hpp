@@ -42,7 +42,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 23, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT TreeModel
+class CRANBERRY_SYSTEM_EXPORT TreeModel final
 {
 public:
 

@@ -42,7 +42,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 10, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_INPUT_EXPORT GamepadState
+class CRANBERRY_INPUT_EXPORT GamepadState final
 {
 public:
 

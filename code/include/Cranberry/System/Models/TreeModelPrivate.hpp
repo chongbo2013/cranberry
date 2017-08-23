@@ -41,7 +41,7 @@ CRANBERRY_FORWARD_C(TreeModelItem)
 CRANBERRY_BEGIN_PRIV_NAMESPACE
 
 
-class TreeModelPrivate : public QAbstractItemModel
+class TreeModelPrivate final : public QAbstractItemModel
 {
 public:
 

@@ -44,7 +44,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT TextureAtlas
+class CRANBERRY_GRAPHICS_EXPORT TextureAtlas final
 {
 public:
 

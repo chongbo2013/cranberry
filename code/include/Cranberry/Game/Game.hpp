@@ -45,7 +45,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT Game
+class CRANBERRY_GAME_EXPORT Game final
 {
 public:
 

@@ -45,7 +45,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 9, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT SpriteReceiver : public QObject
+class CRANBERRY_SYSTEM_EXPORT SpriteReceiver final : public QObject
 {
 public:
 

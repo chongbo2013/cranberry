@@ -42,7 +42,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 23, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Hitbox
+class CRANBERRY_GRAPHICS_EXPORT Hitbox final
 {
 public:
 

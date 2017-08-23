@@ -45,7 +45,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 18, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT GuiManagerReceiver : public QObject
+class CRANBERRY_SYSTEM_EXPORT GuiManagerReceiver final : public QObject
 {
 public:
 

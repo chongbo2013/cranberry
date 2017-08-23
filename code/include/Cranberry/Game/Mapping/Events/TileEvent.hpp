@@ -43,7 +43,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date August 19, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT TileEvent
+class CRANBERRY_GAME_EXPORT TileEvent final
 {
 public:
 

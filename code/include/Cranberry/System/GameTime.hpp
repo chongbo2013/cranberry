@@ -43,7 +43,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date May 22, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_SYSTEM_EXPORT GameTime
+class CRANBERRY_SYSTEM_EXPORT GameTime final
 {
 public:
 

@@ -40,7 +40,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date June 7, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_OPENGL_EXPORT OpenGLDefaultShaders
+class CRANBERRY_OPENGL_EXPORT OpenGLDefaultShaders final
 {
 public:
 

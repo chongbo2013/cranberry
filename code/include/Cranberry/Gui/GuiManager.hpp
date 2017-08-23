@@ -53,7 +53,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 18, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GUI_EXPORT GuiManager : public RenderBase
+class CRANBERRY_GUI_EXPORT GuiManager final : public RenderBase
 {
 public:
 

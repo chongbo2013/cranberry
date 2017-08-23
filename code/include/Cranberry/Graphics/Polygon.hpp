@@ -39,7 +39,7 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date July 5, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GRAPHICS_EXPORT Polygon : public ShapeBase
+class CRANBERRY_GRAPHICS_EXPORT Polygon final : public ShapeBase
 {
 public:
 
