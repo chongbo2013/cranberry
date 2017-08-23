@@ -50,6 +50,14 @@ public:
     CRANBERRY_DECLARE_COPY(TreeModelItem)
     CRANBERRY_DISABLE_MOVE(TreeModelItem)
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates a new tree model item.
+    ///
+    /// \param member Member name.
+    /// \param value Member value.
+    /// \param parent Parent tree model item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
     TreeModelItem(QVariant member = "", QVariant value = "", TreeModelItem* parent = 0);
 
     ////////////////////////////////////////////////////////////////////////////

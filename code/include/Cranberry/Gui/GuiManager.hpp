@@ -28,7 +28,6 @@
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/System/Receivers/GuiManagerReceiver.hpp>
 
-
 // Forward declarations
 CRANBERRY_FORWARD_C(SpriteBatch)
 CRANBERRY_FORWARD_P(WindowPrivate)
@@ -197,7 +196,7 @@ public overridden:
 private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Helpers
+    // Functions
     ////////////////////////////////////////////////////////////////////////////
     void makeCurrent();
     void loadComponents();

@@ -33,7 +33,6 @@
 // Qt headers
 #include <QList>
 
-
 // Forward declarations
 CRANBERRY_FORWARD_C(Window)
 CRANBERRY_FORWARD_C(OpenGLShader)
@@ -225,7 +224,7 @@ public overridden:
 private:
 
     ////////////////////////////////////////////////////////////////////////////
-    // Helpers
+    // Functions
     ////////////////////////////////////////////////////////////////////////////
     bool createInternal(Window*);
     bool createData();

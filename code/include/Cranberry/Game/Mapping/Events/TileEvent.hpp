@@ -51,8 +51,15 @@ public:
     CRANBERRY_DEFAULT_COPY(TileEvent)
     CRANBERRY_DEFAULT_MOVE(TileEvent)
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Creates a new tile event.
+    ///
+    /// \param tile Tile that caused the event.
+    /// \param layer Layer consisting of the tile.
+    /// \param tileset Tileset consisting of the tile.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
     TileEvent(const MapTile& tile, MapLayer* layer, MapTileset* tileset);
-
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the tile causing the event.
@@ -79,17 +86,7 @@ public:
     const MapTileProperties& properties() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether this event was accepted. Consider the following code:
-    ///
-    /// \code
-    /// void onAboutStepTile(const TileEvent& event)
-    /// {
-    ///     event.reject();
-    /// }
-    /// \endcode
-    ///
-    /// Rejecting the "onAboutStepTile" event will result in the player not
-    /// stepping on the tile, thus no "onStepTile" event is emitted.
+    /// Determines whether this event was accepted.
     ///
     /// \default By default, this value is true.
     /// \returns true if this event was accepted.
