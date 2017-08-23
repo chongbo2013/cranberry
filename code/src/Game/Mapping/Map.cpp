@@ -146,27 +146,33 @@ bool Map::movePlayerBy(int x, int y)
     {
         for (MapLayer* layer : m_layers)
         {
-            const MapTile& oldT = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
-            const MapTile& newT = layer->tiles().at(getTileIndex(m_playerX + x, m_playerY + y));
-
-            if (!newT.isNull())
+            if (layer->layerType() == LayerTypeTile)
             {
-                TileEvent event(newT, layer, m_tilesets[newT.tilesetId()]);
-                onAboutStepTile(event);
+                MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
 
-                if (!event.isAccepted())
+                const MapTile& oldT = tl->tiles().at(getTileIndex(m_playerX, m_playerY));
+                const MapTile& newT = tl->tiles().at(getTileIndex(m_playerX + x, m_playerY + y));
+
+                if (!newT.isNull())
                 {
-                    // We e.g. hit something solid, abort.
-                    return false;
-                }
-            }
+                    TileEvent event(newT, tl, m_tilesets[newT.tilesetId()]);
+                    onAboutStepTile(event);
 
-            if (!oldT.isNull())
-            {
-                onLeaveTile(TileEvent(oldT, layer, m_tilesets[oldT.tilesetId()]));
+                    if (!event.isAccepted())
+                    {
+                        // We e.g. hit something solid, abort.
+                        return false;
+                    }
+                }
+
+                if (!oldT.isNull())
+                {
+                    onLeaveTile(TileEvent(oldT, tl, m_tilesets[oldT.tilesetId()]));
+                }
             }
         }
 
+        // TODO: Replace with if (layer == LayerTypeObject) ...
         for (MapObject& o : m_objects)
         {
             QRect r1(o.x(), o.y(), o.width(), o.height());
@@ -210,26 +216,32 @@ bool Map::movePlayerBy(int x, int y)
             // Current tile changed, send event to all layers.
             for (MapLayer* layer : m_layers)
             {
-                const MapTile& oldT = layer->tiles().at(getTileIndex(oldTileX, oldTileY));
-                const MapTile& newT = layer->tiles().at(getTileIndex(newTileX, newTileY));
-
-                if (!newT.isNull())
+                if (layer->layerType() == LayerTypeTile)
                 {
-                    TileEvent event(newT, layer, m_tilesets[newT.tilesetId()]);
-                    onAboutStepTile(event);
+                    MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
 
-                    if (!event.isAccepted())
+                    const MapTile& oldT = tl->tiles().at(getTileIndex(oldTileX, oldTileY));
+                    const MapTile& newT = tl->tiles().at(getTileIndex(newTileX, newTileY));
+
+                    if (!newT.isNull())
                     {
-                        // We e.g. hit something solid, abort.
-                        return false;
+                        TileEvent event(newT, tl, m_tilesets[newT.tilesetId()]);
+                        onAboutStepTile(event);
+
+                        if (!event.isAccepted())
+                        {
+                            // We e.g. hit something solid, abort.
+                            return false;
+                        }
+
+                        onStepTile(event);
                     }
 
-                    onStepTile(event);
+                    onLeaveTile(TileEvent(oldT, tl, m_tilesets[oldT.tilesetId()]));
                 }
-
-                onLeaveTile(TileEvent(oldT, layer, m_tilesets[oldT.tilesetId()]));
             }
 
+            // TODO: move into loop & MapObjectLayer
             for (MapObject& o : m_objects)
             {
                 QRect r1(o.x(), o.y(), o.width(), o.height());
@@ -325,7 +337,7 @@ bool Map::create(const QString& mapPath, Window* rt)
     for (int i = 0; i < listLayer.size(); i++)
     {
         QDomElement elem = listLayer.at(i).toElement();
-        MapLayer* layer = new MapLayer(this);
+        MapTileLayer* layer = new MapTileLayer(this);
         if (!layer->parse(&elem, m_tilesets, i))
         {
             return cranError(ERRARG(e_03));
@@ -406,8 +418,12 @@ void Map::update(const GameTime& time)
     // Update the layer positions.
     for (MapLayer* layer : m_layers)
     {
-        layer->renderObject()->setPosition(dx + layer->offsetX(), dy + layer->offsetY());
-        layer->renderObject()->setOpacity(layer->opacity());
+        if (layer->layerType() == LayerTypeTile)
+        {
+            MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
+            tl->renderObject()->setPosition(dx + layer->offsetX(), dy + layer->offsetY());
+            tl->renderObject()->setOpacity(layer->opacity());
+        }
     }
 
     updateTileMovement(time.deltaTime());
@@ -420,7 +436,7 @@ void Map::render()
     {
         if (layer->isVisible())
         {
-            layer->renderObject()->render();
+            layer->render();
         }
     }
 }
@@ -509,13 +525,19 @@ void Map::updateTileMovement(double deltaTime)
             // Current tile changed, send event to all layers.
             for (MapLayer* layer : m_layers)
             {
-                const MapTile& tile = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
-                if (!tile.isNull())
+                if (layer->layerType() == LayerTypeTile)
                 {
-                    onStepTile(TileEvent(tile, layer, m_tilesets[tile.tilesetId()]));
+                    MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
+
+                    const MapTile& tile = tl->tiles().at(getTileIndex(m_playerX, m_playerY));
+                    if (!tile.isNull())
+                    {
+                        onStepTile(TileEvent(tile, tl, m_tilesets[tile.tilesetId()]));
+                    }
                 }
             }
 
+            // TODO: put into loop & MapObjectLayer
             for (MapObject* o : m_aboutStepObjs)
             {
                 onStepObject(ObjectEvent(o));

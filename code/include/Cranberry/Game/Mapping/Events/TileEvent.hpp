@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Game/Mapping/MapLayer.hpp>
+#include <Cranberry/Game/Mapping/MapTileLayer.hpp>
 #include <Cranberry/Game/Mapping/MapTile.hpp>
 #include <Cranberry/Game/Mapping/MapTileset.hpp>
 #include <Cranberry/Game/Mapping/MapTileProperties.hpp>
@@ -59,7 +59,7 @@ public:
     /// \param tileset Tileset consisting of the tile.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TileEvent(const MapTile& tile, MapLayer* layer, MapTileset* tileset);
+    TileEvent(const MapTile& tile, MapTileLayer* layer, MapTileset* tileset);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the tile causing the event.
@@ -75,7 +75,7 @@ public:
     /// \returns the layer of the tile.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    const MapLayer& layer() const;
+    const MapTileLayer& layer() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the properties of the causing tile.
@@ -113,7 +113,7 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     MapTile*           m_tile;
-    MapLayer*          m_layer;
+    MapTileLayer*          m_layer;
     MapTileProperties* m_properties;
     mutable bool       m_isAccepted;
 };

@@ -20,115 +20,100 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GAME_MAPPING_MAPLAYER_HPP
-#define CRANBERRY_GAME_MAPPING_MAPLAYER_HPP
+#ifndef CRANBERRY_GAME_MAPPING_MAPTILELAYER_HPP
+#define CRANBERRY_GAME_MAPPING_MAPTILELAYER_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Game/Mapping/Enumerations.hpp>
+#include <Cranberry/Game/Mapping/MapLayer.hpp>
+#include <Cranberry/Game/Mapping/MapTile.hpp>
+#include <Cranberry/Graphics/Tilemap.hpp>
 
 // Forward declarations
-CRANBERRY_FORWARD_C(Map)
+CRANBERRY_FORWARD_Q(QDomElement)
+CRANBERRY_FORWARD_C(MapTileset)
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Abstraction between various layer types in TMX.
+/// Defines one map layer with multiple tiles.
 ///
 /// \class MapLayer
 /// \author Nicolas Kogler
-/// \date August 23, 2017
+/// \date August 16, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT MapLayer
+class CRANBERRY_GAME_EXPORT MapTileLayer final : public MapLayer
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(MapLayer)
-    CRANBERRY_DEFAULT_COPY(MapLayer)
-    CRANBERRY_DEFAULT_MOVE(MapLayer)
+    CRANBERRY_DECLARE_DTOR(MapTileLayer)
+    CRANBERRY_DEFAULT_COPY(MapTileLayer)
+    CRANBERRY_DEFAULT_MOVE(MapTileLayer)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Constructs a new MapLayer with the given Map as parent.
+    /// Constructs a new MapLTileayer with the given Map as parent.
     ///
     /// \param parent The parent of this layer.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    MapLayer(Map* parent = nullptr);
+    MapTileLayer(Map* parent = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the parent map of this layer.
+    /// Retrieves the data encoding type for this layer.
     ///
-    /// \returns the map.
+    /// \returns the encoding type.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    Map* map() const;
+    EncodingType dataEncoding() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the name of this layer.
+    /// Retrieves the data compression mode for this layer.
     ///
-    /// \returns the layer name.
+    /// \returns the compression mode.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    const QString& name() const;
+    CompressionMode dataCompressionMode() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the opacity of the layer.
+    /// Retrieves all tiles, starting from top-left to bottom-right.
     ///
-    /// \returns the layer opacity.
+    /// \returns the tiles.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    float opacity() const;
+    const QVector<MapTile>& tiles() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the visibility of the layer.
+    /// Retrieves the object to render.
     ///
-    /// \returns true if the layer is visible.
+    /// \returns the render object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool isVisible() const;
+    Tilemap* renderObject() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// The position (index) of the layer in the entire map.
+    /// Parses the given layer XML element.
     ///
-    /// \returns the layer index.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int layerId() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the X-offset of this layer.
-    ///
-    /// \returns the X-offset.
+    /// \param xmlElement Layer element to parse.
+    /// \param tilesets Tilesets to use.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    int offsetX() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the Y-offset of this layer.
-    ///
-    /// \returns the Y-offset.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int offsetY() const;
-
-    void setName(const QString& name);
-    void setOpacity(float opac);
-    void setVisibility(bool visible);
-    void setLayerId(int id);
-    void setOffsetX(int x);
-    void setOffsetY(int y);
+    bool parse(
+        QDomElement* xmlElement,
+        const QVector<MapTileset*>& tilesets,
+        int layerId
+        );
 
 
-public overridable:
+public overridden:
 
     ////////////////////////////////////////////////////////////////////////////
     // Virtual functions
     ////////////////////////////////////////////////////////////////////////////
-    virtual LayerType layerType() const = 0;
-    virtual void render() = 0;
+    LayerType layerType() const override;
+    void render() override;
 
 
 private:
@@ -136,13 +121,10 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    Map*    m_parent;
-    QString m_name;
-    float   m_opacity;
-    bool    m_isVisible;
-    int     m_layerId;
-    int     m_offsetX;
-    int     m_offsetY;
+    Tilemap*         m_tileMap;
+    EncodingType     m_encoding;
+    CompressionMode  m_compression;
+    QVector<MapTile> m_tiles;
 };
 
 

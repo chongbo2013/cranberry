@@ -107,14 +107,15 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Game/Mapping/MapTile.hpp \
                     include/Cranberry/Game/Mapping/MapTileProperties.hpp \
                     include/Cranberry/Graphics/Tilemap.hpp \
-                    include/Cranberry/Game/Mapping/MapLayer.hpp \
                     include/Cranberry/Game/Mapping/MapTileset.hpp \
                     include/Cranberry/Game/Mapping/Enumerations.hpp \
                     include/Cranberry/Input/Enumerations.hpp \
                     include/Cranberry/Game/Mapping/Map.hpp \
     include/Cranberry/Game/Mapping/MapObject.hpp \
     include/Cranberry/Game/Mapping/Events/TileEvent.hpp \
-    include/Cranberry/Game/Mapping/Events/ObjectEvent.hpp
+    include/Cranberry/Game/Mapping/Events/ObjectEvent.hpp \
+    include/Cranberry/Game/Mapping/MapTileLayer.hpp \
+    include/Cranberry/Game/Mapping/MapLayer.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -175,10 +176,11 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Game/Mapping/MapEnumerations.cpp \
                     src/Graphics/Base/GraphicsEnumerations.cpp \
                     src/Game/Mapping/Map.cpp \
-                    src/Game/Mapping/MapLayer.cpp \
     src/Game/Mapping/MapObject.cpp \
     src/Game/Mapping/Events/TileEvent.cpp \
-    src/Game/Mapping/Events/ObjectEvent.cpp
+    src/Game/Mapping/Events/ObjectEvent.cpp \
+    src/Game/Mapping/MapTileLayer.cpp \
+    src/Game/Mapping/MapLayer.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

@@ -26,9 +26,9 @@
 CRANBERRY_USING_NAMESPACE
 
 
-TileEvent::TileEvent(const MapTile& tile, MapLayer* layer, MapTileset* tileset)
+TileEvent::TileEvent(const MapTile& tile, MapTileLayer* layer, MapTileset* tileset)
     : m_tile(const_cast<MapTile*>(&tile))
-    , m_layer(const_cast<MapLayer*>(layer))
+    , m_layer(const_cast<MapTileLayer*>(layer))
     , m_properties(const_cast<MapTileProperties*>(&tileset->tileProperties(tile.tileId())))
     , m_isAccepted(true)
 {
@@ -41,7 +41,7 @@ const MapTile& TileEvent::tile() const
 }
 
 
-const MapLayer& TileEvent::layer() const
+const MapTileLayer& TileEvent::layer() const
 {
     return *m_layer;
 }

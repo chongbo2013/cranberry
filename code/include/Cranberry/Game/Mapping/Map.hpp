@@ -25,7 +25,7 @@
 
 
 // Cranberry headers
-#include <Cranberry/Game/Mapping/MapLayer.hpp>
+#include <Cranberry/Game/Mapping/MapTileLayer.hpp>
 #include <Cranberry/Game/Mapping/MapObject.hpp>
 #include <Cranberry/Game/Mapping/MapTileset.hpp>
 #include <Cranberry/Game/Mapping/Events/TileEvent.hpp>
