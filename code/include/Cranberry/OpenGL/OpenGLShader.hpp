@@ -27,8 +27,7 @@
 #include <Cranberry/Graphics/Base/Enumerations.hpp>
 
 // Qt headers
-#include <QPointF>
-#include <QSizeF>
+#include <QRectF>
 #include <QString>
 
 // Forward declarations
@@ -208,6 +207,16 @@ public:
     void setWindowSize(const QSize& size);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the source rectangle for uniform u_sourceRect. This function
+    /// will fail if the shader program has not yet been linked. Will call
+    /// bind() automatically.
+    ///
+    /// \param rect Source rectangle.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setSourceRect(const QRectF& rect);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Gets the layout location of the uniform called \p name.
     ///
     /// \param name Name of the uniform.
@@ -368,6 +377,7 @@ private:
     int                   m_locMode;   ///< Uniform location of u_mode
     int                   m_locEffect; ///< Uniform location of u_effect
     int                   m_locSize;   ///< Uniform location of u_winSize
+    int                   m_locRect;   ///< Uniform location of u_sourceRect
 };
 
 

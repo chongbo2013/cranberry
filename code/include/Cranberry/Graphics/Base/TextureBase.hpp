@@ -250,6 +250,7 @@ private:
     priv::QuadVertices m_vertices;
     BlendModes         m_blendMode;
     Effect             m_effect;
+    QRectF             m_sourceRect;
     QOpenGLTexture*    m_texture;
     QOpenGLBuffer*     m_vertexBuffer;
     QOpenGLBuffer*     m_indexBuffer;

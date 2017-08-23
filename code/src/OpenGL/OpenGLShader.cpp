@@ -186,6 +186,18 @@ void OpenGLShader::setWindowSize(const QSize& size)
 }
 
 
+void OpenGLShader::setSourceRect(const QRectF& rect)
+{
+    ensure_bound(glDebug(m_program->setUniformValue(
+                         m_locRect,
+                         rect.x(),
+                         rect.y(),
+                         rect.width(),
+                         rect.height())
+                         ));
+}
+
+
 int OpenGLShader::uniformLocation(const QString& name)
 {
     return m_program->uniformLocation(name);
@@ -341,6 +353,7 @@ bool OpenGLShader::link()
     glDebug(m_locMode = m_program->uniformLocation("u_mode"));
     glDebug(m_locEffect = m_program->uniformLocation("u_effect"));
     glDebug(m_locSize = m_program->uniformLocation("u_winSize"));
+    glDebug(m_locRect = m_program->uniformLocation("u_sourceRect"));
 
     // Stores all invalid attributes in a list.
     QStringList attr;
@@ -350,6 +363,7 @@ bool OpenGLShader::link()
     if (m_locMode == -1) attr << "u_mode";
     if (m_locSize == -1) attr << "u_winSize";
     if (m_locEffect == -1) attr << "u_effect";
+    if (m_locRect == -1) attr << "u_sourceRect";
 
     if (!attr.isEmpty())
     {

@@ -266,6 +266,7 @@ bool AnimationBase::createInternal(
     m_currentFrame = &m_frames.first();
 
     setSize(largestSize.width(), largestSize.height());
+    setOrigin(width() / 2, height() / 2);
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;
@@ -297,6 +298,7 @@ bool AnimationBase::createInternal(
     m_currentFrame = &m_frames.first();
 
     setSize(largestSize.width(), largestSize.height());
+    setOrigin(width() / 2, height() / 2);
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;

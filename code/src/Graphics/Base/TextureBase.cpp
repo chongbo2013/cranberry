@@ -149,6 +149,7 @@ bool TextureBase::createTexture(const QImage& img)
 
     m_texture->setMinificationFilter(QOpenGLTexture::Linear);
     m_texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
 
     return true;
 }
@@ -250,6 +251,7 @@ void TextureBase::modifyProgram()
     glDebug(program->setBlendMode(m_blendMode));
     glDebug(program->setEffect(m_effect));
     glDebug(program->setWindowSize(renderTarget()->size()));
+    glDebug(program->setSourceRect(m_sourceRect));
 }
 
 
@@ -327,6 +329,7 @@ void TextureBase::setSourceRectangle(qreal x, qreal y, qreal w, qreal h)
     m_vertices.at(2).uv(uvcW, uvcH);
     m_vertices.at(3).uv(uvcX, uvcH);
 
+    m_sourceRect = QRectF(x, y, w, h);
     m_update = true;
 }
 
