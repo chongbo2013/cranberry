@@ -260,7 +260,7 @@ bool MapLayer::parse(
 
         if (tile == 0)
         {
-            m_tileMap->appendEmptyTile();
+            m_tileMap->appendNullTile();
             m_tiles.append(MapTile());
             continue;
         }

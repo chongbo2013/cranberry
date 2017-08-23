@@ -149,7 +149,7 @@ bool Map::movePlayerBy(int x, int y)
             const MapTile& oldT = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
             const MapTile& newT = layer->tiles().at(getTileIndex(m_playerX + x, m_playerY + y));
 
-            if (!newT.isTransparent())
+            if (!newT.isNull())
             {
                 TileEvent event(newT, layer, m_tilesets[newT.tilesetId()]);
                 onAboutStepTile(event);
@@ -161,7 +161,7 @@ bool Map::movePlayerBy(int x, int y)
                 }
             }
 
-            if (!oldT.isTransparent())
+            if (!oldT.isNull())
             {
                 onLeaveTile(TileEvent(oldT, layer, m_tilesets[oldT.tilesetId()]));
             }
@@ -213,7 +213,7 @@ bool Map::movePlayerBy(int x, int y)
                 const MapTile& oldT = layer->tiles().at(getTileIndex(oldTileX, oldTileY));
                 const MapTile& newT = layer->tiles().at(getTileIndex(newTileX, newTileY));
 
-                if (!newT.isTransparent())
+                if (!newT.isNull())
                 {
                     TileEvent event(newT, layer, m_tilesets[newT.tilesetId()]);
                     onAboutStepTile(event);
@@ -510,7 +510,7 @@ void Map::updateTileMovement(double deltaTime)
             for (MapLayer* layer : m_layers)
             {
                 const MapTile& tile = layer->tiles().at(getTileIndex(m_playerX, m_playerY));
-                if (!tile.isTransparent())
+                if (!tile.isNull())
                 {
                     onStepTile(TileEvent(tile, layer, m_tilesets[tile.tilesetId()]));
                 }

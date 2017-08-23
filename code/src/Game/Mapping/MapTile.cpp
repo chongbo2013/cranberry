@@ -33,7 +33,7 @@ MapTile::MapTile()
 }
 
 
-bool MapTile::isTransparent() const
+bool MapTile::isNull() const
 {
     return m_tileId == -1 && m_tilesetId == -1;
 }

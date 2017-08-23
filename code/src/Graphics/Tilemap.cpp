@@ -414,7 +414,7 @@ bool Tilemap::appendTile(int tileIndex, int tileset)
 }
 
 
-void Tilemap::appendEmptyTile()
+void Tilemap::appendNullTile()
 {
     if (m_currentX >= m_mapWidth)
     {
