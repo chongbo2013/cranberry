@@ -681,7 +681,7 @@ void SpriteBatch::releaseFrame()
 }
 
 
-TreeModelItem* SpriteBatch::rootModelItem() const
+TreeModelItem* SpriteBatch::rootModelItem()
 {
     return m_rootModelItem;
 }

@@ -176,6 +176,12 @@ void RenderBase::setName(const QString& name)
 }
 
 
+TreeModelItem* RenderBase::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void RenderBase::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiName = new TreeModelItem("Name", m_name);

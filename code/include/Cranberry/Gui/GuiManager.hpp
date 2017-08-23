@@ -176,13 +176,21 @@ public overridden:
     void render() override;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root model item of this instance.
+    ///
+    /// \returns the root model item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    TreeModelItem* rootModelItem() override;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates the property items and appends them to the model. Any items
     /// appended to the model are owned by it - no custom deletion required.
     ///
     /// \param model Model to append property items to.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void createProperties(TreeModel* model) override;
+    void createProperties(TreeModel* model) override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Updates the property items. Make sure to have at least an instance of the
@@ -190,7 +198,7 @@ public overridden:
     /// you are able to see your objects change live.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void updateProperties() override;
+    void updateProperties() override;
 
 
 private:

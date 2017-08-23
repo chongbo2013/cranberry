@@ -391,6 +391,12 @@ QString getSpriteModeString(MovementMode mm)
 }
 
 
+TreeModelItem* Sprite::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void Sprite::createProperties(TreeModel* model)
 {
     if (isNull())

@@ -185,6 +185,14 @@ public overridable:
     virtual RenderBaseEmitter* signals() override;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the root model item of this instance.
+    ///
+    /// \returns the root model item.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    virtual TreeModelItem* rootModelItem() override;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates the property items and appends them to the model. Any items
     /// appended to the model are owned by it - no custom deletion required.
     ///

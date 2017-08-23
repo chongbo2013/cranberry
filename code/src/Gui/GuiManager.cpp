@@ -376,6 +376,12 @@ void GuiManager::requestUpdate()
 }
 
 
+TreeModelItem* GuiManager::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void GuiManager::createProperties(TreeModel* model)
 {
     m_batch->createProperties(nullptr);

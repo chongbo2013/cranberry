@@ -201,7 +201,7 @@ public overridden:
     /// \returns the root model item of this instance.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TreeModelItem* rootModelItem() const;
+    TreeModelItem* rootModelItem() override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the property items and appends them to the model. Any items

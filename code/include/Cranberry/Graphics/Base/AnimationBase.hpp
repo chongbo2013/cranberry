@@ -189,13 +189,12 @@ public overridden:
     void render() override;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the root model item for this instance. Use this method only if
-    /// the debug overlay is about to be shown.
+    /// Retrieves the root model item of this instance.
     ///
-    /// \returns the root model item of this instance.
+    /// \returns the root model item.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TreeModelItem* rootModelItem() const;
+    virtual TreeModelItem* rootModelItem() override;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Creates the property items and appends them to the model. Any items

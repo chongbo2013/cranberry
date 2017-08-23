@@ -413,6 +413,12 @@ void ShapeBase::drawElements()
 }
 
 
+TreeModelItem* ShapeBase::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void ShapeBase::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiColo = new TreeModelItem("Color", m_colorBuffer[0]);

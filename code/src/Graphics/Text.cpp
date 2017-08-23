@@ -362,6 +362,12 @@ QSizeF Text::measureText()
 }
 
 
+TreeModelItem* Text::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void Text::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiText = new TreeModelItem("Text", htmlToPlain(m_text));

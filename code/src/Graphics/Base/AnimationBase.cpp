@@ -313,7 +313,7 @@ TextureBase* AnimationBase::getCurrentTexture()
 }
 
 
-TreeModelItem* AnimationBase::rootModelItem() const
+TreeModelItem* AnimationBase::rootModelItem()
 {
     return m_rootModelItem;
 }

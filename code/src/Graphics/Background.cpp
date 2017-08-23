@@ -270,6 +270,12 @@ void Background::updateUVs()
 }
 
 
+TreeModelItem* Background::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void Background::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiDire = new TreeModelItem("Direction", getMoveDirString(m_scrollDir));

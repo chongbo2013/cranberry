@@ -1002,6 +1002,12 @@ TransformBaseEmitter* TransformBase::signals()
 }
 
 
+TreeModelItem* TransformBase::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void TransformBase::createProperties(TreeModel* model)
 {
     QRectF bounds = visibleBounds();

@@ -389,6 +389,12 @@ void TextureBase::requestUpdate()
 }
 
 
+TreeModelItem* TextureBase::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
 void TextureBase::createProperties(TreeModel* model)
 {
     TreeModelItem* tmiBlen = new TreeModelItem("Blending mode", getBlendModeString(m_blendMode));

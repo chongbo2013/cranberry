@@ -134,7 +134,7 @@ enum FlipFlag
 ////////////////////////////////////////////////////////////////////////////////
 Q_DECLARE_FLAGS(PropertyTypes, PropertyType)
 Q_DECLARE_FLAGS(MapOrientations, MapOrientation)
-Q_DECLARE_FLAGS(LayerEncodings, LayerEncoding)
+Q_DECLARE_FLAGS(EncodingTypes, EncodingType)
 Q_DECLARE_FLAGS(CompressionModes, CompressionMode)
 Q_DECLARE_FLAGS(FlipFlags, FlipFlag)
 
@@ -158,7 +158,7 @@ CRANBERRY_END_NAMESPACE
 // Qt flag operators
 ////////////////////////////////////////////////////////////////////////////////
 Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::MapOrientations)
-Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::LayerEncodings)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::EncodingTypes)
 Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::CompressionModes)
 Q_DECLARE_OPERATORS_FOR_FLAGS(CRANBERRY_NAMESPACE::FlipFlags)
 
