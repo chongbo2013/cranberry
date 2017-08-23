@@ -534,6 +534,15 @@ public:
     void copyTransform(TransformBase* src, TransformBase* dst, bool copySize = false);
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Synchronises transformations applied via moveBy, moveTo, rotateBy,
+    /// rotateTo, scaleTo and fadeTo with the object \p other.
+    ///
+    /// \param other Object to sync transformations with.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void synchroniseWith(TransformBase* other);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Moves the object by \p advanceX in the X-direction and by \p advanceY
     /// in the Y-direction.
     ///
@@ -714,6 +723,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     TransformBaseEmitter m_emitter;
     TreeModelItem*       m_rootModelItem;
+    TransformBase*       m_syncObject;
     MoveDirections       m_moveDir;
     RotateDirection      m_rotateDirX;
     RotateDirection      m_rotateDirY;

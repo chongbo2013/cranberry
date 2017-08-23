@@ -22,6 +22,7 @@
 // Cranberry headers
 #include <Cranberry/Graphics/Base/RenderBase.hpp>
 #include <Cranberry/Graphics/Base/TransformBase.hpp>
+#include <Cranberry/System/Debug.hpp>
 #include <Cranberry/System/Models/TreeModel.hpp>
 #include <Cranberry/System/Models/TreeModelItem.hpp>
 #include <Cranberry/Window/Window.hpp>
@@ -38,7 +39,8 @@ CRANBERRY_USING_NAMESPACE
 
 
 TransformBase::TransformBase()
-    : m_moveDir(MoveNone)
+    : m_syncObject(nullptr)
+    , m_moveDir(MoveNone)
     , m_rotateDirX(RotateCW)
     , m_rotateDirY(RotateCW)
     , m_rotateDirZ(RotateCW)
@@ -466,34 +468,24 @@ void TransformBase::moveBy(float advanceX, float advanceY)
     m_moveDir = MoveNone;
 
     // Calculates the target position.
-    if (advanceX != 0.f)
+    if (int(advanceX) != 0.f)
     {
         m_isMovingX = true;
         m_targetMoveX = m_x + advanceX;
-
-        if (advanceX < 0)
-        {
-            m_moveDir |= MoveWest;
-        }
-        else
-        {
-            m_moveDir |= MoveEast;
-        }
+        m_moveDir |= (advanceX < 0) ? MoveWest : MoveEast;
     }
 
-    if (advanceY != 0.f)
+    if (int(advanceY) != 0.f)
     {
         m_isMovingY = true;
         m_targetMoveY = m_y + advanceY;
+        m_moveDir |= (advanceY < 0) ? MoveNorth : MoveSouth;
+    }
 
-        if (advanceY < 0)
-        {
-            m_moveDir |= MoveNorth;
-        }
-        else
-        {
-            m_moveDir |= MoveSouth;
-        }
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setMoveSpeed(m_speedMoveX, m_speedMoveY);
+        m_syncObject->moveBy(advanceX, advanceY);
     }
 }
 
@@ -510,30 +502,20 @@ void TransformBase::moveTo(float targetX, float targetY)
     float toMoveY = targetY - b.y();
 
     // Determines the target location.
-    if (targetX < b.x())
-    {
-        m_moveDir |= MoveWest;
-        m_targetMoveX = m_x + toMoveX;
-    }
-    else
-    {
-        m_moveDir |= MoveEast;
-        m_targetMoveX = m_x + toMoveX;
-    }
+    m_moveDir |= (targetX < b.x()) ? MoveWest  : MoveEast;
+    m_moveDir |= (targetY < b.y()) ? MoveNorth : MoveSouth;
 
-    if (targetY < m_y)
-    {
-        m_moveDir |= MoveNorth;
-        m_targetMoveY = m_y + toMoveY;
-    }
-    else
-    {
-        m_moveDir |= MoveSouth;
-        m_targetMoveY = m_y + toMoveY;
-    }
+    m_targetMoveX = m_x + toMoveX;
+    m_targetMoveY = m_y + toMoveY;
 
-    if (int(toMoveX) != 0) m_isMovingX = true;
-    if (int(toMoveY) != 0) m_isMovingY = true;
+    m_isMovingX = int(toMoveX) != 0;
+    m_isMovingY = int(toMoveY) != 0;
+
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setMoveSpeed(m_speedMoveX, m_speedMoveY);
+        m_syncObject->moveTo(targetX, targetY);
+    }
 }
 
 
@@ -545,9 +527,16 @@ void TransformBase::beginRotate(bool cwX, bool cwY, bool cwZ)
     m_isRotatingY = (m_rotateAxes & AxisY);
     m_isRotatingZ = (m_rotateAxes & AxisZ);
 
-    m_rotateDirX  = cwX ? RotateCW : RotateCCW;
-    m_rotateDirY  = cwY ? RotateCW : RotateCCW;
-    m_rotateDirZ  = cwZ ? RotateCW : RotateCCW;
+    m_rotateDirX = cwX ? RotateCW : RotateCCW;
+    m_rotateDirY = cwY ? RotateCW : RotateCCW;
+    m_rotateDirZ = cwZ ? RotateCW : RotateCCW;
+
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setRotateMode(RotateForever);
+        m_syncObject->setRotateSpeed(m_speedRotateX, m_speedRotateY, m_speedRotateZ);
+        m_syncObject->beginRotate(cwX, cwY, cwZ);
+    }
 }
 
 
@@ -562,6 +551,7 @@ void TransformBase::rotateBy(float advanceX, float advanceY, float advanceZ)
     m_isRotatingX = false;
     m_isRotatingY = false;
     m_isRotatingZ = false;
+
     m_rotateDirX = RotateNone;
     m_rotateDirY = RotateNone;
     m_rotateDirZ = RotateNone;
@@ -614,6 +604,13 @@ void TransformBase::rotateBy(float advanceX, float advanceY, float advanceZ)
             m_targetRotateZ = m_angleZ + advanceZ;
         }
     }
+
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setRotateMode(m_rotateMode);
+        m_syncObject->setRotateSpeed(m_speedRotateX, m_speedRotateY, m_speedRotateZ);
+        m_syncObject->rotateBy(advanceX, advanceY, advanceZ);
+    }
 }
 
 
@@ -625,38 +622,44 @@ void TransformBase::rotateTo(float target)
 
 void TransformBase::rotateTo(float targetX, float targetY, float targetZ)
 {
+    // Determines the rotate directions.
+    m_rotateDirX = (targetX < m_angleX) ? RotateCCW : RotateCW;
+    m_rotateDirY = (targetY < m_angleY) ? RotateCCW : RotateCW;
+    m_rotateDirZ = (targetZ < m_angleZ) ? RotateCCW : RotateCW;
+
+    m_isRotatingX = int(targetX) != m_angleX;
+    m_isRotatingY = int(targetY) != m_angleY;
+    m_isRotatingZ = int(targetZ) != m_angleZ;
+
     m_targetRotateX = targetX;
     m_targetRotateY = targetY;
     m_targetRotateZ = targetZ;
 
-    // Determines the rotate directions.
-    if (targetX < m_angleX) m_rotateDirX = RotateCCW;
-    else m_rotateDirX = RotateCW;
-    if (targetY < m_angleY) m_rotateDirY = RotateCCW;
-    else m_rotateDirY = RotateCW;
-    if (targetZ < m_angleZ) m_rotateDirZ = RotateCCW;
-    else m_rotateDirY = RotateCW;
-
-    m_isRotatingX = true;
-    m_isRotatingY = true;
-    m_isRotatingZ = true;
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setRotateMode(m_rotateMode);
+        m_syncObject->setRotateSpeed(m_speedRotateX, m_speedRotateY, m_speedRotateZ);
+        m_syncObject->rotateTo(targetX, targetY, targetZ);
+    }
 }
 
 
 void TransformBase::scaleTo(float scaleX, float scaleY)
 {
-    // Do not accept negative values.
-    m_targetScaleX = qAbs(scaleX);
-    m_targetScaleY = qAbs(scaleY);
+    m_isScalingX = scaleX != m_scaleX;
+    m_isScalingY = scaleY != m_scaleY;
 
-    // Calculates the target scale.
-    if (m_targetScaleX <= m_scaleX) m_scaleDirX = ScaleDown;
-    else m_scaleDirX = ScaleUp;
-    if (m_targetScaleY <= m_scaleY) m_scaleDirY = ScaleDown;
-    else m_scaleDirY = ScaleUp;
+    m_scaleDirX = (scaleX <= m_scaleX) ? ScaleDown : ScaleUp;
+    m_scaleDirY = (scaleY <= m_scaleY) ? ScaleDown : ScaleUp;
 
-    m_isScalingX = true;
-    m_isScalingY = true;
+    m_targetScaleX = scaleX;
+    m_targetScaleY = scaleY;
+
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setScaleSpeed(m_speedScaleX, m_speedScaleY);
+        m_syncObject->scaleTo(scaleX, scaleY);
+    }
 }
 
 
@@ -665,17 +668,25 @@ void TransformBase::fadeTo(float target)
     // Do not accept negative values.
     target = (float)(uchar) qAbs(target);
 
-    // Calculates the target opacity.
-    if (target <= m_opacity) m_fadeDir = FadeOut;
-    else m_fadeDir = FadeIn;
-
+    m_isFading = int(target) != int(m_opacity);
+    m_fadeDir = (target < m_opacity) ? FadeOut : FadeIn;
     m_targetOpacity = target;
-    m_isFading = true;
+
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->setFadeSpeed(m_speedFade);
+        m_syncObject->fadeTo(target);
+    }
 }
 
 
 void TransformBase::endMove()
 {
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->endMove();
+    }
+
     m_isMovingX = false;
     m_isMovingY = false;
 
@@ -685,6 +696,11 @@ void TransformBase::endMove()
 
 void TransformBase::endRotate()
 {
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->endRotate();
+    }
+
     m_isRotatingX = false;
     m_isRotatingY = false;
     m_isRotatingZ = false;
@@ -695,6 +711,11 @@ void TransformBase::endRotate()
 
 void TransformBase::endScale()
 {
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->endScale();
+    }
+
     m_isScalingX = false;
     m_isScalingY = false;
 
@@ -704,6 +725,11 @@ void TransformBase::endScale()
 
 void TransformBase::endFade()
 {
+    if (m_syncObject != nullptr)
+    {
+        m_syncObject->endFade();
+    }
+
     m_isFading = false;
 
     signals()->emitStoppedFading();
@@ -752,6 +778,18 @@ void TransformBase::copyTransform(TransformBase* src, TransformBase* dst, bool s
         dst->m_width   = src->m_width;
         dst->m_height  = src->m_height;
     }
+}
+
+
+void TransformBase::synchroniseWith(TransformBase* other)
+{
+    if (other == this)
+    {
+        cranError("TransformBase: Cannot synchronise an object with itself.");
+        return;
+    }
+
+    other->m_syncObject = this;
 }
 
 

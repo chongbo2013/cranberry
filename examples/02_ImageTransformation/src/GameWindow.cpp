@@ -76,7 +76,7 @@ void GameWindow::onInit()
     m_texture->moveTo(WINDOW_WIDTH - rc.width(), rc.y());
     m_texture->setRotateMode(RotateForever);
     m_texture->beginRotate();
-    m_texture->startScalingTo(0.25, 0.25);
+    m_texture->scaleTo(0.25, 0.25);
 
     // signals & slots
     QObject::connect(
@@ -151,10 +151,10 @@ void GameWindow::stoppedScaling()
 {
     if (m_texture->scaleDirectionX() == ScaleDown)
     {
-        m_texture->startScalingTo(0.5, 0.5);
+        m_texture->scaleTo(0.5, 0.5);
     }
     else
     {
-        m_texture->startScalingTo(0.25, 0.25);
+        m_texture->scaleTo(0.25, 0.25);
     }
 }
