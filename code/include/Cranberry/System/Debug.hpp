@@ -100,6 +100,11 @@ class StackWalker
 {
 public:
 
+    CRANBERRY_DEFAULT_CTOR(StackWalker)
+    CRANBERRY_DEFAULT_DTOR(StackWalker)
+    CRANBERRY_DISABLE_COPY(StackWalker)
+    CRANBERRY_DISABLE_MOVE(StackWalker)
+
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the stack trace at this point of execution.
     ///
