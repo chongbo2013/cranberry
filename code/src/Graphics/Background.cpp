@@ -64,7 +64,7 @@ void Background::setScrollView(const QRectF& view)
 }
 
 
-void Background::setScrollPosition(const QVector2D& pos)
+void Background::setScrollPosition(const QPointF& pos)
 {
     m_scrollX = pos.x();
     m_scrollY = pos.y();
@@ -83,21 +83,24 @@ void Background::setScrollMode(ScrollMode mode)
 }
 
 
-void Background::setScrollSpeed(const QVector2D& speed)
+void Background::setScrollSpeed(float speedX, float speedY)
 {
-    m_speedScrollX = speed.x();
-    m_speedScrollY = speed.y();
+    m_speedScrollX = speedX;
+    m_speedScrollY = speedY;
 }
 
 
-void Background::startScrolling(const QVector2D& advance)
+void Background::beginScroll()
 {
     if (m_scrollMode == ScrollInfinite)
     {
         m_isScrolling = true;
-        return;
     }
+}
 
+
+void Background::scrollBy(const QPointF& advance)
+{
     // Does not accept negative values. Directions are specified in function
     // Background::setScrollingDirection().
     float byX = qAbs(advance.x());
@@ -130,7 +133,33 @@ void Background::startScrolling(const QVector2D& advance)
 }
 
 
-void Background::stopScrolling()
+void Background::scrollTo(const QPointF& pos)
+{
+    m_scrollDir = MoveNone;
+
+    if (pos.x() > m_scrollX)
+    {
+        m_scrollDir |= MoveEast;
+    }
+    else
+    {
+        m_scrollDir |= MoveWest;
+    }
+
+    if (pos.y() > m_scrollY)
+    {
+        m_scrollDir |= MoveSouth;
+    }
+    else
+    {
+        m_scrollDir |= MoveNorth;
+    }
+
+    scrollBy(QPointF(qAbs(pos.x() - m_scrollX), qAbs(pos.y() - m_scrollY)));
+}
+
+
+void Background::endScroll()
 {
     m_isScrolling = false;
 }

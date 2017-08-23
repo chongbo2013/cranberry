@@ -76,15 +76,16 @@ public:
     /// \param pos Scroll position in pixels.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setScrollPosition(const QVector2D& pos);
+    void setScrollPosition(const QPointF& pos);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the scroll speed in both directions.
     ///
-    /// \param speed QVector2D containing X-speed and Y-speed.
+    /// \param speedX Speed in X-direction.
+    /// \param speedY Speed in Y-direction.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setScrollSpeed(const QVector2D& speed);
+    void setScrollSpeed(float speedX, float speedY);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the scroll mode (none, normal or infinite).
@@ -103,19 +104,33 @@ public:
     void setScrollDirection(MoveDirections dir);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Starts scrolling the background.
-    ///
-    /// \note The parameter is ignored if ScrollMode == ScrollInfinite.
-    /// \param advance QVector2D containing X-advance and Y-advance.
+    /// Begins scrolling the background, but only if the scroll mode is
+    /// ScrollInfinite.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void startScrolling(const QVector2D& advance = QVector2D());
+    void beginScroll();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Starts scrolling the background.
+    ///
+    /// \param advance QPointF containing X-advance and Y-advance.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void scrollBy(const QPointF& advance);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Scrolls the background to the given scroll \p pos.
+    ///
+    /// \param pos Position to scroll to.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void scrollTo(const QPointF& pos);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Terminates the scroll movement manually.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void stopScrolling();
+    void endScroll();
 
 
 public overridden:

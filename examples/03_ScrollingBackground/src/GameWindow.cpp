@@ -91,7 +91,7 @@ void GameWindow::onInit()
         m_background[i]->setScrollView(getView(i));
         m_background[i]->setBlendColor(getColor(i));
         m_background[i]->setBlendMode(BlendMultiply);
-        m_background[i]->startScrolling();
+        m_background[i]->beginScroll();
     }
 
     // m_linkText
