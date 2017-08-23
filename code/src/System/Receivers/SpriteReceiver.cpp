@@ -36,5 +36,5 @@ void SpriteReceiver::stoppedRunning()
 {
     if (!m_sprite) return;
 
-    m_sprite->stopMovement();
+    m_sprite->endMove();
 }

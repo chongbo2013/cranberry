@@ -228,7 +228,7 @@ void Sprite::destroy()
 }
 
 
-void Sprite::runMovement(const QString& n)
+void Sprite::beginMove(const QString& n)
 {
     if (m_isBlocking)
     {
@@ -237,7 +237,7 @@ void Sprite::runMovement(const QString& n)
     else if (m_isRunning && m_currentMove)
     {
         moveBy(m_currentMove->horizontalAdvance(), m_currentMove->verticalAdvance());
-        resumeMovement();
+        resumeMove();
         return;
     }
 
@@ -267,7 +267,7 @@ void Sprite::runMovement(const QString& n)
 }
 
 
-void Sprite::runIdle(const QString& n)
+void Sprite::beginIdle(const QString& n)
 {
     if (m_isBlocking)
     {
@@ -289,7 +289,7 @@ void Sprite::runIdle(const QString& n)
 }
 
 
-void Sprite::resumeMovement()
+void Sprite::resumeMove()
 {
     if (m_isBlocking || !m_currentMove)
     {
@@ -301,7 +301,7 @@ void Sprite::resumeMovement()
 }
 
 
-void Sprite::stopMovement()
+void Sprite::endMove()
 {
     if (!m_currentMove)
     {
