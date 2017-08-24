@@ -124,6 +124,53 @@ const QColor& Map::backgroundColor() const
 }
 
 
+const QVector<MapTileset*>& Map::tilesets() const
+{
+    return m_tilesets;
+}
+
+
+const QVector<MapLayer*>& Map::layers() const
+{
+    return m_layers;
+}
+
+
+MapLayer* Map::layerByName(const QString& name) const
+{
+    for (MapLayer* layer : m_layers)
+    {
+        if (layer->name() == name)
+        {
+            return layer;
+        }
+    }
+
+    return nullptr;
+}
+
+
+MapObject* Map::objectByName(const QString& name) const
+{
+    for (MapLayer* layer : m_layers)
+    {
+        if (layer->layerType() == LayerTypeObject)
+        {
+            const MapObjectLayer* ol = static_cast<MapObjectLayer*>(layer);
+            for (MapObject* o : ol->objects())
+            {
+                if (o->name() == name)
+                {
+                    return o;
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+
 const QMap<QString, QVariant>& Map::properties() const
 {
     return m_properties;
@@ -200,57 +247,7 @@ bool Map::create(const QString& mapPath, Window* rt)
     m_tileHeight = mapNode.attribute("tileheight").toInt();
     m_bgColor = getColorFromString(mapNode.attribute("backgroundcolor"));
 
-    QDomNodeList listTileset = mapNode.elementsByTagName("tileset");
-    QDomNodeList listLayer = mapNode.childNodes();
-
-    // Parses the tilesets.
-    for (int i = 0; i < listTileset.size(); i++)
-    {
-        QDomElement elem = listTileset.at(i).toElement();
-        MapTileset* tileset = new MapTileset;
-        if (!tileset->parse(&elem))
-        {
-            return cranError(ERRARG(e_02));
-        }
-
-        m_tilesets.append(tileset);
-    }
-
-    // Parses all the layers.
-    for (int i = 0; i < listLayer.size(); i++)
-    {
-        QDomElement node = listLayer.at(i).toElement();
-        if (node.nodeName() == "layer")
-        {
-            MapTileLayer* layer = new MapTileLayer(this);
-            if (!layer->parse(&node, m_tilesets, m_layers.size()))
-            {
-                return cranError(ERRARG(e_03));
-            }
-
-            m_layers.append(layer);
-        }
-        else if (node.nodeName() == "objectgroup")
-        {
-            MapObjectLayer* layer = new MapObjectLayer(this);
-            if (!layer->parse(&node, m_layers.size()))
-            {
-                return cranError(ERRARG(e_03));
-            }
-
-            m_layers.append(layer);
-        }
-    }
-
-    // Parses the properties.
-    QDomElement propsNode = mapNode
-            .elementsByTagName("properties")
-            .at(0)
-            .toElement();
-
-    getTmxProperties(&propsNode, m_properties);
-
-    return true;
+    return loadTilesets(&mapNode) && loadLayers(&mapNode) && loadProperties(&mapNode);
 }
 
 
@@ -292,21 +289,69 @@ void Map::render()
 }
 
 
-const QVector<MapTileset*>& Map::tilesets() const
-{
-    return m_tilesets;
-}
-
-
-const QVector<MapLayer*>& Map::layers() const
-{
-    return m_layers;
-}
-
-
 int Map::getTileIndex(int x, int y)
 {
     return y * m_tileWidth + x;
+}
+
+
+bool Map::loadTilesets(QDomElement* elem)
+{
+    QDomNodeList listTileset = elem->elementsByTagName("tileset");
+    for (int i = 0; i < listTileset.size(); i++)
+    {
+        QDomElement elem = listTileset.at(i).toElement();
+        MapTileset* tileset = new MapTileset;
+        if (!tileset->parse(&elem))
+        {
+            return cranError(ERRARG(e_02));
+        }
+
+        m_tilesets.append(tileset);
+    }
+
+    return true;
+}
+
+
+bool Map::loadLayers(QDomElement* elem)
+{
+    QDomNodeList listLayer = elem->childNodes();
+    for (int i = 0; i < listLayer.size(); i++)
+    {
+        QDomElement node = listLayer.at(i).toElement();
+        if (node.nodeName() == "layer")
+        {
+            MapTileLayer* layer = new MapTileLayer(this);
+            if (!layer->parse(&node, m_tilesets, m_layers.size()))
+            {
+                return cranError(ERRARG(e_03));
+            }
+
+            m_layers.append(layer);
+        }
+        else if (node.nodeName() == "objectgroup")
+        {
+            MapObjectLayer* layer = new MapObjectLayer(this);
+            if (!layer->parse(&node, m_layers.size()))
+            {
+                return cranError(ERRARG(e_03));
+            }
+
+            m_layers.append(layer);
+        }
+    }
+
+    return true;
+}
+
+
+bool Map::loadProperties(QDomElement* elem)
+{
+    QDomElement props = elem->elementsByTagName("properties").at(0).toElement();
+    getTmxProperties(&props, m_properties);
+
+    return true;
 }
 
 
