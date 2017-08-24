@@ -22,13 +22,15 @@
 // Cranberry headers
 #include <Cranberry/Game/Mapping/Events/ObjectEvent.hpp>
 #include <Cranberry/Game/Mapping/MapObject.hpp>
+#include <Cranberry/Game/Mapping/MapObjectLayer.hpp>
 
 
 CRANBERRY_USING_NAMESPACE
 
 
-ObjectEvent::ObjectEvent(MapObject* obj)
+ObjectEvent::ObjectEvent(const MapObject* obj, const MapObjectLayer* layer)
     : m_obj(obj)
+    , m_layer(layer)
     , m_isAccepted(true)
 {
 }
@@ -37,6 +39,12 @@ ObjectEvent::ObjectEvent(MapObject* obj)
 const MapObject& ObjectEvent::object() const
 {
     return *m_obj;
+}
+
+
+const MapObjectLayer& ObjectEvent::layer() const
+{
+    return *m_layer;
 }
 
 

@@ -29,6 +29,7 @@
 
 // Forward declarations
 CRANBERRY_FORWARD_C(MapObject)
+CRANBERRY_FORWARD_C(MapObjectLayer)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -55,9 +56,10 @@ public:
     /// Creates a new object event with the given cause object.
     ///
     /// \param obj Object that caused the event.
+    /// \param layer Layer on which the object resides.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    ObjectEvent(MapObject* obj);
+    ObjectEvent(const MapObject* obj, const MapObjectLayer* layer);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the associated object.
@@ -66,6 +68,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     const MapObject& object() const;
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the associated layer.
+    ///
+    /// \returns the layer.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    const MapObjectLayer& layer() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this event was accepted. Consider the following code:
@@ -104,8 +114,9 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    MapObject*   m_obj;
-    mutable bool m_isAccepted;
+    const MapObject*      m_obj;
+    const MapObjectLayer* m_layer;
+    mutable bool          m_isAccepted;
 };
 
 

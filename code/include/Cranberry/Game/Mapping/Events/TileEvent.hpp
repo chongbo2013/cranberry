@@ -59,7 +59,7 @@ public:
     /// \param tileset Tileset consisting of the tile.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    TileEvent(const MapTile& tile, MapTileLayer* layer, MapTileset* tileset);
+    TileEvent(const MapTile& tile, const MapTileLayer* layer, const MapTileset* tileset);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the tile causing the event.
@@ -112,10 +112,10 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    MapTile*           m_tile;
-    MapTileLayer*          m_layer;
-    MapTileProperties* m_properties;
-    mutable bool       m_isAccepted;
+    const MapTile*           m_tile;
+    const MapTileLayer*      m_layer;
+    const MapTileProperties* m_properties;
+    mutable bool             m_isAccepted;
 };
 
 

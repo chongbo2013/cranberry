@@ -21,10 +21,7 @@
 
 // Cranberry headers
 #include <Cranberry/Game/Mapping/MapObject.hpp>
-
-// Qt headers
-
-// Standard headers
+#include <Cranberry/Graphics/Base/RenderBase.hpp>
 
 
 CRANBERRY_USING_NAMESPACE
@@ -32,11 +29,18 @@ CRANBERRY_USING_NAMESPACE
 
 MapObject::MapObject()
     : m_id(-1)
-    , m_x(-1)
-    , m_y(-1)
-    , m_w(-1)
-    , m_h(-1)
+    , m_renderObject(nullptr)
+    , m_takeOwnership(false)
 {
+}
+
+
+MapObject::~MapObject()
+{
+    if (m_takeOwnership)
+    {
+        delete m_renderObject;
+    }
 }
 
 
@@ -52,27 +56,15 @@ int MapObject::id() const
 }
 
 
-int MapObject::x() const
+const QString& MapObject::name() const
 {
-    return m_x;
+    return m_name;
 }
 
 
-int MapObject::y() const
+const QString& MapObject::type() const
 {
-    return m_y;
-}
-
-
-int MapObject::width() const
-{
-    return m_w;
-}
-
-
-int MapObject::height() const
-{
-    return m_h;
+    return m_type;
 }
 
 
@@ -80,6 +72,12 @@ const QVariant& MapObject::propertyValue(const QString& property) const
 {
     auto it = m_properties.find(property);
     return it.value();
+}
+
+
+RenderBase* MapObject::renderObject() const
+{
+    return m_renderObject;
 }
 
 
@@ -95,25 +93,30 @@ void MapObject::setId(int id)
 }
 
 
-void MapObject::setX(int x)
+void MapObject::setName(const QString &name)
 {
-    m_x = x;
+    m_name = name;
 }
 
 
-void MapObject::setY(int y)
+void MapObject::setType(const QString &type)
 {
-    m_y = y;
+    m_type = type;
 }
 
 
-void MapObject::setWidth(int w)
+void MapObject::setRenderObject(RenderBase* obj, bool takeOwnership)
 {
-    m_w = w;
+    m_takeOwnership = takeOwnership;
+    m_renderObject = obj;
 }
 
 
-void MapObject::setHeight(int h)
+void MapObject::render()
 {
-    m_h = h;
+    if (m_renderObject != nullptr)
+    {
+        copyTransform(this, m_renderObject, true);
+        m_renderObject->render();
+    }
 }

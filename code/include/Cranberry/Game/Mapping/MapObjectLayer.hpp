@@ -20,115 +20,82 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GAME_MAPPING_MAPLAYER_HPP
-#define CRANBERRY_GAME_MAPPING_MAPLAYER_HPP
+#ifndef CRANBERRY_GAME_MAPPING_MAPOBJECTLAYER_HPP
+#define CRANBERRY_GAME_MAPPING_MAPOBJECTLAYER_HPP
 
 
 // Cranberry headers
-#include <Cranberry/Game/Mapping/Enumerations.hpp>
+#include <Cranberry/Game/Mapping/MapLayer.hpp>
+#include <Cranberry/Game/Mapping/MapObject.hpp>
+
+// Qt headers
+#include <QVector>
 
 // Forward declarations
-CRANBERRY_FORWARD_C(Map)
+CRANBERRY_FORWARD_Q(QDomElement)
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Abstraction between various layer types in TMX.
+/// Defines an object layer with multiple objects in it.
 ///
-/// \class MapLayer
+/// \class MapObjectLayer
 /// \author Nicolas Kogler
-/// \date August 23, 2017
+/// \date August 24, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT MapLayer
+class CRANBERRY_GAME_EXPORT MapObjectLayer final : public MapLayer
 {
 public:
 
-    CRANBERRY_DEFAULT_DTOR(MapLayer)
-    CRANBERRY_DISABLE_COPY(MapLayer)
-    CRANBERRY_DISABLE_MOVE(MapLayer)
+    CRANBERRY_DECLARE_DTOR(MapObjectLayer)
+    CRANBERRY_DISABLE_COPY(MapObjectLayer)
+    CRANBERRY_DISABLE_MOVE(MapObjectLayer)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Constructs a new MapLayer with the given Map as parent.
+    /// Constructs a new MapLTileayer with the given Map as parent.
     ///
     /// \param parent The parent of this layer.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    MapLayer(Map* parent = nullptr);
+    MapObjectLayer(Map* parent = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the parent map of this layer.
+    /// Retrieves a map object by name.
     ///
-    /// \returns the map.
+    /// \param name Name of the object.
+    /// \returns a nullptr if not successful.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    Map* map() const;
+    MapObject* objectByName(const QString& name) const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the name of this layer.
+    /// Retrieves all objects of that layer.
     ///
-    /// \returns the layer name.
+    /// \returns all objects.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    const QString& name() const;
+    const QVector<MapObject*>& objects() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the opacity of the layer.
+    /// Parses the given layer XML element.
     ///
-    /// \returns the layer opacity.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    float opacity() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the visibility of the layer.
-    ///
-    /// \returns true if the layer is visible.
+    /// \param xmlElement Layer element to parse.
+    /// \param layerId Index of this layer.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool isVisible() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// The position (index) of the layer in the entire map.
-    ///
-    /// \returns the layer index.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int layerId() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the X-offset of this layer.
-    ///
-    /// \returns the X-offset.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int offsetX() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the Y-offset of this layer.
-    ///
-    /// \returns the Y-offset.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int offsetY() const;
-
-    void setName(const QString& name);
-    void setOpacity(float opac);
-    void setVisibility(bool visible);
-    void setLayerId(int id);
-    void setOffsetX(int x);
-    void setOffsetY(int y);
+    bool parse(QDomElement* xmlElement, int layerId);
 
 
-public overridable:
+public overridden:
 
     ////////////////////////////////////////////////////////////////////////////
     // Virtual functions
     ////////////////////////////////////////////////////////////////////////////
-    virtual LayerType layerType() const = 0;
-    virtual void render() = 0;
+    LayerType layerType() const override;
+    void render() override;
 
 
 private:
@@ -136,18 +103,12 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    Map*    m_parent;
-    QString m_name;
-    float   m_opacity;
-    bool    m_isVisible;
-    int     m_layerId;
-    int     m_offsetX;
-    int     m_offsetY;
+    QVector<MapObject*> m_objects;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class MapLayer
+/// \class MapObjectLayer
 /// \ingroup Game
 ///
 /// More detailed description, code examples.

@@ -25,7 +25,6 @@
 
 
 // Cranberry headers
-#include <Cranberry/Game/Mapping/MapTileLayer.hpp>
 #include <Cranberry/Game/Mapping/MapObject.hpp>
 #include <Cranberry/Game/Mapping/MapTileset.hpp>
 #include <Cranberry/Game/Mapping/Events/TileEvent.hpp>
@@ -279,7 +278,6 @@ protected:
     ////////////////////////////////////////////////////////////////////////////
     const QVector<MapTileset*>& tilesets() const;
     const QVector<MapLayer*>& layers() const;
-    const QVector<MapObject>& objects() const;
 
 
 private:
@@ -288,6 +286,8 @@ private:
     // Functions
     ////////////////////////////////////////////////////////////////////////////
     int getTileIndex(int, int);
+    bool movePlayerByTiles(int, int);
+    bool movePlayerByPixels(int, int);
     void updateTileMovement(double);
 
     ////////////////////////////////////////////////////////////////////////////
@@ -313,8 +313,6 @@ private:
     QColor                  m_bgColor;
     QVector<MapLayer*>      m_layers;
     QVector<MapTileset*>    m_tilesets;
-    QVector<MapObject>      m_objects;
-    QVector<MapObject*>     m_aboutStepObjs;
     QMap<QString, QVariant> m_properties;
 };
 

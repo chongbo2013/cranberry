@@ -50,8 +50,8 @@ class CRANBERRY_GAME_EXPORT MapTileLayer final : public MapLayer
 public:
 
     CRANBERRY_DECLARE_DTOR(MapTileLayer)
-    CRANBERRY_DEFAULT_COPY(MapTileLayer)
-    CRANBERRY_DEFAULT_MOVE(MapTileLayer)
+    CRANBERRY_DISABLE_COPY(MapTileLayer)
+    CRANBERRY_DISABLE_MOVE(MapTileLayer)
 
     ////////////////////////////////////////////////////////////////////////////
     /// Constructs a new MapLTileayer with the given Map as parent.
@@ -98,6 +98,7 @@ public:
     ///
     /// \param xmlElement Layer element to parse.
     /// \param tilesets Tilesets to use.
+    /// \param layerId Index of this layer.
     ///
     ////////////////////////////////////////////////////////////////////////////
     bool parse(

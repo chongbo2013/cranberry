@@ -25,12 +25,15 @@
 
 
 // Cranberry headers
-#include <Cranberry/Config.hpp>
+#include <Cranberry/Graphics/Base/TransformBase.hpp>
 
 // Qt headers
 #include <QMap>
 #include <QString>
 #include <QVariant>
+
+// Forward declarations
+CRANBERRY_FORWARD_C(RenderBase)
 
 
 CRANBERRY_BEGIN_NAMESPACE
@@ -45,14 +48,14 @@ CRANBERRY_BEGIN_NAMESPACE
 /// \date August 19, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT MapObject
+class CRANBERRY_GAME_EXPORT MapObject : public TransformBase
 {
 public:
 
     CRANBERRY_DECLARE_CTOR(MapObject)
-    CRANBERRY_DEFAULT_DTOR(MapObject)
-    CRANBERRY_DEFAULT_COPY(MapObject)
-    CRANBERRY_DEFAULT_MOVE(MapObject)
+    CRANBERRY_DECLARE_DTOR(MapObject)
+    CRANBERRY_DISABLE_COPY(MapObject)
+    CRANBERRY_DISABLE_MOVE(MapObject)
 
     ////////////////////////////////////////////////////////////////////////////
     /// Determines whether this object is null.
@@ -71,36 +74,20 @@ public:
     int id() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the absolute X-position of this object.
+    /// Retrieves the name of this object.
     ///
-    /// \returns the X-position, in pixels.
+    /// \returns the name.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    int x() const;
+    const QString& name() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the absolute Y-position of this object.
+    /// Retrieves the type of this object (e.g. "npc" or "warp").
     ///
-    /// \returns the Y-position, in pixels.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int y() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the width of this object.
-    ///
-    /// \returns the width, in pixels.
+    /// \returns the type.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    int width() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the height of this object.
-    ///
-    /// \returns the height, in pixels.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    int height() const;
+    const QString& type() const;
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the value of the property \p property.
@@ -112,6 +99,14 @@ public:
     const QVariant& propertyValue(const QString& property) const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the associated render object of this object.
+    ///
+    /// \returns the render object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    RenderBase* renderObject() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the modifiable property map.
     ///
     /// \returns the property map.
@@ -119,11 +114,46 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     QMap<QString, QVariant>& properties();
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the global ID of this object.
+    ///
+    /// \param id Global ID.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
     void setId(int id);
-    void setX(int x);
-    void setY(int y);
-    void setWidth(int w);
-    void setHeight(int h);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the name of this object.
+    ///
+    /// \param name New name of the object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setName(const QString& name);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the type of this object.
+    ///
+    /// \param type New type of the object.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setType(const QString& type);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the object to be rendered when calling render().
+    ///
+    /// \param obj RenderBase object to render.
+    /// \param takeOwnership If true, the object will be deleted automatically.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setRenderObject(RenderBase* obj, bool takeOwnership = false);
+
+
+public overridable:
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Virtual functions
+    ////////////////////////////////////////////////////////////////////////////
+    virtual void render();
 
 
 private:
@@ -132,11 +162,12 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     int                     m_id;
-    int                     m_x;
-    int                     m_y;
-    int                     m_w;
-    int                     m_h;
+    QString                 m_name;
+    QString                 m_type;
     QMap<QString, QVariant> m_properties;
+    RenderBase*             m_renderObject;
+    bool                    m_takeOwnership;
+
 };
 
 

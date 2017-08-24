@@ -162,7 +162,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the absolute width, in pixels. To get the visible width, issue
-    /// a call to TransformBase::bounds().boundingRect().width().
+    /// a call to TransformBase::visibleBounds().width().
     ///
     /// \returns the width.
     ///
@@ -171,7 +171,7 @@ public:
 
     ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the absolute height, in pixels. To get the visible height,
-    /// issue a call to TransformBase::bounds().boundingRect().height().
+    /// issue a call to TransformBase::visibleBounds().height().
     ///
     /// \returns the height.
     ///

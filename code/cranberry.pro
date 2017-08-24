@@ -115,7 +115,8 @@ HEADERS     +=      include/Cranberry/Config.hpp \
     include/Cranberry/Game/Mapping/Events/TileEvent.hpp \
     include/Cranberry/Game/Mapping/Events/ObjectEvent.hpp \
     include/Cranberry/Game/Mapping/MapTileLayer.hpp \
-    include/Cranberry/Game/Mapping/MapLayer.hpp
+    include/Cranberry/Game/Mapping/MapLayer.hpp \
+    include/Cranberry/Game/Mapping/MapObjectLayer.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -180,7 +181,8 @@ SOURCES     +=      src/System/Debug.cpp \
     src/Game/Mapping/Events/TileEvent.cpp \
     src/Game/Mapping/Events/ObjectEvent.cpp \
     src/Game/Mapping/MapTileLayer.cpp \
-    src/Game/Mapping/MapLayer.cpp
+    src/Game/Mapping/MapLayer.cpp \
+    src/Game/Mapping/MapObjectLayer.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

@@ -259,5 +259,9 @@ LayerType MapTileLayer::layerType() const
 
 void MapTileLayer::render()
 {
+    // Convert position to integer due to rendering artifacts.
+    m_tileMap->setX((int) offsetX() + map()->x());
+    m_tileMap->setY((int) offsetY() + map()->y());
+    m_tileMap->setOpacity(opacity() + map()->opacity());
     m_tileMap->render();
 }
