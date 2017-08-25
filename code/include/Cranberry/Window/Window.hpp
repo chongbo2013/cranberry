@@ -261,9 +261,9 @@ private:
 /// you need for your game and put your game logic inside them.
 ///
 /// \code
-/// class MyWindow final : public cran::Window
+/// class MyWindow final : public Window
 /// {
-/// protected:
+/// protected overridden:
 ///
 ///     void onInit() override;
 ///     void onExit() override;
