@@ -30,25 +30,31 @@
 // Qt headers
 #include <QBrush>
 #include <QPainter>
+#include <QOffscreenSurface>
 #include <QPainterPath>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions>
-#include <QOpenGLTexture>
+#include <QOpenGLFramebufferObject>
 #include <QTextDocumentFragment>
 
-
-CRANBERRY_USING_NAMESPACE
-
-
+// Constants
 CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - Cannot render invalid object.")
 CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Texture could not be created.")
 CRANBERRY_CONST_VAR(qint32, c_maxSize, 4096)
+
+// Macroes
+#define qsf(x) (QSize(x.width(), x.height()))
+
+
+CRANBERRY_USING_NAMESPACE
 
 
 Text::Text()
     : RenderBase()
     , m_textPen(new QPen(Qt::white))
     , m_outlineBrush(new QBrush(Qt::black))
-    , m_texture(new TextureBase)
+    , m_fbo(nullptr)
+    , m_batch(nullptr)
     , m_outlineWidth(0)
     , m_columnLimit(-1)
     , m_rowLimit(-1)
@@ -65,7 +71,8 @@ Text::~Text()
 {
     delete m_textPen;
     delete m_outlineBrush;
-    delete m_texture;
+
+    destroy();
 }
 
 
@@ -151,16 +158,34 @@ void Text::setOutlineWidth(int width)
 
 bool Text::create(Window* rt)
 {
-    if (!RenderBase::create(rt)) return false;
+    if (!RenderBase::create(rt))
+    {
+        return false;
+    }
 
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    m_fbo = new QOpenGLFramebufferObject(qsf(approximateSize()), QOpenGLFramebufferObject::CombinedDepthStencil);
+    m_batch = new SpriteBatch();
+
+    if (!m_fbo->isValid() || !m_batch->create(m_fbo, renderTarget()))
+    {
+        return false;
+    }
+
+    m_lastWidth = m_fbo->width();
+    m_lastHeight = m_fbo->height();
+    m_paintDevice = new QOpenGLPaintDevice(m_fbo->width(), m_fbo->height());
+
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.text"));
+
     return true;
 }
 
 
 void Text::destroy()
 {
-    if (!m_texture->isNull()) m_texture->destroy();
+    delete m_fbo;
+    delete m_batch;
+    delete m_paintDevice;
 
     RenderBase::destroy();
 }
@@ -171,8 +196,8 @@ void Text::update(const GameTime& time)
     updateTransform(time);
 
     // Copies all transformations.
-    m_texture->setShaderProgram(shaderProgram());
-    m_texture->copyTransform(this, m_texture);
+    m_batch->setShaderProgram(shaderProgram());
+    m_batch->copyTransform(this, m_batch);
 }
 
 
@@ -182,23 +207,27 @@ void Text::render()
     {
         return;
     }
-    else if (m_textUpdate)
+
+    if (m_textUpdate)
     {
         updateTexture();
         m_textUpdate = false;
     }
 
-    m_texture->render();
+    // Specifies the outline width in the shader.
+    OpenGLShader* shader = OpenGLDefaultShaders::get("cb.glsl.text");
+    int uloc = shader->uniformLocation("u_outlineWidth");
+    if (uloc != -1)
+    {
+        shader->setUniformValue(uloc, m_outlineWidth);
+    }
+
+    m_batch->render();
 }
 
 
 void Text::updateTexture()
 {
-    if (m_texture->isNull())
-    {
-        createTexture();
-    }
-
     auto size = measureText();
     if (size.width() > m_lastWidth || size.height() > m_lastHeight)
     {
@@ -209,28 +238,10 @@ void Text::updateTexture()
 }
 
 
-void Text::createTexture()
-{
-    QOpenGLTexture* texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-    if (!texture->create())
-    {
-        cranError(ERRARG(e_02));
-        delete texture;
-        return;
-    }
-
-    // Smoothen the texture and avoid pixel fragments.
-    texture->setMinificationFilter(QOpenGLTexture::Linear);
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
-    texture->setWrapMode(QOpenGLTexture::ClampToEdge);
-
-    // Creates a new ITexture on base of the QOpenGLTexture.
-    m_texture->create(texture, renderTarget());
-}
-
-
 void Text::resizeTexture(QSizeF base)
 {
+    delete m_fbo;
+
     // Finds a suitable size for the texture.
     float w, h;
     if (m_columnLimit <= 0 || m_rowLimit <= 0)
@@ -240,24 +251,16 @@ void Text::resizeTexture(QSizeF base)
     }
     else
     {
-        auto s = findPerfectSize();
+        // Restricts the size, no matter what.
+        auto s = approximateSize();
         w = s.width();
         h = s.height();
     }
 
-    m_texture->texture()->bind();
+    m_fbo = new QOpenGLFramebufferObject(QSize(w, h), QOpenGLFramebufferObject::CombinedDepthStencil);
+    m_batch->destroy();
+    m_batch->create(m_fbo, renderTarget());
 
-    // Allocates storage for the texture, without initial pixel data.
-    glDebug(gl->glTexImage2D(
-                GL_TEXTURE_2D,  GL_ZERO, GL_RGBA8,
-                int(w), int(h), GL_ZERO, GL_RGBA,
-                GL_UNSIGNED_BYTE, nullptr
-                ));
-
-    m_texture->texture()->release();
-    m_texture->setSize(w, h);
-    m_texture->setOrigin(w / 2.0, h / 2.0);
-    m_texture->setSourceRectangle(0.0, 0.0, w, h);
     m_lastWidth = w;
     m_lastHeight = h;
 }
@@ -268,12 +271,12 @@ void Text::renderToTexture()
     QFontMetrics fm(m_font);
     QPoint pt(m_outlineWidth / 2, m_outlineWidth / 2);
 
-    // Base image
-    QImage img = QImage(width(), height(), QImage::Format_RGBA8888);
-    img.fill(Qt::transparent);
+    m_fbo->bind();
 
     // Rendering hints
-    QPainter painter(&img);
+    QPainter painter;
+    painter.begin(m_paintDevice);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter.setRenderHints(
             QPainter::HighQualityAntialiasing |
             QPainter::SmoothPixmapTransform   |
@@ -281,9 +284,10 @@ void Text::renderToTexture()
             QPainter::Antialiasing
             );
 
-    // Outline test
+    // Outline
     if (m_outlineWidth > 0)
     {
+        QColor oc = outlineColor();
         QPainterPathStroker stroker;
         stroker.setJoinStyle(Qt::RoundJoin);
         stroker.setCapStyle(Qt::RoundCap);
@@ -292,39 +296,36 @@ void Text::renderToTexture()
         QPainterPath ppath;
         ppath.addText(pt.x(), pt.y() + fm.ascent() - 0.5, m_font, m_text);
         painter.setBrush(*m_outlineBrush);
-        painter.setPen(Qt::NoPen);
+        painter.setPen(QColor(oc.red(), oc.blue(), oc.green(), 96));
         painter.drawPath(stroker.createStroke(ppath));
     }
 
     // Appearance
     painter.setFont(m_font);
+    painter.setBrush(Qt::NoBrush);
     painter.setPen(*m_textPen);
 
     // Text
-    painter.drawText(QRect(pt, img.size()), m_text, m_options);
+    painter.drawText(QRect(pt, m_fbo->size()), m_text, m_options);
     painter.end();
 
-    m_texture->texture()->bind();
-
-    // Renders all pixels into the texture.
-    glDebug(gl->glTexSubImage2D(
-                GL_TEXTURE_2D, GL_ZERO,
-                0, 0, img.width(), img.height(),
-                GL_RGBA, GL_UNSIGNED_BYTE, img.constBits()
-                ));
-
-    m_texture->texture()->release();
+    // QPainter changes viewport, blending, smoothing and depth testing,
+    // therefore we have to restore states before rendering cranberry objects.
+    renderTarget()->restoreOpenGLSettings();
 }
 
 
 void Text::recalcSize()
 {
     QSizeF s = measureText();
-    setSize(s.width(), s.height());
+    setSize(s);
+
+    // Resize the paint device, otherwise text may be rendered out-of-bounds.
+    m_paintDevice->setSize(qsf(s));
 }
 
 
-QSizeF Text::findPerfectSize()
+QSizeF Text::approximateSize()
 {
     QFontMetrics fm(m_font);
     QSize sz = fm.boundingRect('x').size();
@@ -336,7 +337,7 @@ QSizeF Text::findPerfectSize()
     if ((sz.width() % 2) != 0) sz.rwidth() += 1;
     if ((sz.height() % 2) != 0) sz.rheight() += 1;
 
-    return sz;
+    return sz.isEmpty() ? QSizeF(8, 8) : sz;
 }
 
 
@@ -354,7 +355,7 @@ QSizeF Text::measureText()
     sz.setWidth(sz.width() + m_outlineWidth);
     sz.setHeight(sz.height() + m_outlineWidth);
 
-    // Align to power of 2.
+    // Align to power of 2 due to restrictions on some hardware.
     if ((sz.width() % 2) != 0) sz.rwidth() += 1;
     if ((sz.height() % 2) != 0) sz.rheight() += 1;
 

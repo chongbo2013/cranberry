@@ -115,6 +115,7 @@ void OpenGLDefaultShaders::cranberryLoadDefaultShaders()
     add("cb.glsl.blur", cranberryGetShader("blur"));
     add("cb.glsl.pixel", cranberryGetShader("pixel"));
     add("cb.glsl.tilemap", cranberryGetShader("tilemap"));
+    add("cb.glsl.text", cranberryGetShader("text"));
 
     // Updatable shaders
     add("cb.glsl.film", cranberryGetShader("film"), true);
@@ -137,6 +138,7 @@ void OpenGLDefaultShaders::cranberryFreeDefaultShaders()
     remove("cb.glsl.fisheye");
     remove("cb.glsl.radialblur");
     remove("cb.glsl.tilemap");
+    remove("cb.glsl.text");
 }
 
 

@@ -11,7 +11,7 @@
 ## GENERAL SETTINGS
 ##
 ################################################################################
-QT             +=       widgets gamepad qml quick xml
+QT             +=       widgets gamepad qml quick xml gui core
 CONFIG         +=       c++11 exceptions no_keywords
 DEFINES        +=       CRANBERRY_BUILD
 DEFINES        +=       CRANBERRY_VERSION=\\\"1.0.0\\\"
@@ -111,15 +111,15 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Game/Mapping/Enumerations.hpp \
                     include/Cranberry/Input/Enumerations.hpp \
                     include/Cranberry/Game/Mapping/Map.hpp \
-    include/Cranberry/Game/Mapping/MapObject.hpp \
-    include/Cranberry/Game/Mapping/Events/TileEvent.hpp \
-    include/Cranberry/Game/Mapping/Events/ObjectEvent.hpp \
-    include/Cranberry/Game/Mapping/MapTileLayer.hpp \
-    include/Cranberry/Game/Mapping/MapLayer.hpp \
-    include/Cranberry/Game/Mapping/MapObjectLayer.hpp \
-    include/Cranberry/Game/Mapping/MapPlayer.hpp \
-    include/Cranberry/System/Emitters/MapPlayerEmitter.hpp \
-    include/Cranberry/System/Receivers/MapPlayerReceiver.hpp
+                    include/Cranberry/Game/Mapping/MapObject.hpp \
+                    include/Cranberry/Game/Mapping/Events/TileEvent.hpp \
+                    include/Cranberry/Game/Mapping/Events/ObjectEvent.hpp \
+                    include/Cranberry/Game/Mapping/MapTileLayer.hpp \
+                    include/Cranberry/Game/Mapping/MapLayer.hpp \
+                    include/Cranberry/Game/Mapping/MapObjectLayer.hpp \
+                    include/Cranberry/Game/Mapping/MapPlayer.hpp \
+                    include/Cranberry/System/Emitters/MapPlayerEmitter.hpp \
+                    include/Cranberry/System/Receivers/MapPlayerReceiver.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -180,14 +180,14 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Game/Mapping/MapEnumerations.cpp \
                     src/Graphics/Base/GraphicsEnumerations.cpp \
                     src/Game/Mapping/Map.cpp \
-    src/Game/Mapping/MapObject.cpp \
-    src/Game/Mapping/Events/TileEvent.cpp \
-    src/Game/Mapping/Events/ObjectEvent.cpp \
-    src/Game/Mapping/MapTileLayer.cpp \
-    src/Game/Mapping/MapLayer.cpp \
-    src/Game/Mapping/MapObjectLayer.cpp \
-    src/Game/Mapping/MapPlayer.cpp \
-    src/System/Receivers/MapPlayerReceiver.cpp
+                    src/Game/Mapping/MapObject.cpp \
+                    src/Game/Mapping/Events/TileEvent.cpp \
+                    src/Game/Mapping/Events/ObjectEvent.cpp \
+                    src/Game/Mapping/MapTileLayer.cpp \
+                    src/Game/Mapping/MapLayer.cpp \
+                    src/Game/Mapping/MapObjectLayer.cpp \
+                    src/Game/Mapping/MapPlayer.cpp \
+                    src/System/Receivers/MapPlayerReceiver.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp

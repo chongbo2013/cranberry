@@ -25,10 +25,11 @@
 
 
 // Cranberry headers
-#include <Cranberry/Graphics/Base/TextureBase.hpp>
+#include <Cranberry/Graphics/SpriteBatch.hpp>
 
 // Qt headers
 #include <QFont>
+#include <QOpenGLPaintDevice>
 #include <QTextOption>
 
 // Forward declarations
@@ -252,29 +253,30 @@ private:
     // Functions
     ////////////////////////////////////////////////////////////////////////////
     void updateTexture();
-    void createTexture();
     void resizeTexture(QSizeF);
     void renderToTexture();
     void recalcSize();
-    auto findPerfectSize() -> QSizeF;
+    auto approximateSize() -> QSizeF;
     auto measureText() -> QSizeF;
 
     ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    TreeModelItem* m_rootModelItem;
-    QString        m_text;
-    QFont          m_font;
-    QPen*          m_textPen;
-    QBrush*        m_outlineBrush;
-    QTextOption    m_options;
-    TextureBase*   m_texture;
-    int            m_outlineWidth;
-    int            m_columnLimit;
-    int            m_rowLimit;
-    float          m_lastWidth;
-    float          m_lastHeight;
-    bool           m_textUpdate;
+    TreeModelItem*            m_rootModelItem;
+    QString                   m_text;
+    QFont                     m_font;
+    QPen*                     m_textPen;
+    QBrush*                   m_outlineBrush;
+    QTextOption               m_options;
+    QOpenGLPaintDevice*       m_paintDevice;
+    QOpenGLFramebufferObject* m_fbo;
+    SpriteBatch*              m_batch;
+    int                       m_outlineWidth;
+    int                       m_columnLimit;
+    int                       m_rowLimit;
+    float                     m_lastWidth;
+    float                     m_lastHeight;
+    bool                      m_textUpdate;
 };
 
 

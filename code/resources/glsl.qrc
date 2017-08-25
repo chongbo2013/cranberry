@@ -24,5 +24,7 @@
         <file>glsl/radialblur_frag.glsl</file>
         <file>glsl/tilemap_vert.glsl</file>
         <file>glsl/tilemap_frag.glsl</file>
+        <file>glsl/text_vert.glsl</file>
+        <file>glsl/text_frag.glsl</file>
     </qresource>
 </RCC>
