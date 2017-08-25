@@ -160,14 +160,14 @@ void GuiManager::destroy()
     makeCurrent();
     renderTarget()->unregisterQmlWindow(this);
 
+    delete m_fbo;
     delete m_qmlComponent;
     delete m_rootItem;
 
+    m_fbo = nullptr;
     m_qmlComponent = nullptr;
     m_rootItem = nullptr;
 
-    // Make batch reusable.
-    renderTarget()->makeCurrent();
     m_batch->destroy();
 }
 

@@ -63,6 +63,7 @@ SpriteBatch::SpriteBatch()
     , m_frameTexture(0)
     , m_msFrameTexture(0)
     , m_isEmbedded(false)
+    , m_takeOwnership(false)
 {
     m_vertices.at(0).rgba(1, 1, 1, 1);
     m_vertices.at(1).rgba(1, 1, 1, 1);
@@ -97,9 +98,14 @@ bool SpriteBatch::create(Window* rt)
 }
 
 
-bool SpriteBatch::create(QOpenGLFramebufferObject* fbo, Window* rt)
+bool SpriteBatch::create(
+    QOpenGLFramebufferObject* fbo,
+    Window* rt,
+    bool takeOwnership
+    )
 {
     m_fbo = fbo;
+    m_takeOwnership = takeOwnership;
 
     return createInternal(rt) && createData() && writeData();
 }
@@ -504,7 +510,7 @@ void SpriteBatch::destroyFboRbo()
             m_msFrameTexture = 0;
         }
     }
-    else
+    else if (m_takeOwnership)
     {
         delete m_fbo;
         m_fbo = nullptr;

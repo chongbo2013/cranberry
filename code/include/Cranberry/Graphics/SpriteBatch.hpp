@@ -118,10 +118,15 @@ public:
     ///
     /// \param fbo Existing fbo with attached texture.
     /// \param renderTarget Target to render batch on.
+    /// \param takeOwnership If true, deletes the given FBO automatically.
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool create(QOpenGLFramebufferObject* fbo, Window* renderTarget = nullptr);
+    bool create(
+            QOpenGLFramebufferObject* fbo,
+            Window* renderTarget = nullptr,
+            bool takeOwnership = false
+            );
 
     ////////////////////////////////////////////////////////////////////////////
     /// Adds a new renderable object and puts it at the end of the list.
@@ -265,6 +270,7 @@ private:
     uint                      m_frameTexture;
     uint                      m_msFrameTexture;
     bool                      m_isEmbedded;
+    bool                      m_takeOwnership;
 };
 
 

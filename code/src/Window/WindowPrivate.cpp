@@ -37,6 +37,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QOpenGLExtraFunctions>
+#include <QOpenGLFramebufferObject>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
@@ -74,6 +75,7 @@ priv::WindowPrivate::WindowPrivate(cran::Window* w)
     QSurfaceFormat fmt = format();
     fmt.setDepthBufferSize(24);
     fmt.setStencilBufferSize(8);
+    fmt.setSamples(8);
 
     // Determines between OpenGL and GLES API.
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL)
@@ -147,6 +149,7 @@ void priv::WindowPrivate::restoreOpenGLSettings()
     glDebug(m_gl->glDisable(GL_DEPTH_TEST));
     glDebug(m_gl->glDepthMask(GL_FALSE));
     glDebug(context()->extraFunctions()->glBindVertexArray(m_vao));
+    glDebug(QOpenGLFramebufferObject::bindDefault());
 }
 
 
