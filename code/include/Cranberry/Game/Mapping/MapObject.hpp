@@ -186,10 +186,10 @@ private:
 /// {
 ///     if (!event.object().isNull())
 ///     {
-///         // We are stepping on an actual object now.
+///         // We are stepping on an actual object now
 ///         if (event.object().propertyValue("type").toString() == "warp")
 ///         {
-///             // Extract map/position/whatever out of other properties.
+///             // Extract warp data out of other properties
 ///         }
 ///     }
 /// }

@@ -81,16 +81,16 @@ void GameWindow::onInit()
     // signals & slots
     QObject::connect(
             m_texture->signals(),
-            &TransformBaseEmitter::stoppedMoving,
+            &TransformBaseEmitter::finishedMove,
             this,
-            &GameWindow::stoppedMoving
+            &GameWindow::moveFinished
             );
 
     QObject::connect(
             m_texture->signals(),
-            &TransformBaseEmitter::stoppedScaling,
+            &TransformBaseEmitter::finishedScale,
             this,
-            &GameWindow::stoppedScaling
+            &GameWindow::scaleFinished
             );
 }
 
@@ -133,7 +133,7 @@ void GameWindow::onRender()
 }
 
 
-void GameWindow::stoppedMoving()
+void GameWindow::moveFinished()
 {
     auto rc = m_texture->visibleBounds();
     if (m_texture->moveDirection() & MoveEast)
@@ -147,7 +147,7 @@ void GameWindow::stoppedMoving()
 }
 
 
-void GameWindow::stoppedScaling()
+void GameWindow::scaleFinished()
 {
     if (m_texture->scaleDirectionX() == ScaleDown)
     {

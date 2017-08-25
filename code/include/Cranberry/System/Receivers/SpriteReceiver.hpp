@@ -59,7 +59,7 @@ public:
 
 public Q_SLOTS:
 
-    void stoppedRunning();
+    void finishedMove();
 
 
 private:

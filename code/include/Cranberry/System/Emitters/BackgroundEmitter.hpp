@@ -52,11 +52,11 @@ public:
     CRANBERRY_DEFAULT_MOVE(BackgroundEmitter)
 
 
-    inline void emitStoppedScrolling() { Q_EMIT stoppedScrolling(); }
+    inline void emitFinishedScroll() { Q_EMIT finishedScroll(); }
 
 Q_SIGNALS:
 
-    void stoppedScrolling();
+    void finishedScroll();
 
 
 private:

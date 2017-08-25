@@ -123,17 +123,17 @@ private:
 /// warping or animations.
 ///
 /// \code
-/// void onAboutStepTile(const TileEvent& e)
+/// void onAboutStepTile(const TileEvent& event)
 /// {
-///     if (e.properties().value("solid").toBool())
+///     if (event.properties().value("solid").toBool())
 ///     {
-///         e.reject(); // do not step on tile
+///         event.reject(); // do not step on tile
 ///     }
 /// }
 ///
-/// void onStepTile(const TileEvent& e)
+/// void onStepTile(const TileEvent& event)
 /// {
-///     if (e.properties().value("warp").isValid())
+///     if (event.properties().value("warp").isValid())
 ///     {
 ///         // do some warp stuff
 ///     }

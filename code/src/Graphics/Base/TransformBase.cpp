@@ -690,7 +690,7 @@ void TransformBase::endMove()
     m_isMovingX = false;
     m_isMovingY = false;
 
-    signals()->emitStoppedMoving();
+    signals()->emitFinishedMove();
 }
 
 
@@ -705,7 +705,7 @@ void TransformBase::endRotate()
     m_isRotatingY = false;
     m_isRotatingZ = false;
 
-    signals()->emitStoppedRotating();
+    signals()->emitFinishedRotate();
 }
 
 
@@ -719,7 +719,7 @@ void TransformBase::endScale()
     m_isScalingX = false;
     m_isScalingY = false;
 
-    signals()->emitStoppedScaling();
+    signals()->emitFinishedScale();
 }
 
 
@@ -732,7 +732,7 @@ void TransformBase::endFade()
 
     m_isFading = false;
 
-    signals()->emitStoppedFading();
+    signals()->emitFinishedFade();
 }
 
 

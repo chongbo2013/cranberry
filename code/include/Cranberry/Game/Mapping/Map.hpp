@@ -195,7 +195,7 @@ public overridden:
     virtual void render();
 
 
-public overridable:
+protected overridable:
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player is about to step on a tile.
@@ -275,11 +275,44 @@ private:
 /// \class Map
 /// \ingroup Game
 ///
-/// More detailed description, code examples.
+/// Renders multiple map layers and objects.
 ///
 /// \code
+/// Map map;
+/// map.create(":/maps/map.tmx");
+/// map.player()->setTileX(8);  // set initial X-position
+/// map.player()->setTileY(10); // set initial Y-position
+/// map.player()->setRenderObject(myObj); // set object to render as player
+///
 /// ...
+///
+/// map.render();
 /// \endcode
+///
+/// Of course, it is also possible to sublass the map class and reorder the
+/// layers and the player as desired or change tile/object behaviours.
+///
+/// \code
+/// class MyMap : public Map
+/// {
+/// public overridden:
+///
+///     // Call base method, then implement custom loading (e.g. spawnpoints).
+///     bool create(const QString& mapPath, Window* renderTarget) override;
+///
+///     // Render layers in a custom order.
+///     void render() override;
+///
+/// protected overridden:
+///
+///     // Custom behaviour when the player is about to step on a tile. See the
+///     // TileEvent docs to see possible use cases.
+///     void onAboutStepTile(const TileEvent& event) override;
+/// };
+/// \endcode
+///
+/// You can even change the layer and appearance of the player when a certain
+/// tile is being stepped on. Be creative!
 ///
 ////////////////////////////////////////////////////////////////////////////////
 

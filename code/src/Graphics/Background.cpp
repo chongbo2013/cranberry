@@ -180,7 +180,7 @@ void Background::update(const GameTime& time)
                 m_scrollX = m_targetScrollX;
                 m_isScrolling = false;
 
-                signals()->emitStoppedScrolling();
+                signals()->emitFinishedScroll();
             }
 
             // Makes sure that the primary image does not leave the window.
@@ -197,7 +197,7 @@ void Background::update(const GameTime& time)
                 m_scrollX = m_targetScrollX;
                 m_isScrolling = false;
 
-                signals()->emitStoppedScrolling();
+                signals()->emitFinishedScroll();
             }
 
             // Makes sure that the primary image does not leave the window.
@@ -214,7 +214,7 @@ void Background::update(const GameTime& time)
                 m_scrollY = m_targetScrollY;
                 m_isScrolling = false;
 
-                signals()->emitStoppedScrolling();
+                signals()->emitFinishedScroll();
             }
 
             // Makes sure that the primary image does not leave the window.
@@ -231,7 +231,7 @@ void Background::update(const GameTime& time)
                 m_scrollY = m_targetScrollX;
                 m_isScrolling = false;
 
-                signals()->emitStoppedScrolling();
+                signals()->emitFinishedScroll();
             }
 
             // Makes sure that the primary image does not leave the window.

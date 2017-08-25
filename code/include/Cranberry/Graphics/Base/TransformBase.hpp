@@ -781,18 +781,41 @@ private:
 /// This class is capable of applying all kinds of transformations on an object.
 /// Along with that, it provides signals that are emitted as soon as one of the
 /// transformations stopped in order to write complex animations with ease!
+/// Do not forget to place the Q_OBJECT macro in the private section of your
+/// class in order to connect the signals to slots!
 ///
 /// \code
-/// void start()
+/// void GameWindow::onInit()
 /// {
-///     connect(sprite->transformableEmitter(), SIGNAL(stoppedMoving()), this, SLOT(stop()));
-///     sprite->startMovingBy(100, 80);
+///     QObject::connect(
+///         myObj->signals(),
+///         &TransformableEmitter::finishedMove,
+///         this,
+///         &GameWindow::moveFinished
+///         );
+///
+///     ...
+///
+///     myObj->moveBy(100, 80);
 /// }
 ///
-/// void stop()
+/// void GameWindow::moveFinished()
 /// {
-///     qDebug() << "I stopped moving!";
+///     // Rotate myObj forever after it was moved
+///     myObj->setRotateMode(RotateForever);
+///     myObj->beginRotate();
 /// }
+/// \endcode
+///
+/// The TransformableEmitter provides the following signals as of today:
+///
+/// \code
+/// finishedMove(void)
+/// finishedScale(void)
+/// finishedRotate(void)
+/// finishedFade(void)
+/// positionChanged(void)
+/// sizeChanged(void)
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

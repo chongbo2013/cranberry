@@ -265,11 +265,20 @@ private:
 /// The base class for all texture-based objects.
 ///
 /// \code
-/// class Sprite : public TextureBase
+/// class MyTexture : public TextureBase
 /// {
 /// public:
 ///
-///     ...
+///     // Perform transformations and such
+///     void update() override;
+///
+///     // Apply effects and such
+///     void render() override;
+///
+/// protected overridden:
+///
+///     // Post-initialize anything necessary for your class
+///     void initializeData() override;
 /// };
 /// \endcode
 ///

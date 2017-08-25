@@ -144,10 +144,15 @@ private:
 /// \class TextureAtlas
 /// \ingroup Graphics
 ///
-/// More detailed description, code examples.
+/// Contains an algorithm to pack multiple textures in a big one. May be
+/// useful for classes that need to make heavy use of caching (e.g. text glyphs).
 ///
 /// \code
-/// ...
+/// TextureAtlas atlas;
+/// while (atlas.canInsert())
+/// {
+///     atlas.insert(myImages.takeFirst());
+/// }
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

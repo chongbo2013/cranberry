@@ -127,11 +127,11 @@ private:
 /// order to achieve some nice functionality on your map, e.g.:
 ///
 /// \code
-/// void onAboutStepTile(const TileEvent& e)
+/// void onAboutStepTile(const TileEvent& event)
 /// {
-///     if (e.properties().value("solid").toBool())
+///     if (event.properties().value("solid").toBool() == true)
 ///     {
-///         e.reject(); // do not step on tile
+///         event.reject(); // do not step on tile
 ///     }
 /// }
 /// \endcode

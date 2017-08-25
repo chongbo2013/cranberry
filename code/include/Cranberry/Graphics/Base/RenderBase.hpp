@@ -248,7 +248,7 @@ extern QString cranResourcePath(const QString& src);
 /// \class RenderBase
 /// \ingroup Graphics
 ///
-/// The IRenderable class is the base for all graphic objects in cranberry. It
+/// The RenderBase class is the base for all graphic objects in cranberry. It
 /// provides the render target, the shader program and the OpenGL functions.
 ///
 /// \code

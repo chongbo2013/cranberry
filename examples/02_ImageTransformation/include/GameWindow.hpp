@@ -53,8 +53,8 @@ protected:
 private Q_SLOTS:
 
 
-    void stoppedMoving();
-    void stoppedScaling();
+    void moveFinished();
+    void scaleFinished();
 
 
 private:

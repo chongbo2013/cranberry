@@ -52,11 +52,11 @@ public:
     CRANBERRY_DEFAULT_MOVE(AnimationBaseEmitter)
 
 
-    inline void emitStoppedAnimating() { Q_EMIT stoppedAnimating(); }
+    inline void emitFinishedAnimation() { Q_EMIT finishedAnimation(); }
 
 Q_SIGNALS:
 
-    void stoppedAnimating();
+    void finishedAnimation();
 
 
 private:

@@ -51,20 +51,20 @@ public:
     CRANBERRY_DEFAULT_COPY(TransformBaseEmitter)
     CRANBERRY_DEFAULT_MOVE(TransformBaseEmitter)
 
-    inline void emitStoppedMoving() { Q_EMIT stoppedMoving(); }
-    inline void emitStoppedRotating() { Q_EMIT stoppedRotating(); }
-    inline void emitStoppedScaling() { Q_EMIT stoppedScaling(); }
-    inline void emitStoppedFading() { Q_EMIT stoppedFading(); }
+    inline void emitFinishedMove() { Q_EMIT finishedMove(); }
+    inline void emitFinishedRotate() { Q_EMIT finishedRotate(); }
+    inline void emitFinishedScale() { Q_EMIT finishedScale(); }
+    inline void emitFinishedFade() { Q_EMIT finishedFade(); }
     inline void emitPositionChanged() { Q_EMIT positionChanged(); }
     inline void emitSizeChanged() { Q_EMIT sizeChanged(); }
 
 
 Q_SIGNALS:
 
-    void stoppedMoving();
-    void stoppedRotating();
-    void stoppedScaling();
-    void stoppedFading();
+    void finishedMove();
+    void finishedRotate();
+    void finishedScale();
+    void finishedFade();
     void positionChanged();
     void sizeChanged();
 

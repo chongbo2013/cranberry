@@ -124,10 +124,22 @@ private:
 /// \class ObjectEvent
 /// \ingroup Game
 ///
-/// More detailed description, code examples.
+/// This event can be used to implement special object behaviour when the player
+/// is about to approach them or already approached them.
 ///
 /// \code
-/// ...
+/// void onAboutStepObject(const ObjectEvent& event)
+/// {
+///     if (event.object().propertyValue("type").toString() == "warp")
+///     {
+///         // Fetch other properties to perform warp
+///     }
+///
+///     if (event.object().propertyValue("solid").toBool() == true)
+///     {
+///         event.reject(); // is solid, can not step on it
+///     }
+/// }
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

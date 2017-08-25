@@ -114,7 +114,7 @@ void AnimationBase::resumeAnimation()
 
 void AnimationBase::stopAnimation()
 {
-    m_emitter.emitStoppedAnimating();
+    m_emitter.emitFinishedAnimation();
     m_isAnimating = false;
 }
 
@@ -138,7 +138,7 @@ void AnimationBase::update(const GameTime& time)
                 if (m_mode == AnimateOnce)
                 {
                     m_isAnimating = false;
-                    m_emitter.emitStoppedAnimating();
+                    m_emitter.emitFinishedAnimation();
                 }
             }
 

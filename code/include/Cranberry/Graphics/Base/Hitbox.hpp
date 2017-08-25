@@ -94,7 +94,7 @@ private:
 ///
 /// // Warning: We create hitboxes on the fly, since it is hard to track changes
 /// // to it, because literally everything can alter it. If you need one hitbox
-/// // multiple times, store it
+/// // multiple times, store it in a variable.
 /// if (m_polygon->hitbox().intersectsWith(m_sprite->hitbox())
 /// {
 ///     // some game logic

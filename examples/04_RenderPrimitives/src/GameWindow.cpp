@@ -150,16 +150,16 @@ void GameWindow::onInit()
     // signals & slots
     QObject::connect(
             m_hexagon->signals(),
-            &TransformBaseEmitter::stoppedScaling,
+            &TransformBaseEmitter::finishedScale,
             this,
-            &GameWindow::stoppedScaling
+            &GameWindow::scaleFinished
             );
 
     QObject::connect(
             m_hexagon->signals(),
-            &TransformBaseEmitter::stoppedMoving,
+            &TransformBaseEmitter::finishedMove,
             this,
-            &GameWindow::stoppedMoving
+            &GameWindow::moveFinished
             );
 }
 
@@ -220,7 +220,7 @@ void GameWindow::onRender()
 }
 
 
-void GameWindow::stoppedScaling()
+void GameWindow::scaleFinished()
 {
     if (m_hexagon->scaleDirectionX() == ScaleDown)
     {
@@ -233,7 +233,7 @@ void GameWindow::stoppedScaling()
 }
 
 
-void GameWindow::stoppedMoving()
+void GameWindow::moveFinished()
 {
     if (m_decagon->moveDirection() & MoveEast)
     {

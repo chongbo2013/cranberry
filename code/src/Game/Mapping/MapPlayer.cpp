@@ -40,7 +40,7 @@ MapPlayer::MapPlayer(Map* parent)
     m_receiver.setMapPlayer(this);
     m_receiver.connect(
             signals(),
-            &TransformBaseEmitter::stoppedMoving,
+            &TransformBaseEmitter::finishedMove,
             &m_receiver,
             &MapPlayerReceiver::finishedMove
             );

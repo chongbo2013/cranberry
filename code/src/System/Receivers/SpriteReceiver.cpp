@@ -32,7 +32,7 @@ void SpriteReceiver::setSprite(Sprite* sprite)
 }
 
 
-void SpriteReceiver::stoppedRunning()
+void SpriteReceiver::finishedMove()
 {
     if (m_sprite != nullptr)
     {

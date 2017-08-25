@@ -75,9 +75,9 @@ Sprite::Sprite()
     // Movement should stop as soon as tile-based stuff is finished.
     QObject::connect(
         signals(),
-        &TransformBaseEmitter::stoppedMoving,
+        &TransformBaseEmitter::finishedMove,
         &m_receiver,
-        &SpriteReceiver::stoppedRunning
+        &SpriteReceiver::finishedMove
         );
 }
 

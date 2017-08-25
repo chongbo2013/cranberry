@@ -150,11 +150,34 @@ private:
 /// \class MapLayer
 /// \ingroup Game
 ///
-/// More detailed description, code examples.
+/// When subclassing the Map class, the layers can be accessed and rendered in
+/// a custom way.
 ///
 /// \code
-/// ...
+/// void MyMap::render()
+/// {
+///     for (MapLayer* layer : layers())
+///     {
+///         // Render our player
+///         if (layer->name() == "playerLayer")
+///         {
+///             player()->render();
+///         }
+///
+///         // Mess with the layer somehow
+///         layer->setOpacity(0.5f);
+///         layer->setOffsetX(16);
+///         layer->setOffsetY(16);
+///
+///         layer->render();
+///     }
+/// }
 /// \endcode
+///
+/// It is possible to iterate through the layers with a classic \em for loop and
+/// check against the iterator variable in order to determine the location of
+/// the player in between all those layers, while it gives you less flexibility
+/// of where and how your player is rendered.
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
