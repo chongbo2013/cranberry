@@ -34,7 +34,8 @@ void SpriteReceiver::setSprite(Sprite* sprite)
 
 void SpriteReceiver::stoppedRunning()
 {
-    if (!m_sprite) return;
-
-    m_sprite->endMove();
+    if (m_sprite != nullptr)
+    {
+        m_sprite->endMove();
+    }
 }

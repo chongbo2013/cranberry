@@ -112,6 +112,15 @@ void MapObject::setRenderObject(RenderBase* obj, bool takeOwnership)
 }
 
 
+void MapObject::update(const GameTime& time)
+{
+    if (m_renderObject != nullptr)
+    {
+        m_renderObject->update(time);
+    }
+}
+
+
 void MapObject::render()
 {
     if (m_renderObject != nullptr)

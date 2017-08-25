@@ -20,40 +20,22 @@
 
 
 // Cranberry headers
-#include <Cranberry/Gui/GuiManager.hpp>
+#include <Cranberry/Game/Mapping/MapPlayer.hpp>
 
 
 CRANBERRY_USING_NAMESPACE
 
 
-void GuiManagerReceiver::setGuiManager(GuiManager* manager)
+void MapPlayerReceiver::setMapPlayer(MapPlayer* player)
 {
-    m_manager = manager;
+    m_mapPlayer = player;
 }
 
 
-void GuiManagerReceiver::loadComponents()
+void MapPlayerReceiver::finishedMove()
 {
-    if (m_manager != nullptr)
+    if (m_mapPlayer != nullptr)
     {
-        m_manager->loadComponents();
-    }
-}
-
-
-void GuiManagerReceiver::requestUpdate()
-{
-    if (m_manager != nullptr)
-    {
-        m_manager->requestUpdate();
-    }
-}
-
-
-void GuiManagerReceiver::resizeFbo()
-{
-    if (m_manager != nullptr)
-    {
-        m_manager->resizeFbo();
+        m_mapPlayer->moveFinished();
     }
 }

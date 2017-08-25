@@ -21,8 +21,8 @@
 
 // Cranberry headers
 #include <Cranberry/Game/Mapping/Map.hpp>
-#include <Cranberry/Game/Mapping/MapTileLayer.hpp>
 #include <Cranberry/Game/Mapping/MapObjectLayer.hpp>
+#include <Cranberry/Game/Mapping/MapTileLayer.hpp>
 #include <Cranberry/System/Debug.hpp>
 
 // Qt headers
@@ -42,19 +42,47 @@ CRANBERRY_USING_NAMESPACE
 
 Map::Map()
     : m_orientation(MapOrientationOrthogonal)
-    , m_moveMode(PlayerMoveTiles)
-    , m_playerMoveDir(MoveNone)
     , m_width(0)
     , m_height(0)
     , m_tileWidth(0)
     , m_tileHeight(0)
-    , m_playerX(0)
-    , m_playerY(0)
-    , m_targetX(0)
-    , m_targetY(0)
-    , m_playerMovingX(false)
-    , m_playerMovingY(false)
+    , m_player(new MapPlayer(this))
 {
+    QObject::connect(
+            m_player->signals(),
+            &MapPlayerEmitter::startedMoveTile,
+            [this] (const TileEvent& e) -> void { onAboutStepTile(e); }
+            );
+
+    QObject::connect(
+            m_player->signals(),
+            &MapPlayerEmitter::startedMoveObject,
+            [this] (const ObjectEvent& e) -> void { onAboutStepObject(e); }
+            );
+
+    QObject::connect(
+            m_player->signals(),
+            &MapPlayerEmitter::finishedMoveTile,
+            [this] (const TileEvent& e) -> void { onStepTile(e); }
+            );
+
+    QObject::connect(
+            m_player->signals(),
+            &MapPlayerEmitter::finishedMoveObject,
+            [this] (const ObjectEvent& e) -> void { onStepObject(e); }
+            );
+
+    QObject::connect(
+            m_player->signals(),
+            &MapPlayerEmitter::startedLeaveTile,
+            [this] (const TileEvent& e) -> void { onLeaveTile(e); }
+            );
+
+    QObject::connect(
+            m_player->signals(),
+            &MapPlayerEmitter::startedLeaveObject,
+            [this] (const ObjectEvent& e) -> void { onLeaveObject(e); }
+            );
 }
 
 
@@ -76,21 +104,9 @@ bool Map::isNull() const
 }
 
 
-bool Map::isPlayerMoving() const
-{
-    return m_playerMovingX || m_playerMovingY;
-}
-
-
 MapOrientation Map::orientation() const
 {
     return m_orientation;
-}
-
-
-PlayerMoveMode Map::playerMoveMode() const
-{
-    return m_moveMode;
 }
 
 
@@ -136,6 +152,12 @@ const QVector<MapLayer*>& Map::layers() const
 }
 
 
+MapPlayer* Map::player() const
+{
+    return m_player;
+}
+
+
 MapLayer* Map::layerByName(const QString& name) const
 {
     for (MapLayer* layer : m_layers)
@@ -174,46 +196,6 @@ MapObject* Map::objectByName(const QString& name) const
 const QMap<QString, QVariant>& Map::properties() const
 {
     return m_properties;
-}
-
-
-void Map::setPlayerMoveMode(PlayerMoveMode mode)
-{
-    m_moveMode = mode;
-}
-
-
-bool Map::movePlayerBy(int x, int y)
-{
-    // Reject any movement while there is one running.
-    if (isPlayerMoving() || (x == 0 && y == 0))
-    {
-        return false;
-    }
-
-    if (m_moveMode == PlayerMoveTiles)
-    {
-        return movePlayerByTiles(x, y);
-    }
-    else
-    {
-        return movePlayerByPixels(x, y);
-    }
-}
-
-
-void Map::movePlayerTo(int x, int y)
-{
-    if (m_moveMode == PlayerMoveTiles)
-    {
-        m_playerX = x;
-        m_playerY = y;
-    }
-    else
-    {
-        m_playerX = x * m_tileWidth;
-        m_playerY = y * m_tileHeight;
-    }
 }
 
 
@@ -273,7 +255,8 @@ void Map::destroy()
 void Map::update(const GameTime& time)
 {
     updateTransform(time);
-    updateTileMovement(time.deltaTime());
+
+    m_player->update(time);
 }
 
 
@@ -286,12 +269,8 @@ void Map::render()
             layer->render();
         }
     }
-}
 
-
-int Map::getTileIndex(int x, int y)
-{
-    return y * m_tileWidth + x;
+    m_player->render();
 }
 
 
@@ -352,237 +331,4 @@ bool Map::loadProperties(QDomElement* elem)
     getTmxProperties(&props, m_properties);
 
     return true;
-}
-
-
-bool Map::movePlayerByTiles(int x, int y)
-{
-    for (MapLayer* layer : m_layers)
-    {
-        if (layer->layerType() == LayerTypeTile)
-        {
-            const MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
-            const MapTile& told = tl->tiles().at(getTileIndex(m_playerX, m_playerY));
-            const MapTile& tnew = tl->tiles().at(getTileIndex(m_playerX + x, m_playerY + y));
-
-            if (!tnew.isNull())
-            {
-                TileEvent event(tnew, tl, m_tilesets[tnew.tilesetId()]);
-                onAboutStepTile(event);
-
-                if (!event.isAccepted())
-                {
-                    // We e.g. hit something solid, abort.
-                    return false;
-                }
-            }
-
-            if (!told.isNull())
-            {
-                onLeaveTile(TileEvent(told, tl, m_tilesets[told.tilesetId()]));
-            }
-        }
-        else
-        {
-            const MapObjectLayer* ol = static_cast<MapObjectLayer*>(layer);
-            for (MapObject* o : ol->objects())
-            {
-                const QRect r1(o->x(), o->y(), o->width(), o->height());
-                const QRect r2(m_playerX + x, m_playerY + y, m_tileWidth, m_tileHeight);
-
-                if (r1.intersects(r2) && !o->isNull())
-                {
-                    ObjectEvent event(o, ol);
-                    onAboutStepObject(event);
-
-                    if (!event.isAccepted())
-                    {
-                        // We e.g. hit something solid, abort.
-                        return false;
-                    }
-                }
-
-                onLeaveObject(ObjectEvent(o, ol));
-            }
-        }
-    }
-
-    m_playerMoveDir = MoveNone;
-
-    // Triggers a movement.
-    if (x != 0) m_playerMovingX = true;
-    if (y != 0) m_playerMovingY = true;
-
-    if (x <= 0) m_playerMoveDir |= MoveWest;
-    if (x >= 0) m_playerMoveDir |= MoveEast;
-    if (y <= 0) m_playerMoveDir |= MoveNorth;
-    if (y >= 0) m_playerMoveDir |= MoveSouth;
-
-    m_targetX = m_playerX + x;
-    m_targetY = m_playerY + y;
-    m_realposX = m_playerX * m_tileWidth;
-    m_realposY = m_playerY * m_tileHeight;
-    m_realtargetX = m_realposX + (x * m_tileWidth);
-    m_realtargetY = m_realposY + (y * m_tileHeight);
-
-    return true;
-}
-
-
-bool Map::movePlayerByPixels(int x, int y)
-{
-    int oldTileX = m_playerX / m_tileWidth;
-    int oldTileY = m_playerY / m_tileHeight;
-    int newTileX = (m_playerX + x) / m_tileWidth;
-    int newTileY = (m_playerY + y) / m_tileHeight;
-
-    if (oldTileX != newTileX || oldTileY != newTileY)
-    {
-        // Current tile changed, send event to all layers.
-        for (MapLayer* layer : m_layers)
-        {
-            if (layer->layerType() == LayerTypeTile)
-            {
-                const MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
-                const MapTile& told = tl->tiles().at(getTileIndex(oldTileX, oldTileY));
-                const MapTile& tnew = tl->tiles().at(getTileIndex(newTileX, newTileY));
-
-                if (!tnew.isNull())
-                {
-                    TileEvent event(tnew, tl, m_tilesets[tnew.tilesetId()]);
-                    onAboutStepTile(event);
-
-                    if (!event.isAccepted())
-                    {
-                        // We e.g. hit something solid, abort.
-                        return false;
-                    }
-
-                    onStepTile(event);
-                }
-
-                onLeaveTile(TileEvent(told, tl, m_tilesets[told.tilesetId()]));
-            }
-            else
-            {
-                const MapObjectLayer* ol = static_cast<MapObjectLayer*>(layer);
-                for (MapObject* o : ol->objects())
-                {
-                    const QRect r1(o->x(), o->y(), o->width(), o->height());
-                    const QRect r2(m_playerX + x, m_playerY + y, m_tileWidth, m_tileHeight);
-
-                    if (r1.intersects(r2) && !o->isNull())
-                    {
-                        ObjectEvent event(o, ol);
-                        onAboutStepObject(event);
-
-                        if (!event.isAccepted())
-                        {
-                            // We e.g. hit something solid, abort.
-                            return false;
-                        }
-
-                        onStepObject(event);
-                    }
-
-                    onLeaveObject(ObjectEvent(o, ol));
-                }
-            }
-        }
-    }
-
-    // Moves the player in an instant.
-    m_playerX += x;
-    m_playerY += y;
-
-    return true;
-}
-
-
-void Map::updateTileMovement(double deltaTime)
-{
-    // Update running movements, if any.
-    if (isPlayerMoving())
-    {
-        if (m_playerMovingX)
-        {
-            if (m_playerMoveDir & MoveEast)
-            {
-                m_realposX += moveSpeedX() * deltaTime;
-                if (m_realposX >= m_realtargetX)
-                {
-                    m_realposX = m_realtargetX;
-                    m_playerX = m_targetX;
-                    m_playerMovingX = false;
-                }
-            }
-
-            if (m_playerMoveDir & MoveWest)
-            {
-                m_realposX -= moveSpeedX() * deltaTime;
-                if (m_realposX <= m_realtargetX)
-                {
-                    m_realposX = m_realtargetX;
-                    m_playerX = m_targetX;
-                    m_playerMovingX = false;
-                }
-            }
-        }
-
-        if (m_playerMovingY)
-        {
-            if (m_playerMoveDir & MoveSouth)
-            {
-                m_realposY += moveSpeedY() * deltaTime;
-                if (m_realposY >= m_realtargetY)
-                {
-                    m_realposY = m_realtargetY;
-                    m_playerY = m_targetY;
-                    m_playerMovingY = false;
-                }
-            }
-            else
-            {
-                m_realposY -= moveSpeedY() * deltaTime;
-                if (m_realposY <= m_realtargetY)
-                {
-                    m_realposY = m_realtargetY;
-                    m_playerY = m_targetY;
-                    m_playerMovingY = false;
-                }
-            }
-        }
-
-        if (!isPlayerMoving())
-        {
-            // Current tile changed, send event to all layers.
-            for (MapLayer* layer : m_layers)
-            {
-                if (layer->layerType() == LayerTypeTile)
-                {
-                    const MapTileLayer* tl = static_cast<MapTileLayer*>(layer);
-                    const MapTile& tile = tl->tiles().at(getTileIndex(m_playerX, m_playerY));
-
-                    if (!tile.isNull())
-                    {
-                        onStepTile(TileEvent(tile, tl, m_tilesets[tile.tilesetId()]));
-                    }
-                }
-                else
-                {
-                    const MapObjectLayer* ol = static_cast<MapObjectLayer*>(layer);
-                    for (MapObject* o : ol->objects())
-                    {
-                        const QRect r1(o->x(), o->y(), o->width(), o->height());
-                        const QRect r2(m_playerX, m_playerY, m_tileWidth, m_tileHeight);
-
-                        if (r1.intersects(r2))
-                        {
-                            onStepObject(ObjectEvent(o, ol));
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

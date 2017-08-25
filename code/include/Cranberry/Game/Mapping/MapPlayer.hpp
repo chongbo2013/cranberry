@@ -20,86 +20,64 @@
 
 
 #pragma once
-#ifndef CRANBERRY_GAME_MAPPING_MAPOBJECT_HPP
-#define CRANBERRY_GAME_MAPPING_MAPOBJECT_HPP
+#ifndef CRANBERRY_MAPPLAYER_HPP
+#define CRANBERRY_MAPPLAYER_HPP
 
 
 // Cranberry headers
+#include <Cranberry/Game/Mapping/Enumerations.hpp>
 #include <Cranberry/Graphics/Base/TransformBase.hpp>
-
-// Qt headers
-#include <QMap>
-#include <QString>
-#include <QVariant>
-
-// Forward declarations
-CRANBERRY_FORWARD_C(RenderBase)
+#include <Cranberry/System/Emitters/MapPlayerEmitter.hpp>
+#include <Cranberry/System/Receivers/MapPlayerReceiver.hpp>
 
 
 CRANBERRY_BEGIN_NAMESPACE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Defines one map object within the map. Can be a warp field, spawn point or
-/// something completely else.
+/// Defines a player on a map.
 ///
-/// \class MapObject
+/// \class MapPlayer
 /// \author Nicolas Kogler
-/// \date August 19, 2017
+/// \date August 25, 2017
 ///
 ////////////////////////////////////////////////////////////////////////////////
-class CRANBERRY_GAME_EXPORT MapObject : public TransformBase
+class CRANBERRY_GAME_EXPORT MapPlayer : public TransformBase
 {
 public:
 
-    CRANBERRY_DECLARE_CTOR(MapObject)
-    CRANBERRY_DECLARE_DTOR(MapObject)
-    CRANBERRY_DISABLE_COPY(MapObject)
-    CRANBERRY_DISABLE_MOVE(MapObject)
+    CRANBERRY_DECLARE_DTOR(MapPlayer)
+    CRANBERRY_DEFAULT_COPY(MapPlayer)
+    CRANBERRY_DEFAULT_MOVE(MapPlayer)
+
+    MapPlayer(Map* parent);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Determines whether this object is null.
+    /// Retrieves the X-position of the player, in tiles.
     ///
-    /// \returns true if null.
+    /// \returns the tile-based X-position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    bool isNull() const;
+    int tileX() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the global ID of this object.
+    /// Retrieves the Y-position of the player, in tiles.
     ///
-    /// \returns the global ID.
+    /// \returns the tile-based Y-position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    int id() const;
+    int tileY() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the name of this object.
+    /// Retrieves the move mode of the player.
     ///
-    /// \returns the name.
+    /// \returns the move mode.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    const QString& name() const;
+    PlayerMoveMode moveMode() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the type of this object (e.g. "npc" or "warp").
-    ///
-    /// \returns the type.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    const QString& type() const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the value of the property \p property.
-    ///
-    /// \param property Name of the property.
-    /// \returns the value or a null QVariant.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    const QVariant& propertyValue(const QString& property) const;
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the associated render object of this object.
+    /// Retrieves the object to render the player with.
     ///
     /// \returns the render object.
     ///
@@ -107,92 +85,109 @@ public:
     RenderBase* renderObject() const;
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Retrieves the modifiable property map.
+    /// Specifies the X-position, in tiles.
     ///
-    /// \returns the property map.
+    /// \param x New tile-based X-position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    QMap<QString, QVariant>& properties();
+    void setTileX(int x);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the global ID of this object.
+    /// Specifies the Y-position, in tiles.
     ///
-    /// \param id Global ID.
+    /// \param y New tile-based Y-position.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setId(int id);
+    void setTileY(int y);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the name of this object.
+    /// Specifies the move mode of the player.
     ///
-    /// \param name New name of the object.
+    /// \param mode New move mode.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setName(const QString& name);
+    void setMoveMode(PlayerMoveMode mode);
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the type of this object.
+    /// Specifies the object to render this player with. The transform properties
+    /// of it will be replaced by the transform properties of the MapPlayer. If
+    /// you do not want this, synchronise transformations with this object by
+    /// issuing "mapPlayer->synchroniseWith(myRenderObject);".
     ///
-    /// \param type New type of the object.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    void setType(const QString& type);
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the object to be rendered when calling render(). The transform
-    /// properties of it will be replaced by the transform properties of this
-    /// class. If you do not want this, synchronise transformations with this
-    /// object by issuing "mapObject->synchroniseWith(myRenderObject);".
-    ///
-    /// \param obj RenderBase object to render.
-    /// \param takeOwnership If true, the object will be deleted automatically.
+    /// \param renderObject The object to render the player with.
+    /// \param takeOwnership If true, object will be deleted automatically.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    void setRenderObject(RenderBase* obj, bool takeOwnership = false);
+    void setRenderObject(RenderBase* renderObject, bool takeOwnership = false);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Moves the player by \p x horizontally and \p y vertically. If the move
+    /// mode is PlayerMoveTiles, x and y will be multiplied by the tile width
+    /// and the tile height of the map respectively.
+    ///
+    /// \param x X-offset to move by, either in tiles or pixels.
+    /// \param y Y-offset to move by, either in tiles or pixels.
+    /// \returns true if moved successfully.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool movePlayerBy(int x, int y);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Updates the MapPlayer object.
+    ///
+    /// \param time Contains the delta time.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void update(const GameTime& time);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Renders the MapPlayer object. Renders nothing if the renderObject is
+    /// not available.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void render();
 
 
-public overridable:
+public overridden:
 
     ////////////////////////////////////////////////////////////////////////////
     // Virtual functions
     ////////////////////////////////////////////////////////////////////////////
-    virtual void update(const GameTime& time);
-    virtual void render();
+    MapPlayerEmitter* signals() override;
 
 
 private:
 
     ////////////////////////////////////////////////////////////////////////////
+    // Functions
+    ////////////////////////////////////////////////////////////////////////////
+    int getTileIndex(int x, int y);
+    bool movePlayerByTiles(int x, int y);
+    bool movePlayerByPixels(int x, int y);
+    void moveFinished();
+
+    ////////////////////////////////////////////////////////////////////////////
     // Members
     ////////////////////////////////////////////////////////////////////////////
-    int                     m_id;
-    QString                 m_name;
-    QString                 m_type;
-    QMap<QString, QVariant> m_properties;
-    RenderBase*             m_renderObject;
-    bool                    m_takeOwnership;
+    MapPlayerEmitter  m_emitter;
+    MapPlayerReceiver m_receiver;
+    PlayerMoveMode    m_moveMode;
+    Map*              m_parent;
+    RenderBase*       m_renderObject;
+    bool              m_takeOwnership;
 
+    friend class MapPlayerReceiver;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \class MapObject
+/// \class MapPlayer
 /// \ingroup Game
 ///
-/// This class may be used to store e.g. spawn points or warp fields.
+/// More detailed description, code examples.
 ///
 /// \code
-/// void onStepObject(const ObjectEvent& event)
-/// {
-///     if (!event.object().isNull())
-///     {
-///         // We are stepping on an actual object now.
-///         if (event.object().propertyValue("type").toString() == "warp")
-///         {
-///             // Extract map/position/whatever out of other properties.
-///         }
-///     }
-/// }
+/// ...
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////
