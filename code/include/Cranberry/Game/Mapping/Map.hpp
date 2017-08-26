@@ -171,7 +171,7 @@ public overridden:
     /// \returns true if created successfully.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual bool create(const QString& mapPath, Window* renderTarget);
+    virtual bool create(const QString& mapPath, Window* renderTarget = nullptr);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Destroys all resources allocated by this instance.

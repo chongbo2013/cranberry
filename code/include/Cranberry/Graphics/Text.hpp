@@ -105,6 +105,14 @@ public:
     int outlineWidth() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Retrieves the blur factor of the text.
+    ///
+    /// \returns the blur factor.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    float blurFactor() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the maximum amount of characters per line.
     ///
     /// \returns the column limit.
@@ -128,6 +136,15 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setText(const QString& str);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// If the constraint is a null QRect, no constraint will be applied.
+    /// If otherwise it is not null, the text will be wrapped accordingly.
+    ///
+    /// \param constraint Constraint to apply.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setConstraint(const QRect& constraint);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the font to render text with.
@@ -168,6 +185,18 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setOutlineWidth(int width);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the blur factor of the text. As Qt somehow does not smoothen
+    /// the text properly, the default text shader applies some blur afterwards.
+    /// The value must be in range 0 to 1, while a higher number leads to more
+    /// blur. It is recommended to use a small value for small texts and a big
+    /// value for big texts.
+    ///
+    /// \param factor Blur factor in range 0 to 1.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setBlurFactor(float factor);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the maximum amount of characters per line. A negative value
@@ -253,8 +282,10 @@ private:
     // Functions
     ////////////////////////////////////////////////////////////////////////////
     void updateTexture();
+    void updateShader();
     void resizeTexture(QSizeF);
     void renderToTexture();
+    void prepareConstraint();
     void recalcSize();
     auto approximateSize() -> QSizeF;
     auto measureText() -> QSizeF;
@@ -264,6 +295,7 @@ private:
     ////////////////////////////////////////////////////////////////////////////
     TreeModelItem*            m_rootModelItem;
     QString                   m_text;
+    QRect                     m_constraint;
     QFont                     m_font;
     QPen*                     m_textPen;
     QBrush*                   m_outlineBrush;
@@ -276,6 +308,7 @@ private:
     int                       m_rowLimit;
     float                     m_lastWidth;
     float                     m_lastHeight;
+    float                     m_blurFactor;
     bool                      m_textUpdate;
 };
 

@@ -11,7 +11,7 @@
 ## GENERAL SETTINGS
 ##
 ################################################################################
-QT             +=       widgets gamepad qml quick xml gui core
+QT             +=       widgets gamepad qml quick xml
 CONFIG         +=       c++11 exceptions no_keywords
 DEFINES        +=       CRANBERRY_BUILD
 DEFINES        +=       CRANBERRY_VERSION=\\\"1.0.0\\\"

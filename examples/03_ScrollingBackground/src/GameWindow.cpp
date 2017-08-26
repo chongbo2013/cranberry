@@ -98,7 +98,8 @@ void GameWindow::onInit()
     m_linkText = new Text;
     m_linkText->create(this);
     m_linkText->setText("https://www.toptal.com/designers/subtlepatterns/sakura");
-    m_linkText->setFont(QFont("", 20));
+    m_linkText->setFont(QFont("", 20, QFont::Bold));
+    m_linkText->setBlurFactor(0.65f); // smoothen text
     m_linkText->setX(CENTER_X(m_linkText->width()));
     m_linkText->setY(WINDOW_HEIGHT - 24 - m_linkText->height());
 }

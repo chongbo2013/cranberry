@@ -33,6 +33,7 @@ uniform sampler2D u_tex;
 uniform float u_opac;
 uniform vec2 u_winSize;
 uniform int u_outlineWidth;
+uniform float u_blurFactor;
 
 
 void main()
@@ -48,7 +49,7 @@ void main()
         // Thanks to Qt, our text is very jaggy - create some fake blur.
         ivec2 texSize = textureSize(u_tex, 0);
 
-        vec2 blur = vec2(0.65, 0.65);
+        vec2 blur = vec2(u_blurFactor, u_blurFactor);
         vec2 tile = vec2(1.0 / texSize.x, 1.0 / texSize.y);
         vec2 pos = vec2(fract(o_uv.x / tile.x), fract(o_uv.y / tile.y));
 

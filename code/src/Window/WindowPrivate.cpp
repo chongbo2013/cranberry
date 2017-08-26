@@ -145,7 +145,6 @@ void priv::WindowPrivate::restoreOpenGLSettings()
     glDebug(m_gl->glEnable(GL_BLEND));
     glDebug(m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     glDebug(m_gl->glEnable(GL_MULTISAMPLE));
-    glDebug(m_gl->glEnable(GL_LINE_SMOOTH));
     glDebug(m_gl->glDisable(GL_DEPTH_TEST));
     glDebug(m_gl->glDepthMask(GL_FALSE));
     glDebug(context()->extraFunctions()->glBindVertexArray(m_vao));

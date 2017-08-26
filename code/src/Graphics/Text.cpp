@@ -60,6 +60,7 @@ Text::Text()
     , m_rowLimit(-1)
     , m_lastWidth(0)
     , m_lastHeight(0)
+    , m_blurFactor(0.0f)
     , m_textUpdate(true)
 {
     m_options.setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -106,6 +107,12 @@ int Text::outlineWidth() const
 }
 
 
+float Text::blurFactor() const
+{
+    return m_blurFactor;
+}
+
+
 int Text::columnLimit() const
 {
     return m_columnLimit;
@@ -122,6 +129,19 @@ void Text::setText(const QString& str)
 {
     m_text = str;
     m_textUpdate = true;
+
+    recalcSize();
+}
+
+
+void Text::setConstraint(const QRect& constraint)
+{
+    m_constraint = constraint;
+
+    if (!constraint.isNull())
+    {
+        m_options.setWrapMode(QTextOption::WordWrap);
+    }
 
     recalcSize();
 }
@@ -165,6 +185,21 @@ void Text::setOutlineWidth(int width)
     m_textUpdate = true;
 
     recalcSize();
+}
+
+
+void Text::setBlurFactor(float factor)
+{
+    if (factor > 1.0f)
+    {
+        factor = 1.0f;
+    }
+    else if (factor < 0.0f)
+    {
+        factor = 0.0f;
+    }
+
+    m_blurFactor = factor;
 }
 
 
@@ -238,13 +273,7 @@ void Text::render()
         m_textUpdate = false;
     }
 
-    // Specifies the outline width in the shader.
-    OpenGLShader* shader = OpenGLDefaultShaders::get("cb.glsl.text");
-    int uloc = shader->uniformLocation("u_outlineWidth");
-    if (uloc != -1)
-    {
-        shader->setUniformValue(uloc, m_outlineWidth);
-    }
+    updateShader();
 
     m_batch->render();
 }
@@ -307,6 +336,25 @@ void Text::updateTexture()
     }
 
     renderToTexture();
+}
+
+
+void Text::updateShader()
+{
+    OpenGLShader* shader = OpenGLDefaultShaders::get("cb.glsl.text");
+
+    int uloc = shader->uniformLocation("u_outlineWidth");
+    int bloc = shader->uniformLocation("u_blurFactor");
+
+    if (uloc != -1)
+    {
+        shader->setUniformValue(uloc, m_outlineWidth);
+    }
+
+    if (bloc != -1)
+    {
+        shader->setUniformValue(bloc, m_blurFactor);
+    }
 }
 
 
@@ -387,6 +435,18 @@ void Text::renderToTexture()
 }
 
 
+void Text::prepareConstraint()
+{
+    if (m_constraint.isNull())
+    {
+        int max = std::numeric_limits<int>::max();
+
+        m_constraint.setWidth(max);
+        m_constraint.setHeight(max);
+    }
+}
+
+
 void Text::recalcSize()
 {
     QSizeF s = measureText();
@@ -415,8 +475,20 @@ QSizeF Text::approximateSize()
 
 QSizeF Text::measureText()
 {
+    prepareConstraint();
+
+    int flags = m_options.alignment();
+    if (m_options.wrapMode() == QTextOption::WordWrap)
+    {
+        flags |= Qt::TextWordWrap;
+    }
+    else if (m_options.wrapMode() == QTextOption::WrapAnywhere)
+    {
+        flags |= Qt::TextWrapAnywhere;
+    }
+
     QFontMetrics fm(m_font);
-    QSize sz = fm.boundingRect(m_text).size();
+    QSize sz = fm.boundingRect(m_constraint, flags, m_text).size();
 
     sz.setWidth(sz.width() + m_outlineWidth);
     sz.setHeight(sz.height() + m_outlineWidth);
