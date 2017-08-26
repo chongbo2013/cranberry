@@ -78,23 +78,43 @@ SpriteBatch::~SpriteBatch()
 }
 
 
-bool SpriteBatch::isNull() const
+const QColor& SpriteBatch::backgroundColor() const
 {
-    return RenderBase::isNull() ||
-           m_frameBuffer  == 0   ||
-           m_msFrameBuffer == 0  ||
-           m_renderBuffer == 0   ||
-           m_vertexArray  == 0   ||
-           m_vertexBuffer == 0   ||
-           m_indexBuffer  == 0   ||
-           m_frameTexture == 0   ||
-           m_msFrameTexture == 0;
+    return m_backColor;
 }
 
 
-bool SpriteBatch::create(Window* rt)
+const QRectF& SpriteBatch::geometry() const
 {
-    return create(nullptr, rt);
+    return m_geometry;
+}
+
+
+Effect SpriteBatch::effect() const
+{
+    return m_effect;
+}
+
+
+void SpriteBatch::setBackgroundColor(const QColor& color)
+{
+    m_backColor = color;
+}
+
+
+void SpriteBatch::setGeometry(const QRectF& rc)
+{
+    if (rc == m_geometry) return;
+
+    m_geometry = rc;
+    setPosition(rc.x(), rc.y());
+    recreateFboRbo();
+}
+
+
+void SpriteBatch::setEffect(Effect effect)
+{
+    m_effect = effect;
 }
 
 
@@ -108,15 +128,6 @@ bool SpriteBatch::create(
     m_takeOwnership = takeOwnership;
 
     return createInternal(rt) && createData() && writeData();
-}
-
-
-void SpriteBatch::destroy()
-{
-    destroyFboRbo();
-    destroyBuffers();
-
-    RenderBase::destroy();
 }
 
 
@@ -142,6 +153,35 @@ bool SpriteBatch::insertObject(int layer, RenderBase* object)
 bool SpriteBatch::removeObject(RenderBase* object)
 {
     return m_objects.removeOne(object);
+}
+
+
+bool SpriteBatch::isNull() const
+{
+    return RenderBase::isNull() ||
+           m_frameBuffer  == 0   ||
+           m_msFrameBuffer == 0  ||
+           m_renderBuffer == 0   ||
+           m_vertexArray  == 0   ||
+           m_vertexBuffer == 0   ||
+           m_indexBuffer  == 0   ||
+           m_frameTexture == 0   ||
+           m_msFrameTexture == 0;
+}
+
+
+bool SpriteBatch::create(Window* rt)
+{
+    return create(nullptr, rt);
+}
+
+
+void SpriteBatch::destroy()
+{
+    destroyFboRbo();
+    destroyBuffers();
+
+    RenderBase::destroy();
 }
 
 
@@ -171,45 +211,118 @@ void SpriteBatch::render()
 }
 
 
-const QColor& SpriteBatch::backgroundColor() const
+TreeModelItem* SpriteBatch::rootModelItem()
 {
-    return m_backColor;
+    return m_rootModelItem;
 }
 
 
-const QRectF& SpriteBatch::geometry() const
+void SpriteBatch::createProperties(TreeModel* model)
 {
-    return m_geometry;
+    auto cp = m_geometry;
+    if (cp.isNull())
+    {
+        cp.setWidth(renderTarget()->width());
+        cp.setHeight(renderTarget()->height());
+    }
+
+    TreeModelItem* tmiEffe = new TreeModelItem("Effect", getEffectString(m_effect));
+    TreeModelItem* tmiBack = new TreeModelItem("Backcolor", m_backColor);
+    TreeModelItem* tmiObjs = new TreeModelItem("Objects");
+    TreeModelItem* tmiGeom = new TreeModelItem("Geometry");
+    TreeModelItem* tmiGeoX = new TreeModelItem("x", cp.x());
+    TreeModelItem* tmiGeoY = new TreeModelItem("y", cp.y());
+    TreeModelItem* tmiGeoW = new TreeModelItem("w", cp.width());
+    TreeModelItem* tmiGeoH = new TreeModelItem("h", cp.height());
+    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
+    TreeModelItem* tmiSFbo = new TreeModelItem("Single-sampled frame buffer", m_frameBuffer);
+    TreeModelItem* tmiMFbo = new TreeModelItem("Multi-sampled frame buffer", m_msFrameBuffer);
+    TreeModelItem* tmiORbo = new TreeModelItem("Render buffer", m_renderBuffer);
+    TreeModelItem* tmiOVao = new TreeModelItem("Vertex array", m_vertexArray);
+    TreeModelItem* tmiOVbo = new TreeModelItem("Vertex buffer", m_vertexBuffer);
+    TreeModelItem* tmiOIbo = new TreeModelItem("Index buffer", m_indexBuffer);
+    TreeModelItem* tmiSTex = new TreeModelItem("Single-sampled texture", m_frameTexture);
+    TreeModelItem* tmiMTex = new TreeModelItem("Multi-sampled texture", m_msFrameTexture);
+
+    m_rootModelItem = new TreeModelItem("SpriteBatch");
+    m_rootModelItem->appendChild(tmiEffe);
+    m_rootModelItem->appendChild(tmiBack);
+    m_rootModelItem->appendChild(tmiObjs);
+    m_rootModelItem->appendChild(tmiGeom);
+    m_rootModelItem->appendChild(tmiOpGL);
+
+    tmiGeom->appendChild(tmiGeoX);
+    tmiGeom->appendChild(tmiGeoY);
+    tmiGeom->appendChild(tmiGeoW);
+    tmiGeom->appendChild(tmiGeoH);
+    tmiOpGL->appendChild(tmiSFbo);
+    tmiOpGL->appendChild(tmiMFbo);
+    tmiOpGL->appendChild(tmiORbo);
+    tmiOpGL->appendChild(tmiOVao);
+    tmiOpGL->appendChild(tmiOVbo);
+    tmiOpGL->appendChild(tmiOIbo);
+    tmiOpGL->appendChild(tmiSTex);
+    tmiOpGL->appendChild(tmiMTex);
+
+    Q_FOREACH (RenderBase* rb, m_objects)
+    {
+        tmiObjs->appendChild(new TreeModelItem("Name", rb->name()));
+    }
+
+    // The sprite batch is also used by other classes; give the possibility to
+    // simply append the root item to another item.
+    if (model != nullptr)
+    {
+        model->addItem(m_rootModelItem);
+        RenderBase::createProperties(model);
+    }
+    else
+    {
+        m_isEmbedded = true;
+    }
 }
 
 
-void SpriteBatch::setBackgroundColor(const QColor& color)
+void SpriteBatch::updateProperties()
 {
-    m_backColor = color;
+    // Update child objects if count changed.
+    if (m_rootModelItem->childAt(2)->childCount() != m_objects.size())
+    {
+        m_rootModelItem->childAt(2)->removeAllChildren();
+
+        Q_FOREACH (RenderBase* rb, m_objects)
+        {
+            m_rootModelItem->childAt(2)->appendChild(new TreeModelItem("Name", rb->name()));
+        }
+    }
+
+    auto cp = m_geometry;
+    if (cp.isNull())
+    {
+        cp.setWidth(renderTarget()->width());
+        cp.setHeight(renderTarget()->height());
+    }
+
+    m_rootModelItem->childAt(0)->setValue(getEffectString(m_effect));
+    m_rootModelItem->childAt(1)->setValue(m_backColor);
+    m_rootModelItem->childAt(3)->childAt(0)->setValue(cp.x());
+    m_rootModelItem->childAt(3)->childAt(1)->setValue(cp.y());
+    m_rootModelItem->childAt(3)->childAt(2)->setValue(cp.width());
+    m_rootModelItem->childAt(3)->childAt(3)->setValue(cp.height());
+    m_rootModelItem->childAt(4)->childAt(0)->setValue(m_frameBuffer);
+    m_rootModelItem->childAt(4)->childAt(1)->setValue(m_msFrameBuffer);
+    m_rootModelItem->childAt(4)->childAt(2)->setValue(m_renderBuffer);
+    m_rootModelItem->childAt(4)->childAt(3)->setValue(m_vertexArray);
+    m_rootModelItem->childAt(4)->childAt(4)->setValue(m_vertexBuffer);
+    m_rootModelItem->childAt(4)->childAt(5)->setValue(m_indexBuffer);
+    m_rootModelItem->childAt(4)->childAt(6)->setValue(m_frameTexture);
+    m_rootModelItem->childAt(4)->childAt(7)->setValue(m_msFrameTexture);
+
+    if (!m_isEmbedded)
+    {
+        RenderBase::updateProperties();
+    }
 }
-
-
-void SpriteBatch::setGeometry(const QRectF& rc)
-{
-    if (rc == m_geometry) return;
-
-    m_geometry = rc;
-    setPosition(rc.x(), rc.y());
-    recreateFboRbo();
-}
-
-
-Effect SpriteBatch::effect() const
-{
-    return m_effect;
-}
-
-
-void SpriteBatch::setEffect(Effect effect)
-{
-    m_effect = effect;
-}
-
 
 
 bool SpriteBatch::createInternal(Window* rt)
@@ -684,118 +797,4 @@ void SpriteBatch::releaseFrame()
     glDebug(egl->glBindVertexArray(renderTarget()->vao()));
     glDebug(egl->glBindFramebuffer(GL_FRAMEBUFFER, offscreenRenderer()));
     shaderProgram()->release();
-}
-
-
-TreeModelItem* SpriteBatch::rootModelItem()
-{
-    return m_rootModelItem;
-}
-
-
-void SpriteBatch::createProperties(TreeModel* model)
-{
-    auto cp = m_geometry;
-    if (cp.isNull())
-    {
-        cp.setWidth(renderTarget()->width());
-        cp.setHeight(renderTarget()->height());
-    }
-
-    TreeModelItem* tmiEffe = new TreeModelItem("Effect", getEffectString(m_effect));
-    TreeModelItem* tmiBack = new TreeModelItem("Backcolor", m_backColor);
-    TreeModelItem* tmiObjs = new TreeModelItem("Objects");
-    TreeModelItem* tmiGeom = new TreeModelItem("Geometry");
-    TreeModelItem* tmiGeoX = new TreeModelItem("x", cp.x());
-    TreeModelItem* tmiGeoY = new TreeModelItem("y", cp.y());
-    TreeModelItem* tmiGeoW = new TreeModelItem("w", cp.width());
-    TreeModelItem* tmiGeoH = new TreeModelItem("h", cp.height());
-    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
-    TreeModelItem* tmiSFbo = new TreeModelItem("Single-sampled frame buffer", m_frameBuffer);
-    TreeModelItem* tmiMFbo = new TreeModelItem("Multi-sampled frame buffer", m_msFrameBuffer);
-    TreeModelItem* tmiORbo = new TreeModelItem("Render buffer", m_renderBuffer);
-    TreeModelItem* tmiOVao = new TreeModelItem("Vertex array", m_vertexArray);
-    TreeModelItem* tmiOVbo = new TreeModelItem("Vertex buffer", m_vertexBuffer);
-    TreeModelItem* tmiOIbo = new TreeModelItem("Index buffer", m_indexBuffer);
-    TreeModelItem* tmiSTex = new TreeModelItem("Single-sampled texture", m_frameTexture);
-    TreeModelItem* tmiMTex = new TreeModelItem("Multi-sampled texture", m_msFrameTexture);
-
-    m_rootModelItem = new TreeModelItem("SpriteBatch");
-    m_rootModelItem->appendChild(tmiEffe);
-    m_rootModelItem->appendChild(tmiBack);
-    m_rootModelItem->appendChild(tmiObjs);
-    m_rootModelItem->appendChild(tmiGeom);
-    m_rootModelItem->appendChild(tmiOpGL);
-
-    tmiGeom->appendChild(tmiGeoX);
-    tmiGeom->appendChild(tmiGeoY);
-    tmiGeom->appendChild(tmiGeoW);
-    tmiGeom->appendChild(tmiGeoH);
-    tmiOpGL->appendChild(tmiSFbo);
-    tmiOpGL->appendChild(tmiMFbo);
-    tmiOpGL->appendChild(tmiORbo);
-    tmiOpGL->appendChild(tmiOVao);
-    tmiOpGL->appendChild(tmiOVbo);
-    tmiOpGL->appendChild(tmiOIbo);
-    tmiOpGL->appendChild(tmiSTex);
-    tmiOpGL->appendChild(tmiMTex);
-
-    Q_FOREACH (RenderBase* rb, m_objects)
-    {
-        tmiObjs->appendChild(new TreeModelItem("Name", rb->name()));
-    }
-
-    // The sprite batch is also used by other classes; give the possibility to
-    // simply append the root item to another item.
-    if (model != nullptr)
-    {
-        model->addItem(m_rootModelItem);
-        RenderBase::createProperties(model);
-    }
-    else
-    {
-        m_isEmbedded = true;
-    }
-}
-
-
-void SpriteBatch::updateProperties()
-{
-    // Update child objects if count changed.
-    if (m_rootModelItem->childAt(2)->childCount() != m_objects.size())
-    {
-        m_rootModelItem->childAt(2)->removeAllChildren();
-
-        Q_FOREACH (RenderBase* rb, m_objects)
-        {
-            m_rootModelItem->childAt(2)->appendChild(new TreeModelItem("Name", rb->name()));
-        }
-    }
-
-    auto cp = m_geometry;
-    if (cp.isNull())
-    {
-        cp.setWidth(renderTarget()->width());
-        cp.setHeight(renderTarget()->height());
-    }
-
-    m_rootModelItem->childAt(0)->setValue(getEffectString(m_effect));
-    m_rootModelItem->childAt(1)->setValue(m_backColor);
-    m_rootModelItem->childAt(3)->childAt(0)->setValue(cp.x());
-    m_rootModelItem->childAt(3)->childAt(1)->setValue(cp.y());
-    m_rootModelItem->childAt(3)->childAt(2)->setValue(cp.width());
-    m_rootModelItem->childAt(3)->childAt(3)->setValue(cp.height());
-    m_rootModelItem->childAt(4)->childAt(0)->setValue(m_frameBuffer);
-    m_rootModelItem->childAt(4)->childAt(1)->setValue(m_msFrameBuffer);
-    m_rootModelItem->childAt(4)->childAt(2)->setValue(m_renderBuffer);
-    m_rootModelItem->childAt(4)->childAt(3)->setValue(m_vertexArray);
-    m_rootModelItem->childAt(4)->childAt(4)->setValue(m_vertexBuffer);
-    m_rootModelItem->childAt(4)->childAt(5)->setValue(m_indexBuffer);
-    m_rootModelItem->childAt(4)->childAt(6)->setValue(m_frameTexture);
-    m_rootModelItem->childAt(4)->childAt(7)->setValue(m_msFrameTexture);
-
-    if (!m_isEmbedded)
-    {
-        RenderBase::updateProperties();
-    }
 }

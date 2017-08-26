@@ -60,13 +60,13 @@ void GameWindow::onInit()
     m_gifAnim->setPosition(QPointF(WINDOW_WIDTH - 200, WINDOW_HEIGHT - 200));
     m_gifAnim->setScale(200 / m_gifAnim->width(), 200 / m_gifAnim->height());
     m_gifAnim->setOrigin(QPointF(0, 0));
-    m_gifAnim->startAnimation(AnimateForever);
+    m_gifAnim->beginAnimation(AnimateForever);
 
     // m_cranAnim
     m_cranAnim = new CranAnimation;
     m_cranAnim->create(":/pika.json", this);
     m_cranAnim->setScale(RATIO_X(m_cranAnim->width()), RATIO_Y(m_cranAnim->height()));
-    m_cranAnim->startAnimation(AnimateForever);
+    m_cranAnim->beginAnimation(AnimateForever);
 }
 
 

@@ -65,6 +65,7 @@ void GameWindow::onInit()
     // m_gui
     m_gui = new GuiManager;
     m_gui->create("qrc:/gui.qml", this);
+    m_gui->setTransparentToMouseInput(true);
 }
 
 

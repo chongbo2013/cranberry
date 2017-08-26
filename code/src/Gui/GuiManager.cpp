@@ -98,19 +98,6 @@ GuiManager::~GuiManager()
 }
 
 
-bool GuiManager::isNull() const
-{
-    return RenderBase::isNull()      ||
-           m_batch->isNull()         ||
-           m_qmlComponent == nullptr ||
-           m_qmlComponent->isNull()  ||
-           m_rootItem == nullptr     ||
-           m_fbo == nullptr          ||
-          !m_isInitialized           ||
-          !m_fbo->isValid();
-}
-
-
 bool GuiManager::isVisible() const
 {
     return m_isVisible;
@@ -120,6 +107,60 @@ bool GuiManager::isVisible() const
 bool GuiManager::isTransparentToKeyInput() const
 {
     return m_noKeyInput;
+}
+
+
+bool GuiManager::isTransparentToMouseInput() const
+{
+    return m_noMouseInput;
+}
+
+
+QQuickWindow* GuiManager::window() const
+{
+    return m_renderWindow;
+}
+
+
+QQuickItem* GuiManager::rootItem() const
+{
+    return m_rootItem;
+}
+
+
+QQmlContext* GuiManager::context() const
+{
+    return m_qmlEngine->rootContext();
+}
+
+
+QPointF GuiManager::topLeft() const
+{
+    return m_rootItem->position();
+}
+
+
+void GuiManager::setVisible(bool visible)
+{
+    m_isVisible = visible;
+}
+
+
+void GuiManager::setTransparentToKeyInput(bool transparent)
+{
+    m_noKeyInput = transparent;
+}
+
+
+void GuiManager::setTransparentToMouseInput(bool transparent)
+{
+    m_noMouseInput = transparent;
+}
+
+
+void GuiManager::setEffect(Effect effect)
+{
+    m_batch->setEffect(effect);
 }
 
 
@@ -152,6 +193,19 @@ bool GuiManager::create(const QString& qml, Window* rt)
     requestUpdate();
 
     return true;
+}
+
+
+bool GuiManager::isNull() const
+{
+    return RenderBase::isNull()      ||
+           m_batch->isNull()         ||
+           m_qmlComponent == nullptr ||
+           m_qmlComponent->isNull()  ||
+           m_rootItem == nullptr     ||
+           m_fbo == nullptr          ||
+          !m_isInitialized           ||
+          !m_fbo->isValid();
 }
 
 
@@ -209,45 +263,47 @@ void GuiManager::render()
 }
 
 
-void GuiManager::setVisible(bool visible)
+TreeModelItem* GuiManager::rootModelItem()
 {
-    m_isVisible = visible;
+    return m_rootModelItem;
 }
 
 
-void GuiManager::setTransparentToKeyInput(bool transparent)
+void GuiManager::createProperties(TreeModel* model)
 {
-    m_noKeyInput = transparent;
+    m_batch->createProperties(nullptr);
+
+    TreeModelItem* tmiInit = new TreeModelItem("Is initialized?", m_isInitialized);
+    TreeModelItem* tmiVisi = new TreeModelItem("Is visible?", m_isVisible);
+    TreeModelItem* tmiKeyi = new TreeModelItem("Allow key input?", !m_noKeyInput);
+    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_requiresUpdate);
+    TreeModelItem* tmiGFbo = new TreeModelItem("Qml frame buffer", m_fbo->handle());
+
+    m_rootModelItem = new TreeModelItem("GuiManager");
+    m_rootModelItem->appendChild(tmiInit);
+    m_rootModelItem->appendChild(tmiVisi);
+    m_rootModelItem->appendChild(tmiKeyi);
+    m_rootModelItem->appendChild(tmiUpda);
+    m_rootModelItem->appendChild(tmiGFbo);
+    m_rootModelItem->appendChild(m_batch->rootModelItem());
+
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
 }
 
 
-void GuiManager::setEffect(Effect effect)
+void GuiManager::updateProperties()
 {
-    m_batch->setEffect(effect);
-}
+    m_batch->updateProperties();
 
+    m_rootModelItem->childAt(0)->setValue(m_isInitialized);
+    m_rootModelItem->childAt(1)->setValue(m_isVisible);
+    m_rootModelItem->childAt(2)->setValue(!m_noKeyInput);
+    m_rootModelItem->childAt(3)->setValue(m_requiresUpdate);
+    m_rootModelItem->childAt(4)->setValue(m_fbo->handle());
 
-QQuickWindow* GuiManager::window() const
-{
-    return m_renderWindow;
-}
-
-
-QQuickItem* GuiManager::rootItem() const
-{
-    return m_rootItem;
-}
-
-
-QQmlContext* GuiManager::context() const
-{
-    return m_qmlEngine->rootContext();
-}
-
-
-QPointF GuiManager::topLeft() const
-{
-    return m_rootItem->position();
+    RenderBase::updateProperties();
 }
 
 
@@ -373,48 +429,4 @@ void GuiManager::resizeFbo()
 void GuiManager::requestUpdate()
 {
     m_requiresUpdate = true;
-}
-
-
-TreeModelItem* GuiManager::rootModelItem()
-{
-    return m_rootModelItem;
-}
-
-
-void GuiManager::createProperties(TreeModel* model)
-{
-    m_batch->createProperties(nullptr);
-
-    TreeModelItem* tmiInit = new TreeModelItem("Is initialized?", m_isInitialized);
-    TreeModelItem* tmiVisi = new TreeModelItem("Is visible?", m_isVisible);
-    TreeModelItem* tmiKeyi = new TreeModelItem("Allow key input?", !m_noKeyInput);
-    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_requiresUpdate);
-    TreeModelItem* tmiGFbo = new TreeModelItem("Qml frame buffer", m_fbo->handle());
-
-    m_rootModelItem = new TreeModelItem("GuiManager");
-    m_rootModelItem->appendChild(tmiInit);
-    m_rootModelItem->appendChild(tmiVisi);
-    m_rootModelItem->appendChild(tmiKeyi);
-    m_rootModelItem->appendChild(tmiUpda);
-    m_rootModelItem->appendChild(tmiGFbo);
-    m_rootModelItem->appendChild(m_batch->rootModelItem());
-
-    model->addItem(m_rootModelItem);
-
-    RenderBase::createProperties(model);
-}
-
-
-void GuiManager::updateProperties()
-{
-    m_batch->updateProperties();
-
-    m_rootModelItem->childAt(0)->setValue(m_isInitialized);
-    m_rootModelItem->childAt(1)->setValue(m_isVisible);
-    m_rootModelItem->childAt(2)->setValue(!m_noKeyInput);
-    m_rootModelItem->childAt(3)->setValue(m_requiresUpdate);
-    m_rootModelItem->childAt(4)->setValue(m_fbo->handle());
-
-    RenderBase::updateProperties();
 }

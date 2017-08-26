@@ -60,11 +60,19 @@ Tilemap::~Tilemap()
 }
 
 
-bool Tilemap::isNull() const
+bool Tilemap::setTiles(const QVector<QPair<int, int>>& tiles)
 {
-    return RenderBase::isNull() ||
-           m_vertices.empty()   ||
-           m_textures.empty();
+    removeAllTiles();
+
+    for (const auto& t : tiles)
+    {
+        if (!appendTile(t.first, t.second))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 
@@ -124,238 +132,6 @@ bool Tilemap::create(
     m_view = view;
 
     return createInternal(rt) && getUniformLocations();
-}
-
-
-bool Tilemap::createInternal(Window* rt)
-{
-    if (!RenderBase::create(rt)) return false;
-
-    // Attempts to create the vertex buffer.
-    m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    if (!m_vertexBuffer->create() || !m_vertexBuffer->bind())
-    {
-        return cranError(ERRARG(e_02));
-    }
-
-    m_vertexBuffer->allocate(m_mapWidth * m_mapHeight * 6 * priv::MapVertex::size());
-
-    // Attempts to create the sampler buffer.
-    m_textureBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
-    if (!m_textureBuffer->create() || !m_textureBuffer->bind())
-    {
-        return cranError(ERRARG(e_02));
-    }
-
-    m_textureBuffer->allocate(m_mapWidth * m_mapHeight * 6 * sizeof(int));
-
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.tilemap"));
-    setSize(m_mapWidth * m_tileWidth, m_mapHeight * m_tileHeight);
-    setOrigin(width() / 2, height() / 2);
-
-    return true;
-}
-
-
-bool Tilemap::getUniformLocations()
-{
-    m_uniformLocs.clear();
-
-    OpenGLShader* program = shaderProgram();
-    for (int i = 0; i < m_textures.size(); i++)
-    {
-        m_uniformLocs.append(program->uniformLocation("u_set" + QString::number(i)));
-    }
-
-    return true;
-}
-
-
-void Tilemap::destroy()
-{
-    if (m_ownTextures)
-    {
-        for (QOpenGLTexture* t : m_textures)
-        {
-            delete t;
-        }
-    }
-
-    delete m_vertexBuffer;
-    delete m_textureBuffer;
-
-    m_vertexBuffer = nullptr;
-    m_textureBuffer = nullptr;
-
-    m_ids.clear();
-    m_vertices.clear();
-    m_textures.clear();
-
-    RenderBase::destroy();
-}
-
-
-void Tilemap::update(const GameTime& time)
-{
-    updateTransform(time);
-}
-
-
-void Tilemap::render()
-{
-    if (!prepareRendering())
-    {
-        return;
-    }
-
-    bindObjects();
-    writeVertices();
-    modifyProgram();
-    modifyAttribs();
-    drawElements();
-    releaseObjects();
-}
-
-
-void Tilemap::bindObjects()
-{
-    // Binds the texture to the units.
-    for (int i = 0; i < m_textures.size(); i++)
-    {
-        glDebug(gl->glActiveTexture(GL_TEXTURE0 + i));
-        glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_textures.at(i)->textureId()));
-    }
-
-    glDebug(shaderProgram()->bind());
-}
-
-
-void Tilemap::releaseObjects()
-{
-    // Unbinds the texture to the units.
-    for (int i = 0; i < m_textures.size(); i++)
-    {
-        glDebug(gl->glActiveTexture(GL_TEXTURE0 + i));
-        glDebug(gl->glBindTexture(GL_TEXTURE_2D, GL_ZERO));
-    }
-
-    glDebug(shaderProgram()->release());
-}
-
-
-void Tilemap::writeVertices()
-{
-    if (m_update)
-    {
-        glDebug(m_vertexBuffer->bind());
-        glDebug(m_vertexBuffer->write(
-            GL_ZERO,
-            m_vertices.data(),
-            m_vertices.size() * priv::MapVertex::size())
-            );
-
-        glDebug(m_textureBuffer->bind());
-        glDebug(m_textureBuffer->write(
-            GL_ZERO,
-            m_ids.data(),
-            m_ids.size() * sizeof(int))
-            );
-
-        m_update = false;
-    }
-}
-
-
-void Tilemap::modifyProgram()
-{
-    OpenGLShader* program = shaderProgram();
-
-    for (int i = 0; i < m_textures.size(); i++)
-    {
-        glDebug(program->setUniformValue(m_uniformLocs.at(i), i));
-    }
-
-    glDebug(program->setMvpMatrix(matrix(this)));
-    glDebug(program->setOpacity(opacity()));
-}
-
-
-void Tilemap::modifyAttribs()
-{
-    glDebug(gl->glEnableVertexAttribArray(priv::MapVertex::xyAttrib()));
-    glDebug(gl->glEnableVertexAttribArray(priv::MapVertex::uvAttrib()));
-    glDebug(gl->glEnableVertexAttribArray(priv::MapVertex::idAttrib()));
-
-    glDebug(m_vertexBuffer->bind());
-    glDebug(gl->glVertexAttribPointer(
-                priv::MapVertex::xyAttrib(),
-                priv::MapVertex::xyLength(),
-                GL_FLOAT,
-                GL_FALSE,
-                priv::MapVertex::size(),
-                priv::MapVertex::xyOffset()
-                ));
-
-    glDebug(gl->glVertexAttribPointer(
-                priv::MapVertex::uvAttrib(),
-                priv::MapVertex::uvLength(),
-                GL_FLOAT,
-                GL_FALSE,
-                priv::MapVertex::size(),
-                priv::MapVertex::uvOffset()
-                ));
-
-    glDebug(m_textureBuffer->bind());
-    glDebug(gl->glVertexAttribPointer(
-                priv::MapVertex::idAttrib(),
-                priv::MapVertex::idLength(),
-                GL_FLOAT,
-                GL_FALSE,
-                GL_ZERO,
-                priv::MapVertex::idOffset()
-                ));
-}
-
-
-void Tilemap::drawElements()
-{
-    // For really big maps, it is way better to split up the work in order to
-    // only draw as many vertices as actually needed for the entire window.
-
-    // Calculates the carry and the max tiles on screen.
-    int carryX = static_cast<int>(-x() / m_tileWidth);
-    int carryY = static_cast<int>(-y() / m_tileHeight);
-    int screenX = static_cast<int>(renderTarget()->width() / m_tileWidth);
-    int screenY = static_cast<int>(renderTarget()->height() / m_tileHeight);
-
-    // Calculates the visible parts of the map on screen.
-    int visibleX = qMax(0, carryX);
-    int visibleY = qMax(0, carryY);
-    int visibleW = qMin(m_mapWidth  - visibleX, screenX) + 1;
-    int visibleH = qMin(m_mapHeight - visibleY, screenY) + 1;
-
-    for (; visibleY < visibleH; visibleY++)
-    {
-        int start = 6 * (visibleY * m_mapWidth + visibleX);
-        int count = 6 * visibleW;
-        glDebug(gl->glDrawArrays(GL_TRIANGLES, start, count));
-    }
-}
-
-
-bool Tilemap::setTiles(const QVector<QPair<int, int>>& tiles)
-{
-    removeAllTiles();
-
-    for (const auto& t : tiles)
-    {
-        if (!appendTile(t.first, t.second))
-        {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 
@@ -509,4 +285,228 @@ void Tilemap::removeAllTiles()
     m_vertices.clear();
     m_ids.clear();
     m_update = true;
+}
+
+
+bool Tilemap::isNull() const
+{
+    return RenderBase::isNull() ||
+           m_vertices.empty()   ||
+           m_textures.empty();
+}
+
+
+void Tilemap::destroy()
+{
+    if (m_ownTextures)
+    {
+        for (QOpenGLTexture* t : m_textures)
+        {
+            delete t;
+        }
+    }
+
+    delete m_vertexBuffer;
+    delete m_textureBuffer;
+
+    m_vertexBuffer = nullptr;
+    m_textureBuffer = nullptr;
+
+    m_ids.clear();
+    m_vertices.clear();
+    m_textures.clear();
+
+    RenderBase::destroy();
+}
+
+
+void Tilemap::update(const GameTime& time)
+{
+    updateTransform(time);
+}
+
+
+void Tilemap::render()
+{
+    if (!prepareRendering())
+    {
+        return;
+    }
+
+    bindObjects();
+    writeVertices();
+    modifyProgram();
+    modifyAttribs();
+    drawElements();
+    releaseObjects();
+}
+
+
+bool Tilemap::createInternal(Window* rt)
+{
+    if (!RenderBase::create(rt)) return false;
+
+    // Attempts to create the vertex buffer.
+    m_vertexBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    if (!m_vertexBuffer->create() || !m_vertexBuffer->bind())
+    {
+        return cranError(ERRARG(e_02));
+    }
+
+    m_vertexBuffer->allocate(m_mapWidth * m_mapHeight * 6 * priv::MapVertex::size());
+
+    // Attempts to create the sampler buffer.
+    m_textureBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    if (!m_textureBuffer->create() || !m_textureBuffer->bind())
+    {
+        return cranError(ERRARG(e_02));
+    }
+
+    m_textureBuffer->allocate(m_mapWidth * m_mapHeight * 6 * sizeof(int));
+
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.tilemap"));
+    setSize(m_mapWidth * m_tileWidth, m_mapHeight * m_tileHeight);
+    setOrigin(width() / 2, height() / 2);
+
+    return true;
+}
+
+
+bool Tilemap::getUniformLocations()
+{
+    m_uniformLocs.clear();
+
+    OpenGLShader* program = shaderProgram();
+    for (int i = 0; i < m_textures.size(); i++)
+    {
+        m_uniformLocs.append(program->uniformLocation("u_set" + QString::number(i)));
+    }
+
+    return true;
+}
+
+
+void Tilemap::bindObjects()
+{
+    // Binds the texture to the units.
+    for (int i = 0; i < m_textures.size(); i++)
+    {
+        glDebug(gl->glActiveTexture(GL_TEXTURE0 + i));
+        glDebug(gl->glBindTexture(GL_TEXTURE_2D, m_textures.at(i)->textureId()));
+    }
+
+    glDebug(shaderProgram()->bind());
+}
+
+
+void Tilemap::releaseObjects()
+{
+    // Unbinds the texture to the units.
+    for (int i = 0; i < m_textures.size(); i++)
+    {
+        glDebug(gl->glActiveTexture(GL_TEXTURE0 + i));
+        glDebug(gl->glBindTexture(GL_TEXTURE_2D, GL_ZERO));
+    }
+
+    glDebug(shaderProgram()->release());
+}
+
+
+void Tilemap::writeVertices()
+{
+    if (m_update)
+    {
+        glDebug(m_vertexBuffer->bind());
+        glDebug(m_vertexBuffer->write(
+            GL_ZERO,
+            m_vertices.data(),
+            m_vertices.size() * priv::MapVertex::size())
+            );
+
+        glDebug(m_textureBuffer->bind());
+        glDebug(m_textureBuffer->write(
+            GL_ZERO,
+            m_ids.data(),
+            m_ids.size() * sizeof(int))
+            );
+
+        m_update = false;
+    }
+}
+
+
+void Tilemap::modifyProgram()
+{
+    OpenGLShader* program = shaderProgram();
+
+    for (int i = 0; i < m_textures.size(); i++)
+    {
+        glDebug(program->setUniformValue(m_uniformLocs.at(i), i));
+    }
+
+    glDebug(program->setMvpMatrix(matrix(this)));
+    glDebug(program->setOpacity(opacity()));
+}
+
+
+void Tilemap::modifyAttribs()
+{
+    glDebug(gl->glEnableVertexAttribArray(priv::MapVertex::xyAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::MapVertex::uvAttrib()));
+    glDebug(gl->glEnableVertexAttribArray(priv::MapVertex::idAttrib()));
+
+    glDebug(m_vertexBuffer->bind());
+    glDebug(gl->glVertexAttribPointer(
+                priv::MapVertex::xyAttrib(),
+                priv::MapVertex::xyLength(),
+                GL_FLOAT,
+                GL_FALSE,
+                priv::MapVertex::size(),
+                priv::MapVertex::xyOffset()
+                ));
+
+    glDebug(gl->glVertexAttribPointer(
+                priv::MapVertex::uvAttrib(),
+                priv::MapVertex::uvLength(),
+                GL_FLOAT,
+                GL_FALSE,
+                priv::MapVertex::size(),
+                priv::MapVertex::uvOffset()
+                ));
+
+    glDebug(m_textureBuffer->bind());
+    glDebug(gl->glVertexAttribPointer(
+                priv::MapVertex::idAttrib(),
+                priv::MapVertex::idLength(),
+                GL_FLOAT,
+                GL_FALSE,
+                GL_ZERO,
+                priv::MapVertex::idOffset()
+                ));
+}
+
+
+void Tilemap::drawElements()
+{
+    // For really big maps, it is way better to split up the work in order to
+    // only draw as many vertices as actually needed for the entire window.
+
+    // Calculates the carry and the max tiles on screen.
+    int carryX = static_cast<int>(-x() / m_tileWidth);
+    int carryY = static_cast<int>(-y() / m_tileHeight);
+    int screenX = static_cast<int>(renderTarget()->width() / m_tileWidth);
+    int screenY = static_cast<int>(renderTarget()->height() / m_tileHeight);
+
+    // Calculates the visible parts of the map on screen.
+    int visibleX = qMax(0, carryX);
+    int visibleY = qMax(0, carryY);
+    int visibleW = qMin(m_mapWidth  - visibleX, screenX) + 1;
+    int visibleH = qMin(m_mapHeight - visibleY, screenY) + 1;
+
+    for (; visibleY < visibleH; visibleY++)
+    {
+        int start = 6 * (visibleY * m_mapWidth + visibleX);
+        int count = 6 * visibleW;
+        glDebug(gl->glDrawArrays(GL_TRIANGLES, start, count));
+    }
 }

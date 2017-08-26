@@ -114,6 +114,7 @@ public overridden:
     // Virtual functions
     ////////////////////////////////////////////////////////////////////////////
     LayerType layerType() const override;
+    void update(const GameTime& time) override;
     void render() override;
 
 

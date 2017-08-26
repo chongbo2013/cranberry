@@ -59,49 +59,6 @@ ShapeBase::~ShapeBase()
 }
 
 
-bool ShapeBase::isNull() const
-{
-    return RenderBase::isNull()      ||
-           m_vertexBuffer == nullptr ||
-          !m_vertexBuffer->isCreated();
-}
-
-
-void ShapeBase::destroy()
-{
-    delete m_vertexBuffer;
-
-    m_vertexBuffer = nullptr;
-    m_colorBuffer.clear();
-    m_vertices.clear();
-    m_update = false;
-
-    RenderBase::destroy();
-}
-
-
-void ShapeBase::update(const GameTime& time)
-{
-    updateTransform(time);
-}
-
-
-void ShapeBase::render()
-{
-    if (!prepareRendering())
-    {
-        return;
-    }
-
-    bindObjects();
-    writeVertices();
-    modifyProgram();
-    modifyAttribs();
-    drawElements();
-    releaseObjects();
-}
-
-
 uint ShapeBase::vertexCount() const
 {
     return m_vertices.size();
@@ -164,6 +121,129 @@ void ShapeBase::setColor(const QVector<QColor>& colors)
     m_colorBuffer = colors;
     m_colorUpdate = true;
     m_update = true;
+}
+
+
+bool ShapeBase::isNull() const
+{
+    return RenderBase::isNull()      ||
+           m_vertexBuffer == nullptr ||
+          !m_vertexBuffer->isCreated();
+}
+
+
+void ShapeBase::destroy()
+{
+    delete m_vertexBuffer;
+
+    m_vertexBuffer = nullptr;
+    m_colorBuffer.clear();
+    m_vertices.clear();
+    m_update = false;
+
+    RenderBase::destroy();
+}
+
+
+void ShapeBase::update(const GameTime& time)
+{
+    updateTransform(time);
+}
+
+
+void ShapeBase::render()
+{
+    if (!prepareRendering())
+    {
+        return;
+    }
+
+    bindObjects();
+    writeVertices();
+    modifyProgram();
+    modifyAttribs();
+    drawElements();
+    releaseObjects();
+}
+
+
+TreeModelItem* ShapeBase::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
+void ShapeBase::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiColo = new TreeModelItem("Color", m_colorBuffer[0]);
+    TreeModelItem* tmiFill = new TreeModelItem("Is filled?", m_filled);
+    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_update || m_colorUpdate);
+    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
+    TreeModelItem* tmiVBuf = new TreeModelItem("Vertexbuffer", m_vertexBuffer->bufferId());
+
+    m_rootModelItem = new TreeModelItem("ShapeBase");
+    m_rootModelItem->appendChild(tmiColo);
+    m_rootModelItem->appendChild(tmiFill);
+    m_rootModelItem->appendChild(tmiUpda);
+    m_rootModelItem->appendChild(tmiOpGL);
+
+    tmiOpGL->appendChild(tmiVBuf);
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void ShapeBase::updateProperties()
+{
+    m_rootModelItem->childAt(0)->setValue(m_colorBuffer[0]);
+    m_rootModelItem->childAt(1)->setValue(m_filled);
+    m_rootModelItem->childAt(2)->setValue(m_update || m_colorUpdate);
+    m_rootModelItem->childAt(3)->childAt(0)->setValue(m_vertexBuffer->bufferId());
+
+    RenderBase::updateProperties();
+}
+
+
+void ShapeBase::extrudeSegment(
+    const QPointF& p0,
+    const QPointF& p1,
+    const QPointF& p2,
+    const QPointF& p3
+    )
+{
+    priv::Vertex v1, v2, v3, v4, v5, v6;
+    QVector2D line = QVector2D(p2 - p1).normalized();
+    QVector2D norm = QVector2D(-line.y(), line.x()).normalized();
+    QVector2D tan1 = (p0 == p1) ? line : (QVector2D(p1 - p0).normalized() + line).normalized();
+    QVector2D tan2 = (p2 == p3) ? line : (QVector2D(p3 - p2).normalized() + line).normalized();
+    QVector2D mit1 = QVector2D(-tan1.y(), tan1.x());
+    QVector2D mit2 = QVector2D(-tan2.y(), tan2.x());
+
+    // Calculate the length of the miter.
+    qreal len1 = m_lineWidth / QVector2D::dotProduct(norm, mit1);
+    qreal len2 = m_lineWidth / QVector2D::dotProduct(norm, mit2);
+
+    // Calculates the new points.
+    QVector2D a1 = QVector2D(p1) - len1 * mit1;
+    QVector2D a2 = QVector2D(p2) - len2 * mit2;
+    QVector2D a3 = QVector2D(p1) + len1 * mit1;
+    QVector2D a4 = QVector2D(p2) + len2 * mit2;
+
+    // Generate the vertices.
+    v1.xyz(a1.x() + c_magic, a1.y() + c_magic);
+    v2.xyz(a3.x() + c_magic, a3.y() + c_magic);
+    v3.xyz(a2.x() + c_magic, a2.y() + c_magic);
+    v4.xyz(a2.x() + c_magic, a2.y() + c_magic);
+    v5.xyz(a3.x() + c_magic, a3.y() + c_magic);
+    v6.xyz(a4.x() + c_magic, a4.y() + c_magic);
+
+    m_vertices.push_back(v1);
+    m_vertices.push_back(v2);
+    m_vertices.push_back(v3);
+    m_vertices.push_back(v4);
+    m_vertices.push_back(v5);
+    m_vertices.push_back(v6);
 }
 
 
@@ -410,84 +490,4 @@ void ShapeBase::drawElements()
     }
 
     glDebug(gl->glDrawArrays(mode, GL_ZERO, vertexCount()));
-}
-
-
-TreeModelItem* ShapeBase::rootModelItem()
-{
-    return m_rootModelItem;
-}
-
-
-void ShapeBase::createProperties(TreeModel* model)
-{
-    TreeModelItem* tmiColo = new TreeModelItem("Color", m_colorBuffer[0]);
-    TreeModelItem* tmiFill = new TreeModelItem("Is filled?", m_filled);
-    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_update || m_colorUpdate);
-    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
-    TreeModelItem* tmiVBuf = new TreeModelItem("Vertexbuffer", m_vertexBuffer->bufferId());
-
-    m_rootModelItem = new TreeModelItem("ShapeBase");
-    m_rootModelItem->appendChild(tmiColo);
-    m_rootModelItem->appendChild(tmiFill);
-    m_rootModelItem->appendChild(tmiUpda);
-    m_rootModelItem->appendChild(tmiOpGL);
-
-    tmiOpGL->appendChild(tmiVBuf);
-    model->addItem(m_rootModelItem);
-
-    RenderBase::createProperties(model);
-}
-
-
-void ShapeBase::updateProperties()
-{
-    m_rootModelItem->childAt(0)->setValue(m_colorBuffer[0]);
-    m_rootModelItem->childAt(1)->setValue(m_filled);
-    m_rootModelItem->childAt(2)->setValue(m_update || m_colorUpdate);
-    m_rootModelItem->childAt(3)->childAt(0)->setValue(m_vertexBuffer->bufferId());
-
-    RenderBase::updateProperties();
-}
-
-
-void ShapeBase::extrudeSegment(
-    const QPointF& p0,
-    const QPointF& p1,
-    const QPointF& p2,
-    const QPointF& p3
-    )
-{
-    priv::Vertex v1, v2, v3, v4, v5, v6;
-    QVector2D line = QVector2D(p2 - p1).normalized();
-    QVector2D norm = QVector2D(-line.y(), line.x()).normalized();
-    QVector2D tan1 = (p0 == p1) ? line : (QVector2D(p1 - p0).normalized() + line).normalized();
-    QVector2D tan2 = (p2 == p3) ? line : (QVector2D(p3 - p2).normalized() + line).normalized();
-    QVector2D mit1 = QVector2D(-tan1.y(), tan1.x());
-    QVector2D mit2 = QVector2D(-tan2.y(), tan2.x());
-
-    // Calculate the length of the miter.
-    qreal len1 = m_lineWidth / QVector2D::dotProduct(norm, mit1);
-    qreal len2 = m_lineWidth / QVector2D::dotProduct(norm, mit2);
-
-    // Calculates the new points.
-    QVector2D a1 = QVector2D(p1) - len1 * mit1;
-    QVector2D a2 = QVector2D(p2) - len2 * mit2;
-    QVector2D a3 = QVector2D(p1) + len1 * mit1;
-    QVector2D a4 = QVector2D(p2) + len2 * mit2;
-
-    // Generate the vertices.
-    v1.xyz(a1.x() + c_magic, a1.y() + c_magic);
-    v2.xyz(a3.x() + c_magic, a3.y() + c_magic);
-    v3.xyz(a2.x() + c_magic, a2.y() + c_magic);
-    v4.xyz(a2.x() + c_magic, a2.y() + c_magic);
-    v5.xyz(a3.x() + c_magic, a3.y() + c_magic);
-    v6.xyz(a4.x() + c_magic, a4.y() + c_magic);
-
-    m_vertices.push_back(v1);
-    m_vertices.push_back(v2);
-    m_vertices.push_back(v3);
-    m_vertices.push_back(v4);
-    m_vertices.push_back(v5);
-    m_vertices.push_back(v6);
 }

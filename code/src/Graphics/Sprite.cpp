@@ -88,12 +88,6 @@ Sprite::~Sprite()
 }
 
 
-bool Sprite::isNull() const
-{
-    return RenderBase::isNull() || m_movements.isEmpty();
-}
-
-
 bool Sprite::isBlocking() const
 {
     return m_isBlocking;
@@ -103,6 +97,44 @@ bool Sprite::isBlocking() const
 bool Sprite::isRunning() const
 {
     return m_isRunning;
+}
+
+
+void Sprite::setBlendColor(const QColor& color)
+{
+    setBlendColor(color, color, color, color);
+}
+
+
+void Sprite::setBlendColor(
+    const QColor &tl,
+    const QColor &tr,
+    const QColor &br,
+    const QColor &bl
+    )
+{
+    for (auto* const m : m_movements.values())
+    {
+        m->animation()->setBlendColor(tl, tr, br, bl);
+    }
+}
+
+
+void Sprite::setBlendMode(BlendModes modes)
+{
+    for (auto* const m : m_movements.values())
+    {
+        m->animation()->setBlendMode(modes);
+    }
+}
+
+
+void Sprite::setEffect(Effect effect)
+{
+    for (auto* const m : m_movements.values())
+    {
+        m->animation()->setEffect(effect);
+    }
 }
 
 
@@ -250,7 +282,7 @@ void Sprite::beginMove(const QString& n)
     }
 
     // Runs the animation.
-    m->animation()->startAnimation(AnimateForever);
+    m->animation()->beginAnimation(AnimateForever);
     if (m->mode() == MovementTile)
     {
         float mx = m->horizontalAdvance() / m->totalDuration();
@@ -283,7 +315,7 @@ void Sprite::beginIdle(const QString& n)
     }
 
     // Starts the idle mode.
-    m->animation()->startIdle();
+    m->animation()->beginIdle();
     m_currentMove = m;
     m_isRunning = false;
 }
@@ -308,12 +340,18 @@ void Sprite::endMove()
         return;
     }
 
-    m_currentMove->animation()->stopAnimation();
+    m_currentMove->animation()->endAnimation();
     m_currentMove->animation()->endMove();
-    m_currentMove->animation()->startIdle();
+    m_currentMove->animation()->beginIdle();
 
     m_isBlocking = false;
     m_isRunning = false;
+}
+
+
+bool Sprite::isNull() const
+{
+    return RenderBase::isNull() || m_movements.isEmpty();
 }
 
 
@@ -339,44 +377,6 @@ void Sprite::render()
     m_currentMove->animation()->setShaderProgram(shaderProgram());
     m_currentMove->animation()->copyTransform(this, m_currentMove->animation());
     m_currentMove->animation()->render();
-}
-
-
-void Sprite::setBlendColor(const QColor& color)
-{
-    setBlendColor(color, color, color, color);
-}
-
-
-void Sprite::setBlendColor(
-    const QColor &tl,
-    const QColor &tr,
-    const QColor &br,
-    const QColor &bl
-    )
-{
-    for (auto* const m : m_movements.values())
-    {
-        m->animation()->setBlendColor(tl, tr, br, bl);
-    }
-}
-
-
-void Sprite::setBlendMode(BlendModes modes)
-{
-    for (auto* const m : m_movements.values())
-    {
-        m->animation()->setBlendMode(modes);
-    }
-}
-
-
-void Sprite::setEffect(Effect effect)
-{
-    for (auto* const m : m_movements.values())
-    {
-        m->animation()->setEffect(effect);
-    }
 }
 
 

@@ -74,23 +74,7 @@ int AnimationBase::frameCount() const
 }
 
 
-void AnimationBase::destroy()
-{
-    for (TextureAtlas* atlas : m_atlases)
-    {
-        delete atlas;
-    }
-
-    m_frames.clear();
-    m_atlases.clear();
-    m_currentFrame = nullptr;
-    m_isAnimating = false;
-
-    RenderBase::destroy();
-}
-
-
-void AnimationBase::startAnimation(AnimationMode mode)
+void AnimationBase::beginAnimation(AnimationMode mode)
 {
     m_mode = mode;
     m_elapsedTime = 0.0;
@@ -99,7 +83,7 @@ void AnimationBase::startAnimation(AnimationMode mode)
 }
 
 
-void AnimationBase::startIdle()
+void AnimationBase::beginIdle()
 {
     m_currentFrame = &m_idleFrame;
     m_isAnimating = false;
@@ -112,64 +96,10 @@ void AnimationBase::resumeAnimation()
 }
 
 
-void AnimationBase::stopAnimation()
+void AnimationBase::endAnimation()
 {
     m_emitter.emitFinishedAnimation();
     m_isAnimating = false;
-}
-
-
-void AnimationBase::update(const GameTime& time)
-{
-    updateTransform(time);
-
-    // Updates the animation.
-    if (m_isAnimating && Q_LIKELY(!isNull()))
-    {
-        m_elapsedTime += time.deltaTime();
-        if (m_elapsedTime >= m_currentFrame->duration())
-        {
-            // Jump to the next frame and handle overflow.
-            int frameIndex = m_currentFrame->frameId() + 1;
-            if (frameIndex >= m_frames.size())
-            {
-                frameIndex = 0;
-
-                if (m_mode == AnimateOnce)
-                {
-                    m_isAnimating = false;
-                    m_emitter.emitFinishedAnimation();
-                }
-            }
-
-            // Specify the next frame and reset timer.
-            m_elapsedTime = 0.0;
-            m_currentFrame = &m_frames[frameIndex];
-        }
-    }
-
-    // Copies all transformations.
-    TextureBase* texture = getCurrentTexture();
-    {
-        texture->setShaderProgram(shaderProgram());
-        texture->setSourceRectangle(m_currentFrame->rectangle());
-        copyTransform(this, texture);
-    }
-}
-
-
-void AnimationBase::render()
-{
-    if (!prepareRendering()) return;
-
-    // Renders the current texture.
-    getCurrentTexture()->render();
-}
-
-
-AnimationBaseEmitter* AnimationBase::signals()
-{
-    return &m_emitter;
 }
 
 
@@ -218,6 +148,76 @@ void AnimationBase::setEffect(Effect effect)
     {
         atlas->texture()->setEffect(effect);
     }
+}
+
+
+AnimationBaseEmitter* AnimationBase::signals()
+{
+    return &m_emitter;
+}
+
+
+void AnimationBase::destroy()
+{
+    for (TextureAtlas* atlas : m_atlases)
+    {
+        delete atlas;
+    }
+
+    m_frames.clear();
+    m_atlases.clear();
+    m_currentFrame = nullptr;
+    m_isAnimating = false;
+
+    RenderBase::destroy();
+}
+
+
+void AnimationBase::update(const GameTime& time)
+{
+    updateTransform(time);
+
+    // Updates the animation.
+    if (m_isAnimating && Q_LIKELY(!isNull()))
+    {
+        m_elapsedTime += time.deltaTime();
+        if (m_elapsedTime >= m_currentFrame->duration())
+        {
+            // Jump to the next frame and handle overflow.
+            int frameIndex = m_currentFrame->frameId() + 1;
+            if (frameIndex >= m_frames.size())
+            {
+                frameIndex = 0;
+
+                if (m_mode == AnimateOnce)
+                {
+                    m_isAnimating = false;
+                    m_emitter.emitFinishedAnimation();
+                }
+            }
+
+            // Specify the next frame and reset timer.
+            m_elapsedTime = 0.0;
+            m_currentFrame = &m_frames[frameIndex];
+        }
+    }
+
+    // Copies all transformations.
+    TextureBase* texture = getCurrentTexture();
+    {
+        texture->setShaderProgram(shaderProgram());
+        texture->setSourceRectangle(m_currentFrame->rectangle());
+        copyTransform(this, texture);
+    }
+}
+
+
+void AnimationBase::render()
+{
+    if (!prepareRendering()) return;
+
+    // Renders the current texture.
+    getCurrentTexture()->render();
 }
 
 
@@ -302,16 +302,6 @@ bool AnimationBase::createInternal(
     setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
 
     return true;
-}
-
-
-TextureBase* AnimationBase::getCurrentTexture()
-{
-    return m_atlases
-           [
-               m_currentFrame
-              ->atlasId()
-           ]  ->texture();
 }
 
 
@@ -419,4 +409,14 @@ void AnimationBase::updateProperties()
     {
         RenderBase::updateProperties();
     }
+}
+
+
+TextureBase* AnimationBase::getCurrentTexture()
+{
+    return m_atlases
+           [
+               m_currentFrame
+              ->atlasId()
+           ]  ->texture();
 }

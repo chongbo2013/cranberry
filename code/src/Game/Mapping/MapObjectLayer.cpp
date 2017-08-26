@@ -194,6 +194,15 @@ LayerType MapObjectLayer::layerType() const
 }
 
 
+void MapObjectLayer::update(const GameTime& time)
+{
+    for (MapObject* obj : m_objects)
+    {
+        obj->update(time);
+    }
+}
+
+
 void MapObjectLayer::render()
 {
     for (MapObject* obj : m_objects)

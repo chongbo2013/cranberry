@@ -58,6 +58,15 @@ public:
     CRANBERRY_DEFAULT_MOVE(Tilemap)
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Specifies the tiles in the map.
+    ///
+    /// \param tiles List of tile indices, paired with tileset indices.
+    /// \returns false if there are more tiles than the map can actually hold.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool setTiles(const QVector<QPair<int, int>>& tiles);
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Creates the tilemap object.
     ///
     /// \param tilesets Paths to tileset images to use.
@@ -97,15 +106,6 @@ public:
             const QRect& view,
             Window* renderTarget = nullptr
             );
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Specifies the tiles in the map.
-    ///
-    /// \param tiles List of tile indices, paired with tileset indices.
-    /// \returns false if there are more tiles than the map can actually hold.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool setTiles(const QVector<QPair<int, int>>& tiles);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Appends one single tile.

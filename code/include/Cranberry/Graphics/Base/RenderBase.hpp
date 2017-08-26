@@ -56,23 +56,6 @@ public:
     CRANBERRY_DISABLE_MOVE(RenderBase)
 
     ////////////////////////////////////////////////////////////////////////////
-    /// Provides a lightweight way to make the render target's context current.
-    /// Normally, you do not need to use this, only if Qt code interferes with
-    /// the context of the render target.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool makeCurrent();
-
-    ////////////////////////////////////////////////////////////////////////////
-    /// Prepares the render process by making the target's context current or
-    /// by determining whether the object is null.
-    ///
-    /// \returns true if preparing was successful.
-    ///
-    ////////////////////////////////////////////////////////////////////////////
-    bool prepareRendering();
-
-    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves a pointer to the render target.
     ///
     /// \returns a pointer to the render target.
@@ -133,6 +116,23 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setName(const QString& name);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Provides a lightweight way to make the render target's context current.
+    /// Normally, you do not need to use this, only if Qt code interferes with
+    /// the context of the render target.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool makeCurrent();
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// Prepares the render process by making the target's context current or
+    /// by determining whether the object is null.
+    ///
+    /// \returns true if preparing was successful.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool prepareRendering();
 
 
 public overridable:

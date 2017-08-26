@@ -63,6 +63,90 @@ TextureBase::~TextureBase()
 }
 
 
+QOpenGLTexture* TextureBase::texture() const
+{
+    return m_texture;
+}
+
+
+void TextureBase::setSourceRectangle(const QRectF& rc)
+{
+    setSourceRectangle(rc.x(), rc.y(), rc.width(), rc.height());
+}
+
+
+void TextureBase::setSourceRectangle(qreal x, qreal y, qreal w, qreal h)
+{
+    float texW = width();
+    float texH = height();
+    float dstW = w;
+    float dstH = h;
+    float uvcX = x / texW;
+    float uvcY = y / texH;
+    float uvcW = uvcX + (dstW / texW);
+    float uvcH = uvcY + (dstH / texH);
+
+    m_vertices.at(0).xyz(0.f,  0.f,  0.f);
+    m_vertices.at(1).xyz(dstW, 0.f,  0.f);
+    m_vertices.at(2).xyz(dstW, dstH, 0.f);
+    m_vertices.at(3).xyz(0.f,  dstH, 0.f);
+
+    m_vertices.at(0).uv(uvcX, uvcY);
+    m_vertices.at(1).uv(uvcW, uvcY);
+    m_vertices.at(2).uv(uvcW, uvcH);
+    m_vertices.at(3).uv(uvcX, uvcH);
+
+    m_sourceRect = QRectF(x, y, w, h);
+    m_update = true;
+}
+
+
+void TextureBase::setBlendColor(const QColor& color)
+{
+    setBlendColor(color, color, color, color);
+}
+
+
+void TextureBase::setBlendColor(
+    const QColor& tl,
+    const QColor& tr,
+    const QColor& br,
+    const QColor& bl
+    )
+{
+    m_vertices.at(0).rgba(tl);
+    m_vertices.at(1).rgba(tr);
+    m_vertices.at(2).rgba(br);
+    m_vertices.at(3).rgba(bl);
+
+    m_update = true;
+}
+
+
+void TextureBase::setBlendMode(BlendModes modes)
+{
+    m_blendMode = modes;
+}
+
+
+void TextureBase::setEffect(Effect effect)
+{
+    m_effect = effect;
+}
+
+
+bool TextureBase::initializeData()
+{
+    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
+    setSize(m_texture->width(), m_texture->height());
+    setSourceRectangle(0.0f, 0.0f, width(), height());
+    setOrigin(width() / 2.0f, height() / 2.0f);
+    setBlendColor(QColor(Qt::white));
+
+    return true;
+}
+
+
 bool TextureBase::isNull() const
 {
     return RenderBase::isNull()        ||
@@ -111,6 +195,122 @@ bool TextureBase::create(QOpenGLTexture* img, Window* renderTarget)
 }
 
 
+void TextureBase::destroy()
+{
+    delete m_vertexBuffer;
+    delete m_indexBuffer;
+    delete m_texture;
+
+    m_vertexBuffer = nullptr;
+    m_indexBuffer = nullptr;
+    m_texture = nullptr;
+
+    RenderBase::destroy();
+}
+
+
+void TextureBase::update(const GameTime& time)
+{
+    updateTransform(time);
+}
+
+
+void TextureBase::render()
+{
+    if (!prepareRendering())
+    {
+        return;
+    }
+
+    bindObjects();
+    writeVertices();
+    modifyProgram();
+    modifyAttribs();
+    drawElements();
+    releaseObjects();
+}
+
+
+priv::QuadVertices& TextureBase::vertices()
+{
+    return m_vertices;
+}
+
+
+QOpenGLBuffer* TextureBase::buffer() const
+{
+    return m_vertexBuffer;
+}
+
+
+void TextureBase::requestUpdate()
+{
+    m_update = true;
+}
+
+
+TreeModelItem* TextureBase::rootModelItem()
+{
+    return m_rootModelItem;
+}
+
+
+void TextureBase::createProperties(TreeModel* model)
+{
+    TreeModelItem* tmiBlen = new TreeModelItem("Blending mode", getBlendModeString(m_blendMode));
+    TreeModelItem* tmiEffe = new TreeModelItem("Effect", getEffectString(m_effect));
+    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_update);
+    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
+    TreeModelItem* tmiText = new TreeModelItem("Texture", m_texture->textureId());
+    TreeModelItem* tmiVBuf = new TreeModelItem("Vertexbuffer", m_vertexBuffer->bufferId());
+    TreeModelItem* tmiIBuf = new TreeModelItem("Indexbuffer", m_indexBuffer->bufferId());
+
+    m_rootModelItem = new TreeModelItem("TextureBase");
+    m_rootModelItem->appendChild(tmiBlen);
+    m_rootModelItem->appendChild(tmiEffe);
+    m_rootModelItem->appendChild(tmiUpda);
+    m_rootModelItem->appendChild(tmiOpGL);
+
+    tmiOpGL->appendChild(tmiText);
+    tmiOpGL->appendChild(tmiVBuf);
+    tmiOpGL->appendChild(tmiIBuf);
+    model->addItem(m_rootModelItem);
+
+    RenderBase::createProperties(model);
+}
+
+
+void TextureBase::updateProperties()
+{
+    TreeModelItem* tmiOpGL = m_rootModelItem->childAt(3);
+    tmiOpGL->childAt(0)->setValue(m_texture->textureId());
+    tmiOpGL->childAt(1)->setValue(m_vertexBuffer->bufferId());
+    tmiOpGL->childAt(2)->setValue(m_indexBuffer->bufferId());
+
+    m_rootModelItem->childAt(0)->setValue(getBlendModeString(m_blendMode));
+    m_rootModelItem->childAt(1)->setValue(getEffectString(m_effect));
+    m_rootModelItem->childAt(2)->setValue(m_update);
+
+    RenderBase::updateProperties();
+}
+
+
+int TextureBase::maxSize()
+{
+    if (QOpenGLContext::currentContext() == nullptr)
+    {
+        return 0;
+    }
+
+    GLint texSize;
+    QOpenGLContext::currentContext()
+            ->functions()
+            ->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
+
+    return texSize;
+}
+
+
 bool TextureBase::createBuffers()
 {
     // Attempts to create the buffer holding the vertex data.
@@ -152,54 +352,6 @@ bool TextureBase::createTexture(const QImage& img)
     m_texture->setWrapMode(QOpenGLTexture::ClampToEdge);
 
     return true;
-}
-
-
-bool TextureBase::initializeData()
-{
-    setDefaultShaderProgram(OpenGLDefaultShaders::get("cb.glsl.texture"));
-    setSize(m_texture->width(), m_texture->height());
-    setSourceRectangle(0.0f, 0.0f, width(), height());
-    setOrigin(width() / 2.0f, height() / 2.0f);
-    setBlendColor(QColor(Qt::white));
-
-    return true;
-}
-
-
-void TextureBase::destroy()
-{
-    delete m_vertexBuffer;
-    delete m_indexBuffer;
-    delete m_texture;
-
-    m_vertexBuffer = nullptr;
-    m_indexBuffer = nullptr;
-    m_texture = nullptr;
-
-    RenderBase::destroy();
-}
-
-
-void TextureBase::update(const GameTime& time)
-{
-    updateTransform(time);
-}
-
-
-void TextureBase::render()
-{
-    if (!prepareRendering())
-    {
-        return;
-    }
-
-    bindObjects();
-    writeVertices();
-    modifyProgram();
-    modifyAttribs();
-    drawElements();
-    releaseObjects();
 }
 
 
@@ -299,156 +451,4 @@ void TextureBase::drawElements()
                 GL_UNSIGNED_INT,
                 priv::TextureVertex::xyzOffset()
                 ));
-}
-
-
-void TextureBase::setSourceRectangle(const QRectF& rc)
-{
-    setSourceRectangle(rc.x(), rc.y(), rc.width(), rc.height());
-}
-
-
-void TextureBase::setSourceRectangle(qreal x, qreal y, qreal w, qreal h)
-{
-    float texW = width();
-    float texH = height();
-    float dstW = w;
-    float dstH = h;
-    float uvcX = x / texW;
-    float uvcY = y / texH;
-    float uvcW = uvcX + (dstW / texW);
-    float uvcH = uvcY + (dstH / texH);
-
-    m_vertices.at(0).xyz(0.f,  0.f,  0.f);
-    m_vertices.at(1).xyz(dstW, 0.f,  0.f);
-    m_vertices.at(2).xyz(dstW, dstH, 0.f);
-    m_vertices.at(3).xyz(0.f,  dstH, 0.f);
-
-    m_vertices.at(0).uv(uvcX, uvcY);
-    m_vertices.at(1).uv(uvcW, uvcY);
-    m_vertices.at(2).uv(uvcW, uvcH);
-    m_vertices.at(3).uv(uvcX, uvcH);
-
-    m_sourceRect = QRectF(x, y, w, h);
-    m_update = true;
-}
-
-
-void TextureBase::setBlendColor(const QColor& color)
-{
-    setBlendColor(color, color, color, color);
-}
-
-
-void TextureBase::setBlendColor(
-    const QColor& tl,
-    const QColor& tr,
-    const QColor& br,
-    const QColor& bl
-    )
-{
-    m_vertices.at(0).rgba(tl);
-    m_vertices.at(1).rgba(tr);
-    m_vertices.at(2).rgba(br);
-    m_vertices.at(3).rgba(bl);
-
-    m_update = true;
-}
-
-
-void TextureBase::setBlendMode(BlendModes modes)
-{
-    m_blendMode = modes;
-}
-
-
-void TextureBase::setEffect(Effect effect)
-{
-    m_effect = effect;
-}
-
-
-priv::QuadVertices& TextureBase::vertices()
-{
-    return m_vertices;
-}
-
-
-QOpenGLTexture* TextureBase::texture() const
-{
-    return m_texture;
-}
-
-
-QOpenGLBuffer* TextureBase::buffer() const
-{
-    return m_vertexBuffer;
-}
-
-
-void TextureBase::requestUpdate()
-{
-    m_update = true;
-}
-
-
-TreeModelItem* TextureBase::rootModelItem()
-{
-    return m_rootModelItem;
-}
-
-
-void TextureBase::createProperties(TreeModel* model)
-{
-    TreeModelItem* tmiBlen = new TreeModelItem("Blending mode", getBlendModeString(m_blendMode));
-    TreeModelItem* tmiEffe = new TreeModelItem("Effect", getEffectString(m_effect));
-    TreeModelItem* tmiUpda = new TreeModelItem("Requires update?", m_update);
-    TreeModelItem* tmiOpGL = new TreeModelItem("OpenGL");
-    TreeModelItem* tmiText = new TreeModelItem("Texture", m_texture->textureId());
-    TreeModelItem* tmiVBuf = new TreeModelItem("Vertexbuffer", m_vertexBuffer->bufferId());
-    TreeModelItem* tmiIBuf = new TreeModelItem("Indexbuffer", m_indexBuffer->bufferId());
-
-    m_rootModelItem = new TreeModelItem("TextureBase");
-    m_rootModelItem->appendChild(tmiBlen);
-    m_rootModelItem->appendChild(tmiEffe);
-    m_rootModelItem->appendChild(tmiUpda);
-    m_rootModelItem->appendChild(tmiOpGL);
-
-    tmiOpGL->appendChild(tmiText);
-    tmiOpGL->appendChild(tmiVBuf);
-    tmiOpGL->appendChild(tmiIBuf);
-    model->addItem(m_rootModelItem);
-
-    RenderBase::createProperties(model);
-}
-
-
-void TextureBase::updateProperties()
-{
-    TreeModelItem* tmiOpGL = m_rootModelItem->childAt(3);
-    tmiOpGL->childAt(0)->setValue(m_texture->textureId());
-    tmiOpGL->childAt(1)->setValue(m_vertexBuffer->bufferId());
-    tmiOpGL->childAt(2)->setValue(m_indexBuffer->bufferId());
-
-    m_rootModelItem->childAt(0)->setValue(getBlendModeString(m_blendMode));
-    m_rootModelItem->childAt(1)->setValue(getEffectString(m_effect));
-    m_rootModelItem->childAt(2)->setValue(m_update);
-
-    RenderBase::updateProperties();
-}
-
-
-int TextureBase::maxSize()
-{
-    if (QOpenGLContext::currentContext() == nullptr)
-    {
-        return 0;
-    }
-
-    GLint texSize;
-    QOpenGLContext::currentContext()
-            ->functions()
-            ->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
-
-    return texSize;
 }

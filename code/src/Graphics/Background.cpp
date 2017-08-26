@@ -46,12 +46,6 @@ Background::Background()
 }
 
 
-BackgroundEmitter* Background::signals()
-{
-    return &m_emitter;
-}
-
-
 bool Background::isScrolling() const
 {
     return m_isScrolling;
@@ -71,12 +65,6 @@ void Background::setScrollPosition(const QPointF& pos)
 }
 
 
-void Background::setScrollDirection(MoveDirections dir)
-{
-    m_scrollDir = dir;
-}
-
-
 void Background::setScrollMode(ScrollMode mode)
 {
     m_scrollMode = mode;
@@ -87,6 +75,12 @@ void Background::setScrollSpeed(float speedX, float speedY)
 {
     m_speedScrollX = speedX;
     m_speedScrollY = speedY;
+}
+
+
+void Background::setScrollDirection(MoveDirections dir)
+{
+    m_scrollDir = dir;
 }
 
 
@@ -247,55 +241,18 @@ void Background::update(const GameTime& time)
 }
 
 
+BackgroundEmitter* Background::signals()
+{
+    return &m_emitter;
+}
+
+
 bool Background::initializeData()
 {
     TextureBase::initializeData();
     prepareTexture();
 
     return true;
-}
-
-
-void Background::prepareTexture()
-{
-    texture()->bind();
-    texture()->setWrapMode(QOpenGLTexture::Repeat);
-    updateUVs();
-}
-
-
-void Background::updateUVs()
-{
-    // Gathers the view.
-    float winX = (m_view.isNull()) ? 0.f : m_view.x();
-    float winY = (m_view.isNull()) ? 0.f : m_view.y();
-    float winW = (m_view.isNull()) ? renderTarget()->width()  : m_view.width();
-    float winH = (m_view.isNull()) ? renderTarget()->height() : m_view.height();
-
-    // Calculates the amount of repeated images.
-    float repeatX = winW / texture()->width();
-    float repeatY = winH / texture()->height();
-
-    winW += winX;
-    winH += winY;
-
-    // Calculates the texture coordinates.
-    float uvX = m_scrollX / texture()->width();
-    float uvY = m_scrollY / texture()->height();
-    float uvW = repeatX - uvX;
-    float uvH = repeatY - uvY;
-
-    // Modifies the vertices to fill the entire window.
-    vertices().at(0).xyz(winX, winY, 0.f);
-    vertices().at(1).xyz(winW, winY, 0.f);
-    vertices().at(2).xyz(winW, winH, 0.f);
-    vertices().at(3).xyz(winX, winH, 0.f);
-
-    // Applies the coordinates.
-    vertices().at(0).uv(-uvX, -uvY);
-    vertices().at(1).uv(+uvW, -uvY);
-    vertices().at(2).uv(+uvW, +uvH);
-    vertices().at(3).uv(-uvX, +uvH);
 }
 
 
@@ -352,4 +309,47 @@ void Background::updateProperties()
     m_rootModelItem->childAt(4)->childAt(1)->setValue(m_scrollY);
 
     TextureBase::updateProperties();
+}
+
+
+void Background::prepareTexture()
+{
+    texture()->bind();
+    texture()->setWrapMode(QOpenGLTexture::Repeat);
+    updateUVs();
+}
+
+
+void Background::updateUVs()
+{
+    // Gathers the view.
+    float winX = (m_view.isNull()) ? 0.f : m_view.x();
+    float winY = (m_view.isNull()) ? 0.f : m_view.y();
+    float winW = (m_view.isNull()) ? renderTarget()->width()  : m_view.width();
+    float winH = (m_view.isNull()) ? renderTarget()->height() : m_view.height();
+
+    // Calculates the amount of repeated images.
+    float repeatX = winW / texture()->width();
+    float repeatY = winH / texture()->height();
+
+    winW += winX;
+    winH += winY;
+
+    // Calculates the texture coordinates.
+    float uvX = m_scrollX / texture()->width();
+    float uvY = m_scrollY / texture()->height();
+    float uvW = repeatX - uvX;
+    float uvH = repeatY - uvY;
+
+    // Modifies the vertices to fill the entire window.
+    vertices().at(0).xyz(winX, winY, 0.f);
+    vertices().at(1).xyz(winW, winY, 0.f);
+    vertices().at(2).xyz(winW, winH, 0.f);
+    vertices().at(3).xyz(winX, winH, 0.f);
+
+    // Applies the coordinates.
+    vertices().at(0).uv(-uvX, -uvY);
+    vertices().at(1).uv(+uvW, -uvY);
+    vertices().at(2).uv(+uvW, +uvH);
+    vertices().at(3).uv(-uvX, +uvH);
 }

@@ -203,7 +203,7 @@ protected overridable:
     /// \param event Contains useful information about the tile.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void onAboutStepTile(const TileEvent& event) { Q_UNUSED(event); }
+    virtual void onAboutStepTile(const TileEvent&) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player stepped on the tile.
@@ -211,7 +211,7 @@ protected overridable:
     /// \param event Contains useful information about the tile.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void onStepTile(const TileEvent& event) { Q_UNUSED(event); }
+    virtual void onStepTile(const TileEvent&) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player left a tile.
@@ -219,7 +219,7 @@ protected overridable:
     /// \param event Contains useful information about the tile.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void onLeaveTile(const TileEvent& event) { Q_UNUSED(event); }
+    virtual void onLeaveTile(const TileEvent&) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player is about to step on an object.
@@ -227,7 +227,7 @@ protected overridable:
     /// \param event Contains useful information about the object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void onAboutStepObject(const ObjectEvent& event) { Q_UNUSED(event); }
+    virtual void onAboutStepObject(const ObjectEvent&) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player stepped on an object.
@@ -235,7 +235,7 @@ protected overridable:
     /// \param event Contains useful information about the object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void onStepObject(const ObjectEvent& event) { Q_UNUSED(event); }
+    virtual void onStepObject(const ObjectEvent&) { }
 
     ////////////////////////////////////////////////////////////////////////////
     /// This method is called when the player left an object.
@@ -243,7 +243,7 @@ protected overridable:
     /// \param event Contains useful information about the object.
     ///
     ////////////////////////////////////////////////////////////////////////////
-    virtual void onLeaveObject(const ObjectEvent& event) { Q_UNUSED(event); }
+    virtual void onLeaveObject(const ObjectEvent&) { }
 
 
 private:

@@ -257,6 +257,12 @@ LayerType MapTileLayer::layerType() const
 }
 
 
+void MapTileLayer::update(const GameTime& time)
+{
+    m_tileMap->update(time);
+}
+
+
 void MapTileLayer::render()
 {
     // Convert position to integer due to rendering artifacts.

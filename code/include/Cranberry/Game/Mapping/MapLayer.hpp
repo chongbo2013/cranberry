@@ -26,6 +26,7 @@
 
 // Cranberry headers
 #include <Cranberry/Game/Mapping/Enumerations.hpp>
+#include <Cranberry/System/GameTime.hpp>
 
 // Forward declarations
 CRANBERRY_FORWARD_C(Map)
@@ -128,6 +129,7 @@ public overridable:
     // Virtual functions
     ////////////////////////////////////////////////////////////////////////////
     virtual LayerType layerType() const = 0;
+    virtual void update(const GameTime& time) = 0;
     virtual void render() = 0;
 
 

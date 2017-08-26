@@ -235,14 +235,14 @@ bool Map::create(const QString& mapPath, Window* rt)
 
 void Map::destroy()
 {
-    for (MapLayer* m : m_layers)
+    for (MapLayer* layer : m_layers)
     {
-        delete m;
+        delete layer;
     }
 
-    for (MapTileset* m : m_tilesets)
+    for (MapTileset* tileset : m_tilesets)
     {
-        delete m;
+        delete tileset;
     }
 
     m_layers.clear();
@@ -255,6 +255,11 @@ void Map::destroy()
 void Map::update(const GameTime& time)
 {
     updateTransform(time);
+
+    for (MapLayer* layer : m_layers)
+    {
+        layer->update(time);
+    }
 
     m_player->update(time);
 }

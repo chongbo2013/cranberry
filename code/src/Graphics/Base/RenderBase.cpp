@@ -58,70 +58,6 @@ RenderBase::~RenderBase()
 }
 
 
-bool RenderBase::isNull() const
-{
-    return m_renderTarget == nullptr;
-}
-
-
-bool RenderBase::create(Window* renderTarget)
-{
-    if (renderTarget == nullptr)
-    {
-        if ((renderTarget = Window::activeWindow()) == nullptr)
-        {
-            return cranError(ERRARG(e_01));
-        }
-    }
-
-    gl = renderTarget->context()->functions();
-    m_renderTarget = renderTarget;
-
-    signals()->emitCreated();
-    return makeCurrent();
-}
-
-
-void RenderBase::destroy()
-{
-    m_customProgram = nullptr;
-    m_renderTarget = nullptr;
-
-    signals()->emitDestroyed();
-}
-
-
-RenderBaseEmitter* RenderBase::signals()
-{
-    return &m_emitter;
-}
-
-
-bool RenderBase::makeCurrent()
-{
-    auto* cc = QOpenGLContext::currentContext();
-    if (cc != renderTarget()->context() || cc->surface() != renderTarget()->surface())
-    {
-        renderTarget()->makeCurrent();
-    }
-
-    return true;
-}
-
-
-bool RenderBase::prepareRendering()
-{
-    if (Q_UNLIKELY(isNull()))
-    {
-        cranError(ERRARG(e_03));
-        if_debug(Game::instance()->exit(CRANBERRY_EXIT_FATAL));
-        return false;
-    }
-
-    return makeCurrent();
-}
-
-
 Window* RenderBase::renderTarget() const
 {
     return m_renderTarget;
@@ -173,6 +109,70 @@ void RenderBase::setOffscreenRenderer(uint fbo)
 void RenderBase::setName(const QString& name)
 {
     m_name = name;
+}
+
+
+bool RenderBase::makeCurrent()
+{
+    auto* cc = QOpenGLContext::currentContext();
+    if (cc != renderTarget()->context() || cc->surface() != renderTarget()->surface())
+    {
+        renderTarget()->makeCurrent();
+    }
+
+    return true;
+}
+
+
+bool RenderBase::prepareRendering()
+{
+    if (Q_UNLIKELY(isNull()))
+    {
+        cranError(ERRARG(e_03));
+        if_debug(Game::instance()->exit(CRANBERRY_EXIT_FATAL));
+        return false;
+    }
+
+    return makeCurrent();
+}
+
+
+bool RenderBase::isNull() const
+{
+    return m_renderTarget == nullptr;
+}
+
+
+bool RenderBase::create(Window* renderTarget)
+{
+    if (renderTarget == nullptr)
+    {
+        if ((renderTarget = Window::activeWindow()) == nullptr)
+        {
+            return cranError(ERRARG(e_01));
+        }
+    }
+
+    gl = renderTarget->context()->functions();
+    m_renderTarget = renderTarget;
+
+    signals()->emitCreated();
+    return makeCurrent();
+}
+
+
+void RenderBase::destroy()
+{
+    m_customProgram = nullptr;
+    m_renderTarget = nullptr;
+
+    signals()->emitDestroyed();
+}
+
+
+RenderBaseEmitter* RenderBase::signals()
+{
+    return &m_emitter;
 }
 
 

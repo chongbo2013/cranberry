@@ -79,6 +79,14 @@ public:
     bool isTransparentToKeyInput() const;
 
     ////////////////////////////////////////////////////////////////////////////
+    /// Determines whether this Gui is transparent to mouse input.
+    ///
+    /// \returns true if transparent.
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    bool isTransparentToMouseInput() const;
+
+    ////////////////////////////////////////////////////////////////////////////
     /// Retrieves the underlying QQuickWindow.
     ///
     /// \returns the underlying window.
@@ -128,6 +136,15 @@ public:
     ///
     ////////////////////////////////////////////////////////////////////////////
     void setTransparentToKeyInput(bool transparent);
+
+    ////////////////////////////////////////////////////////////////////////////
+    /// If this is set to true, the Gui will behave as "display-only" Gui, i.e.
+    /// it cannot be interacted with.
+    ///
+    /// \param transparent Transparent to mouse input?
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+    void setTransparentToMouseInput(bool transparent);
 
     ////////////////////////////////////////////////////////////////////////////
     /// Specifies the effect to render this object with.
@@ -230,6 +247,7 @@ private:
     bool                      m_isInitialized;
     bool                      m_isVisible;
     bool                      m_noKeyInput;
+    bool                      m_noMouseInput;
 
     friend class GuiManagerReceiver;
     friend class priv::WindowPrivate;
@@ -240,10 +258,18 @@ private:
 /// \class GuiManager
 /// \ingroup Gui
 ///
-/// More detailed description, code examples.
+/// The GuiManager class allows you to load, display and interact with Qml GUIs.
+/// As of today, there is a bug in which the QQuickWindow - associated with the
+/// GuiManager - steals the focus of the main window and greys out the title bar
+/// under Windows, for example.
 ///
 /// \code
+/// // Creates a "display-only" Gui
+/// GuiManager gui;
+/// gui.create(":/gui/main.qml");
+/// gui.setTransparentToMouseInput(true); // no focus possible
 /// ...
+/// gui.render();
 /// \endcode
 ///
 ////////////////////////////////////////////////////////////////////////////////

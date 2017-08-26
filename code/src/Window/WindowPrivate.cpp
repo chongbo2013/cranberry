@@ -336,7 +336,7 @@ void priv::WindowPrivate::dispatchEvents(QEvent* event)
 
     for (GuiManager* g : m_guiWindows)
     {
-        if (g->isVisible())
+        if (g->isVisible() && !g->isTransparentToMouseInput())
         {
             if (canReceiveFocus)
             {
