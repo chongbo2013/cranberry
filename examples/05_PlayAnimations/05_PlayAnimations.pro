@@ -1,6 +1,6 @@
 ################################################################################
 ##
-## Cranberry - C++ game engine based on the Qt5 framework.
+## Cranberry - C++ game engine based on the Qt framework.
 ## Copyright (C) 2017 Nicolas Kogler
 ## License - Lesser General Public License (LGPL) 3.0
 ##

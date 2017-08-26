@@ -1,6 +1,6 @@
 ﻿////////////////////////////////////////////////////////////////////////////////
 //
-// Cranberry - C++ game engine based on the Qt 5.8 framework.
+// Cranberry - C++ game engine based on the Qt framework.
 // Copyright (C) 2017 Nicolas Kogler
 //
 // Cranberry is free software: you can redistribute it and/or modify
@@ -137,7 +137,7 @@ if_debug
 void priv::GamePrivate::printLogo()
 {
     qDebug() << "----------------------------------------------------------";
-    qDebug() << "Cranberry - C++ game engine based on the Qt 5.8 framework.";
+    qDebug() << "Cranberry - C++ game engine based on the Qt framework.";
     qDebug() << "Copyright (C) 2017 Nicolas Kogler";
     qDebug() << "License - Lesser General Public License (LGPL) 3.0";
     qDebug() << "Version" << CRANBERRY_VERSION;
