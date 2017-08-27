@@ -34,12 +34,13 @@
 #include <QJsonObject>
 
 // Constants
-CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - File %2 does not exist.")
-CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Invalid version: %2.")
+CRANBERRY_CONST_VAR(QString, e_01, "%0 [%1] - File \"%2\" does not exist.")
+CRANBERRY_CONST_VAR(QString, e_02, "%0 [%1] - Invalid version: \"%2\".")
 CRANBERRY_CONST_VAR(QString, e_03, "%0 [%1] - Sheet could not be loaded.")
 CRANBERRY_CONST_VAR(QString, e_04, "%0 [%1] - Invalid movement.")
 CRANBERRY_CONST_VAR(QString, e_05, "%0 [%1] - Invalid frame.")
-CRANBERRY_CONST_VAR(QString, e_06, "%0 [%1] - Movement %2 does not exist.")
+CRANBERRY_CONST_VAR(QString, e_06, "%0 [%1] - Movement \"%2\" does not exist.")
+CRANBERRY_CONST_VAR(QString, e_07, "%0 [%1] - AdvanceX && AdvanceY must not be zero.")
 
 
 CRANBERRY_USING_NAMESPACE
@@ -174,6 +175,8 @@ bool Sprite::create(const QString& path, Window* rt)
             return cranError(ERRARG(e_03));
         }
 
+        qreal biggestX = 0, biggestY = 0;
+
         // Loads the movements.
         QJsonArray movements = top.value("movements").toArray();
         Q_FOREACH (QJsonValue m, movements)
@@ -194,11 +197,16 @@ bool Sprite::create(const QString& path, Window* rt)
                 return cranError(ERRARG(e_04));
             }
 
+            if (valAdvX.toInt() == 0 && valAdvY.toInt() == 0)
+            {
+                return cranError(ERRARG(e_07));
+            }
+
             SpriteMovement* move = new SpriteMovement;
             move->setName(valName.toString());
             move->setMovementMode(getJsonMoveMode(valMode));
             move->setHorizontalAdvance(valAdvX.toDouble());
-            move->setVerticalAdvance(valAdvX.toDouble());
+            move->setVerticalAdvance(valAdvY.toDouble());
             move->setIdleFrame(getJsonRect(objIdle));
             move->setRawAnimation(new RawAnimation);
 
@@ -226,6 +234,9 @@ bool Sprite::create(const QString& path, Window* rt)
                 move->setTotalDuration(move->totalDuration() + animFrame.duration());
                 animFrames.append(animFrame);
                 currentFrame++;
+
+                biggestX = qMax(biggestX, animFrame.rectangle().width());
+                biggestY = qMax(biggestY, animFrame.rectangle().height());
             }
 
             if(!move->animation()->createRawAnimation({ img }, animFrames, renderTarget()))
@@ -236,6 +247,9 @@ bool Sprite::create(const QString& path, Window* rt)
             move->animation()->setIdleFrame(0, move->idleFrame());
             m_movements.insert(move->name(), move);
         }
+
+        setSize(biggestX, biggestY);
+        setOrigin(biggestX / 2, biggestY / 2);
 
         return true;
     }
@@ -288,7 +302,7 @@ void Sprite::beginMove(const QString& n)
         float mx = m->horizontalAdvance() / m->totalDuration();
         float my = m->verticalAdvance()   / m->totalDuration();
 
-        setMoveSpeed(mx, my);
+        setMoveSpeed(qAbs(mx), qAbs(my));
         moveBy(m->horizontalAdvance(), m->verticalAdvance());
 
         m_isBlocking = true;
@@ -296,6 +310,7 @@ void Sprite::beginMove(const QString& n)
 
     m_isRunning = true;
     m_currentMove = m;
+    m_currentMove->animation()->copyTransform(this, m_currentMove->animation());
 }
 
 
@@ -374,9 +389,12 @@ void Sprite::render()
         return;
     }
 
-    m_currentMove->animation()->setShaderProgram(shaderProgram());
-    m_currentMove->animation()->copyTransform(this, m_currentMove->animation());
-    m_currentMove->animation()->render();
+    if (m_currentMove != nullptr)
+    {
+        m_currentMove->animation()->setShaderProgram(shaderProgram());
+        m_currentMove->animation()->copyTransform(this, m_currentMove->animation());
+        m_currentMove->animation()->render();
+    }
 }
 
 
