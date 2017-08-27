@@ -70,8 +70,9 @@ public:
     /// Creates the tilemap object.
     ///
     /// \param tilesets Paths to tileset images to use.
-    /// \param tileSize Size of each tile, in pixels.
+    /// \param tileSizes Sizes of each tile in the tilesets, in pixels.
     /// \param mapSize Size of the entire map, in tiles.
+    /// \param mapTileSize General grid size of the map, in pixels.
     /// \param view The map view inside the window. A null rectangle leads to
     ///        having the entire window as view.
     /// \param renderTarget Target to render batch on.
@@ -80,8 +81,9 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     bool create(
             const QVector<QString>& tilesets,
-            const QSize& tileSize,
+            const QVector<QSize>& tileSizes,
             const QSize& mapSize,
+            const QSize& mapTileSize,
             const QRect& view,
             Window* renderTarget = nullptr
             );
@@ -91,8 +93,9 @@ public:
     /// This class will _not_ take ownership of the tilesets provided!
     ///
     /// \param textures Tilesets to use for this tilemap.
-    /// \param tileSize Size of each tile, in pixels.
+    /// \param tileSizes Sizes of each tile in the tilesets, in pixels.
     /// \param mapSize Size of the entire map, in tiles.
+    /// \param mapTileSize General grid size of the map, in pixels.
     /// \param view The map view inside the window. A null rectangle leads to
     ///        having the entire window as view.
     /// \param renderTarget Target to render batch on.
@@ -101,8 +104,9 @@ public:
     ////////////////////////////////////////////////////////////////////////////
     bool create(
             const QVector<QOpenGLTexture*>& textures,
-            const QSize& tileSize,
+            const QVector<QSize>& tileSizes,
             const QSize& mapSize,
+            const QSize& mapTileSize,
             const QRect& view,
             Window* renderTarget = nullptr
             );
@@ -225,6 +229,7 @@ private:
     // Members
     ////////////////////////////////////////////////////////////////////////////
     QVector<QOpenGLTexture*> m_textures;
+    QVector<QSize>           m_tileSizes;
     QVector<int>             m_uniformLocs;
     QOpenGLBuffer*           m_vertexBuffer;
     QOpenGLBuffer*           m_textureBuffer;

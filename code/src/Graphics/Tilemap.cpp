@@ -78,17 +78,19 @@ bool Tilemap::setTiles(const QVector<QPair<int, int>>& tiles)
 
 bool Tilemap::create(
     const QVector<QString>& tilesets,
-    const QSize& tileSize,
+    const QVector<QSize>& tileSizes,
     const QSize& mapSize,
+    const QSize& mapTileSize,
     const QRect& view,
     Window* rt
     )
 {
     // Specifies all members.
-    m_tileWidth  = tileSize.width();
-    m_tileHeight = tileSize.height();
+    m_tileWidth  = mapTileSize.width();
+    m_tileHeight = mapTileSize.height();
     m_mapWidth   = mapSize.width();
     m_mapHeight  = mapSize.height();
+    m_tileSizes  = tileSizes;
     m_view = view;
 
     if (!createInternal(rt)) return false;
@@ -111,8 +113,9 @@ bool Tilemap::create(
 
 bool Tilemap::create(
     const QVector<QOpenGLTexture*>& textures,
-    const QSize& tileSize,
+    const QVector<QSize>& tileSizes,
     const QSize& mapSize,
+    const QSize& mapTileSize,
     const QRect& view,
     Window* rt
     )
@@ -123,11 +126,12 @@ bool Tilemap::create(
     }
 
     // Specifies all members.
-    m_tileWidth  = tileSize.width();
-    m_tileHeight = tileSize.height();
+    m_tileWidth  = mapTileSize.width();
+    m_tileHeight = mapTileSize.height();
     m_mapWidth   = mapSize.width();
     m_mapHeight  = mapSize.height();
     m_ownTextures = false;
+    m_tileSizes = tileSizes;
     m_textures = textures;
     m_view = view;
 
@@ -155,7 +159,7 @@ bool Tilemap::insertTile(int index, int tileIndex, int tileset)
 
 bool Tilemap::insertTile(int x, int y, int tileIndex, int tileset)
 {
-    if (x < 0 || x >= m_mapWidth || y < 0 || y >= m_mapHeight)
+    if (x < 0 || x >= m_mapWidth || y < 0 || y >= m_mapHeight || tileset >= m_textures.size())
     {
         // Out of map bounds.
         return false;
@@ -163,17 +167,18 @@ bool Tilemap::insertTile(int x, int y, int tileIndex, int tileset)
 
     priv::MapVertex t11, t12, t13, t21, t22, t23;
     QOpenGLTexture* const tex = m_textures.at(tileset);
+    QSize tile = m_tileSizes.at(tileset);
 
     // Calculates the tile position from the tile index.
-    int swid = tex->width()  / m_tileWidth;
-    float uvX = ((tileIndex % swid) * m_tileWidth)  / (qreal) tex->width();
-    float uvY = ((tileIndex / swid) * m_tileHeight) / (qreal) tex->height();
-    float uvW = uvX + ((qreal) m_tileWidth  / tex->width());
-    float uvH = uvY + ((qreal) m_tileHeight / tex->height());
-    float xyX = x * m_tileWidth;
-    float xyY = y * m_tileHeight;
-    float xyW = xyX + m_tileWidth;
-    float xyH = xyY + m_tileHeight;
+    int swid = tex->width()  / tile.width();
+    float uvX = ((tileIndex % swid) * tile.width())  / (qreal) tex->width();
+    float uvY = ((tileIndex / swid) * tile.height()) / (qreal) tex->height();
+    float uvW = uvX + ((qreal) tile.width()  / tex->width());
+    float uvH = uvY + ((qreal) tile.height() / tex->height());
+    float xyX = x * tile.width();
+    float xyY = y * tile.height();
+    float xyW = xyX + tile.width();
+    float xyH = xyY + tile.height();
 
     // Modifies the vertices.
     t11.xy(xyX, xyY); t11.uv(uvX, uvY);
@@ -212,7 +217,7 @@ bool Tilemap::replaceTile(int index, int tileIndex, int tileset)
 
 bool Tilemap::replaceTile(int x, int y, int tileIndex, int tileset)
 {
-    if (x < 0 || x >= m_mapWidth || y < 0 || y >= m_mapHeight)
+    if (x < 0 || x >= m_mapWidth || y < 0 || y >= m_mapHeight || tileset >= m_textures.size())
     {
         // Out of map bounds.
         return false;
@@ -220,17 +225,18 @@ bool Tilemap::replaceTile(int x, int y, int tileIndex, int tileset)
 
     priv::MapVertex t11, t12, t13, t21, t22, t23;
     QOpenGLTexture* const tex = m_textures.at(tileset);
+    QSize tile = m_tileSizes.at(tileset);
 
     // Calculates the tile position from the tile index.
-    int swid = tex->width()  / m_tileWidth;
-    float uvX = ((tileIndex % swid) * m_tileWidth)  / (qreal) tex->width();
-    float uvY = ((tileIndex / swid) * m_tileHeight) / (qreal) tex->height();
-    float uvW = uvX + ((qreal) m_tileWidth  / tex->width());
-    float uvH = uvY + ((qreal) m_tileHeight / tex->height());
-    float xyX = x * m_tileWidth;
-    float xyY = y * m_tileHeight;
-    float xyW = xyX + m_tileWidth;
-    float xyH = xyY + m_tileHeight;
+    int swid = tex->width()  / tile.width();
+    float uvX = ((tileIndex % swid) * tile.width())  / (qreal) tex->width();
+    float uvY = ((tileIndex / swid) * tile.height()) / (qreal) tex->height();
+    float uvW = uvX + ((qreal) tile.width()  / tex->width());
+    float uvH = uvY + ((qreal) tile.height() / tex->height());
+    float xyX = x * tile.width();
+    float xyY = y * tile.height();
+    float xyW = xyX + tile.width();
+    float xyH = xyY + tile.height();
 
     // Modifies the vertices.
     t11.xy(xyX, xyY); t11.uv(uvX, uvY);
