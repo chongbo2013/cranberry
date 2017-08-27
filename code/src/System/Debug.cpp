@@ -22,10 +22,12 @@
 // Cranberry headers
 #include <Cranberry/System/Debug.hpp>
 
-// Qt headers
+// Mode-dependent headers
 #ifdef QT_DEBUG
     #include <QDebug>
 #else
+    #include <Cranberry/Game/Game.hpp>
+    #include <QAbstractButton>
     #include <QMessageBox>
 #endif
 
@@ -68,10 +70,16 @@ bool priv::Debug::showError(
     QMessageBox box;
     box.setWindowTitle("Cranberry Error");
     box.setIcon(QMessageBox::Critical);
-    box.setStandardButtons(QMessageBox::Close);
+    box.setStandardButtons(QMessageBox::Ok | QMessageBox::Ignore);
     box.setText(strInfo.arg(strFile, strFunc, strLine));
     box.setDetailedText(strMsg);
+    box.button(QMessageBox::Ignore)->setText("Terminate");
     box.exec();
+
+    if (box.clickedButton()->text() == "Terminate")
+    {
+        Game::instance()->exit(CRANBERRY_EXIT_FATAL);
+    }
 #endif
     return false;
 }

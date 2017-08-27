@@ -189,16 +189,20 @@ bool MapTileLayer::parse(
 
     // Get all the QOpenGLTexture instances from the given tilesets.
     QVector<QOpenGLTexture*> glTextures;
+    QVector<QSize> tileSizes;
+
     for (MapTileset* set : tilesets)
     {
         glTextures.push_back(set->texture());
+        tileSizes.push_back(QSize(set->tileWidth(), set->tileHeight()));
     }
 
     // Creates the tilemap for rendering.
     if (!m_tileMap->create(
             glTextures,
-            QSize(map()->tileWidth(), map()->tileHeight()),
+            tileSizes,
             QSize(map()->width(), map()->height()),
+            QSize(map()->tileWidth(), map()->tileHeight()),
             QRect(),
             map()->renderTarget()
             ))

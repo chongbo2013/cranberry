@@ -245,6 +245,8 @@ void Map::destroy()
         delete tileset;
     }
 
+    delete m_player;
+
     m_layers.clear();
     m_tilesets.clear();
 
