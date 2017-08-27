@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="19" height="13" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+  <image source=":/tileset.png" width="512" height="512"/>
+  <tile id="86">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="87">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="97">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="99">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="114">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="117">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="148">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="160">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="161">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="165">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="166">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="178">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="179">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="194">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+  <tile id="195">
+   <properties>
+    <property name="solid" type="bool" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Base" width="19" height="13">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <layer name="Layer1" width="19" height="13">
+  <data encoding="csv">
+118,161,162,115,161,162,0,0,161,162,161,162,87,88,161,162,87,88,118,
+161,162,87,88,161,162,0,0,87,88,161,162,161,162,87,88,118,161,162,
+161,162,87,88,65,0,0,0,118,0,87,88,70,0,0,161,162,87,88,
+88,161,162,118,0,0,0,0,0,0,0,0,0,0,87,88,87,88,87,
+88,87,88,66,0,0,0,149,0,0,0,0,0,248,0,87,88,161,162,
+115,87,88,0,0,0,0,67,0,0,0,166,0,0,0,70,161,162,87,
+161,162,118,0,0,248,0,0,167,195,196,67,0,0,0,0,0,0,118,
+161,162,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+87,88,70,0,0,0,0,0,0,0,0,149,0,0,0,66,0,0,0,
+161,162,161,162,0,118,67,0,98,0,0,0,67,0,118,66,66,66,161,
+87,88,87,88,161,162,87,88,0,0,0,0,0,0,87,88,66,87,88,
+161,162,161,162,87,88,161,162,248,0,0,87,88,161,162,161,162,161,162,
+161,162,87,88,161,162,161,162,0,0,87,88,161,162,87,88,161,162,161
+</data>
+ </layer>
+ <layer name="Layer2" width="19" height="13">
+  <data encoding="csv">
+145,146,71,72,145,146,0,0,71,72,145,146,145,146,71,72,102,145,146,
+145,146,71,72,0,0,0,0,102,0,71,72,0,0,0,145,146,71,72,
+72,145,146,102,0,0,0,0,0,0,0,0,0,0,71,72,71,72,71,
+72,71,72,0,0,0,0,0,0,0,0,0,0,0,0,71,72,145,146,
+99,71,72,0,0,0,0,0,0,0,0,0,0,0,0,0,145,146,71,
+145,146,102,0,0,0,0,0,0,179,180,0,0,0,0,0,0,0,102,
+145,146,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+71,72,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+145,146,145,146,0,102,0,0,0,0,0,0,0,0,102,0,0,0,145,
+71,72,71,72,145,146,71,72,0,0,0,0,0,0,71,72,0,71,72,
+145,146,145,146,71,72,145,146,0,0,0,71,72,145,146,145,146,145,146,
+145,146,71,72,145,146,145,146,0,0,71,72,145,146,71,72,145,146,145,
+71,72,145,146,71,72,145,146,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer name="Layer3" width="19" height="13">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,163,164,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

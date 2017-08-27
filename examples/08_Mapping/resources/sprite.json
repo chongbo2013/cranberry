@@ -1,0 +1,170 @@
+﻿{
+    "version" : 1,
+    "sheet" : ":/sprite.png",
+    "movements" : [
+        {
+            "name" : "left",
+            "mode" : "tile",
+            "advanceX" : -32,
+            "advanceY" : 0,
+            "idle" : {
+                "x" : 0,
+                "y" : 48,
+                "w" : 32,
+                "h" : 48
+            },
+            "frames" : [
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 32,
+                        "y" : 48,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 64,
+                        "y" : 48,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 96,
+                        "y" : 48,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                }
+            ]
+        },
+        {
+            "name" : "right",
+            "mode" : "tile",
+            "advanceX" : 32,
+            "advanceY" : 0,
+            "idle" : {
+                "x" : 0,
+                "y" : 96,
+                "w" : 32,
+                "h" : 48
+            },
+            "frames" : [
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 32,
+                        "y" : 96,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 64,
+                        "y" : 96,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 96,
+                        "y" : 96,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                }
+            ]
+        },
+        {
+            "name" : "down",
+            "mode" : "tile",
+            "advanceX" : 0,
+            "advanceY" : 32,
+            "idle" : {
+                "x" : 0,
+                "y" : 0,
+                "w" : 32,
+                "h" : 48
+            },
+            "frames" : [
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 32,
+                        "y" : 0,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 64,
+                        "y" : 0,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 96,
+                        "y" : 0,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                }
+            ]
+        },
+        {
+            "name" : "up",
+            "mode" : "tile",
+            "advanceX" : 0,
+            "advanceY" : -32,
+            "idle" : {
+                "x" : 0,
+                "y" : 144,
+                "w" : 32,
+                "h" : 48
+            },
+            "frames" : [
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 32,
+                        "y" : 144,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 64,
+                        "y" : 144,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                },
+                {
+                    "duration" : 80,
+                    "rect" : {
+                        "x" : 96,
+                        "y" : 144,
+                        "w" : 32,
+                        "h" : 48
+                    }
+                }
+            ]
+        }
+    ]
+}

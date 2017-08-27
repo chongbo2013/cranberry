@@ -1,0 +1,8 @@
+﻿<RCC>
+    <qresource prefix="/">
+        <file>tileset.png</file>
+        <file>map.tmx</file>
+        <file>sprite.png</file>
+        <file>sprite.json</file>
+    </qresource>
+</RCC>
