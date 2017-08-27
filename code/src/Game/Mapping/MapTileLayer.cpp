@@ -141,7 +141,7 @@ bool MapTileLayer::parse(
 
         if (m_compression == CompressionModeZlib)
         {
-            int expectedSize = map()->width() * map()->height() * sizeof(int);
+            int expectedSize = map()->mapWidth() * map()->mapHeight() * sizeof(int);
 
             // TODO: Do we really need this? TMX used Qt for compression. Qt docs:
             // "This function will uncompress data compressed with qCompress()
@@ -201,7 +201,7 @@ bool MapTileLayer::parse(
     if (!m_tileMap->create(
             glTextures,
             tileSizes,
-            QSize(map()->width(), map()->height()),
+            QSize(map()->mapWidth(), map()->mapHeight()),
             QSize(map()->tileWidth(), map()->tileHeight()),
             QRect(),
             map()->renderTarget()

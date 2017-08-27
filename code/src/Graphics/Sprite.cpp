@@ -331,7 +331,9 @@ void Sprite::beginIdle(const QString& n)
 
     // Starts the idle mode.
     m->animation()->beginIdle();
+
     m_currentMove = m;
+    m_currentMove->animation()->copyTransform(this, m_currentMove->animation());
     m_isRunning = false;
 }
 

@@ -139,7 +139,10 @@ void MapPlayer::render()
 {
     if (m_renderObject != nullptr)
     {
-        copyTransform(this, m_renderObject, true);
+        setSize(m_parent->tileWidth(), m_parent->tileHeight());
+        copyTransform(this, m_renderObject);
+
+        m_renderObject->setY(y() - (m_renderObject->height() - height()));
         m_renderObject->render();
     }
 }
@@ -153,12 +156,30 @@ MapPlayerEmitter* MapPlayer::signals()
 
 int MapPlayer::getTileIndex(int x, int y)
 {
-    return y * m_parent->width() + x;
+    return y * m_parent->mapWidth() + x;
+}
+
+
+bool MapPlayer::exceedsMapSize(int x, int y)
+{
+    QRect bounds(
+          static_cast<int>(m_parent->x() / m_parent->tileWidth()),
+          static_cast<int>(m_parent->y() / m_parent->tileHeight()),
+          static_cast<int>(m_parent->mapWidth()),
+          static_cast<int>(m_parent->mapHeight())
+          );
+
+    return !bounds.contains(x, y);
 }
 
 
 bool MapPlayer::movePlayerByTiles(int x, int y)
 {
+    if (exceedsMapSize(tileX() + x, tileY() + y))
+    {
+        return false;
+    }
+
     for (MapLayer* layer : m_parent->layers())
     {
         if (layer->layerType() == LayerTypeTile)
@@ -227,6 +248,11 @@ bool MapPlayer::movePlayerByPixels(int dx, int dy)
     int oldTileY = pY / m_parent->tileHeight();
     int newTileX = (pX + dx) / m_parent->tileWidth();
     int newTileY = (pY + dy) / m_parent->tileHeight();
+
+    if (exceedsMapSize(newTileX, newTileY))
+    {
+        return false;
+    }
 
     if (oldTileX != newTileX || oldTileY != newTileY)
     {

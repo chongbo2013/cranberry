@@ -162,6 +162,7 @@ private:
     // Functions
     ////////////////////////////////////////////////////////////////////////////
     int getTileIndex(int x, int y);
+    bool exceedsMapSize(int x, int y);
     bool movePlayerByTiles(int x, int y);
     bool movePlayerByPixels(int x, int y);
     void moveFinished();

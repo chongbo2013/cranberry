@@ -110,13 +110,13 @@ MapOrientation Map::orientation() const
 }
 
 
-int Map::width() const
+int Map::mapWidth() const
 {
     return m_width;
 }
 
 
-int Map::height() const
+int Map::mapHeight() const
 {
     return m_height;
 }
@@ -228,6 +228,8 @@ bool Map::create(const QString& mapPath, Window* rt)
     m_tileWidth = mapNode.attribute("tilewidth").toInt();
     m_tileHeight = mapNode.attribute("tileheight").toInt();
     m_bgColor = getColorFromString(mapNode.attribute("backgroundcolor"));
+
+    setSize(m_width * m_tileWidth, m_height * m_tileHeight);
 
     return loadTilesets(&mapNode) && loadLayers(&mapNode) && loadProperties(&mapNode);
 }
