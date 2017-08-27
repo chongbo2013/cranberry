@@ -20,6 +20,7 @@
 
 
 // Cranberry headers
+#include <Cranberry/Game/Game.hpp>
 #include <Cranberry/Window/Window.hpp>
 #include <Cranberry/Window/WindowPrivate.hpp>
 
@@ -138,6 +139,12 @@ void Window::setSettings(const WindowSettings& settings)
 void Window::saveScreenshot(const QString& path)
 {
     m_priv->takeScreenshot().save(path);
+}
+
+
+void Window::exitGame()
+{
+    Game::instance()->exit();
 }
 
 
