@@ -119,7 +119,9 @@ HEADERS     +=      include/Cranberry/Config.hpp \
                     include/Cranberry/Game/Mapping/MapObjectLayer.hpp \
                     include/Cranberry/Game/Mapping/MapPlayer.hpp \
                     include/Cranberry/System/Emitters/MapPlayerEmitter.hpp \
-                    include/Cranberry/System/Receivers/MapPlayerReceiver.hpp
+                    include/Cranberry/System/Receivers/MapPlayerReceiver.hpp \
+    include/Cranberry/Game/Scene/Scene.hpp \
+    include/Cranberry/Game/Scene/SceneManager.hpp
 
 win32 {
 HEADERS     +=      include/Cranberry/System/StackWalkers/StackWalkerWin32.hpp
@@ -187,7 +189,9 @@ SOURCES     +=      src/System/Debug.cpp \
                     src/Game/Mapping/MapLayer.cpp \
                     src/Game/Mapping/MapObjectLayer.cpp \
                     src/Game/Mapping/MapPlayer.cpp \
-                    src/System/Receivers/MapPlayerReceiver.cpp
+                    src/System/Receivers/MapPlayerReceiver.cpp \
+    src/Game/Scene/Scene.cpp \
+    src/Game/Scene/SceneManager.cpp
 
 win32 {
 SOURCES     +=      src/System/StackWalkers/StackWalkerWin32.cpp
